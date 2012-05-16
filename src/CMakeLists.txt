@@ -1,6 +1,7 @@
 set(Explore_SRCS
     main.cpp
     game/Explore.cpp
+    game/ExploreMenu.cpp
 )
 
 add_executable(Explore ${Explore_SRCS})
