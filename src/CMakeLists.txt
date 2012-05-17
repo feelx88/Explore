@@ -2,6 +2,8 @@ set(Explore_SRCS
     main.cpp
     game/Explore.cpp
     game/ExploreMenu.cpp
+    engine/EngineTypedefs.h
+    engine/EventReceiver.cpp
 )
 
 add_executable(Explore ${Explore_SRCS})
