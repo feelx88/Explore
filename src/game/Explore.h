@@ -5,19 +5,14 @@
 
 #include <engine/EngineTypedefs.h>
 #include <engine/LoggerSingleton.h>
+#include "GameState.h"
 #include "ExploreMenu.h"
 
 class Explore
 {
 public:
-    enum E_GAME_STATE
-    {
-        EGS_QUIT = 0,
-        EGS_MAIN_MENU,
-        EGS_GAME
-    };
-
     Explore();
+    ~Explore();
 
     int run();
 
@@ -26,17 +21,15 @@ public:
     {
         try
         {
-            return mConfig.get<T>( key );
+            return mConfig->get<T>( key );
         }
         catch( boost::property_tree::ptree_bad_path& )
         {
             _LOG( "Key not found, adding it:", key );
-            mConfig.put<T>( key, defaultVal );
+            mConfig->put<T>( key, defaultVal );
             return defaultVal;
         }
     }
-
-    void setGameState( E_GAME_STATE state );
 
 private:
     void loadConfig();
@@ -47,7 +40,8 @@ private:
 
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
-    boost::property_tree::ptree mConfig;
+    IGUIEnvironmentPtr mGUI;
+    PropTreePtr mConfig;
 
     bool mRunning;
     E_GAME_STATE mGameState;

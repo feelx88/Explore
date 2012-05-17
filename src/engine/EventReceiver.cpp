@@ -8,4 +8,5 @@ EventReceiver::EventReceiver()
 
 bool EventReceiver::OnEvent(const SEvent &event)
 {
+    return false;
 }

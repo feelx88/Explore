@@ -3,17 +3,24 @@
 
 #include <irrlicht/irrlicht.h>
 #include <engine/EngineTypedefs.h>
+#include "GameState.h"
 
 class ExploreMenu
 {
 public:
-    ExploreMenu( IrrlichtDevicePtr device );
+    ExploreMenu(IrrlichtDevicePtr device , PropTreePtr config );
 
-    void run();
+    E_GAME_STATE run();
 
 protected:
-    IrrlichtDevicePtr mDevice;
 
+    IrrlichtDevicePtr mDevice;
+    IVideoDriverPtr mVideoDriver;
+    IGUIEnvironmentPtr mGUI;
+
+    PropTreePtr mConfig;
+
+    irr::gui::IGUIButton *mButtonQuit;
 };
 
 #endif // EXPLOREMENU_H
