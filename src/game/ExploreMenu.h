@@ -19,8 +19,6 @@ protected:
     IGUIEnvironmentPtr mGUI;
 
     PropTreePtr mConfig;
-
-    irr::gui::IGUIButton *mButtonQuit;
 };
 
 #endif // EXPLOREMENU_H

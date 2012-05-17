@@ -3,16 +3,22 @@
 using namespace irr;
 using namespace core;
 
-ExploreMenu::ExploreMenu( IrrlichtDevicePtr device )
+ExploreMenu::ExploreMenu( IrrlichtDevicePtr device, PropTreePtr config )
     : mDevice( device ),
       mGUI( mDevice->getGUIEnvironment() ),
-      mVideoDriver( mDevice->getVideoDriver() )
+      mVideoDriver( mDevice->getVideoDriver() ),
+      mConfig( config )
 {
 }
 
 E_GAME_STATE ExploreMenu::run()
 {
-    mButtonQuit = mGUI->addButton( recti( 0, 0, 100, 20 ), 0, -1, L"Quit" );
+    int windowWidth = mConfig->get<int>( "Engine.windowWidth", 640 );
+    int windowHeight = mConfig->get<int>( "Engine.windowHeight", 480 );
+
+    irr::gui::IGUIButton *buttonQuit = mGUI->addButton(
+                recti( position2di( windowWidth / 2, windowHeight / 2 ),
+                       dimension2di( 100, 20 ) ), 0, -1, L"Quit" );
 
     E_GAME_STATE state = EGS_QUIT;
     bool running = true;
@@ -22,7 +28,7 @@ E_GAME_STATE ExploreMenu::run()
         mVideoDriver->beginScene();
         mGUI->drawAll();
 
-        if( mButtonQuit->isPressed() )
+        if( buttonQuit->isPressed() )
         {
             state = EGS_QUIT;
             running = false;
