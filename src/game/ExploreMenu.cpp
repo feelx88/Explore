@@ -5,7 +5,6 @@ ExploreMenu::ExploreMenu( IrrlichtDevicePtr device )
 {
 }
 
-ExploreMenu::E_MENU_RESULT ExploreMenu::run()
+void ExploreMenu::run()
 {
-    return EMR_EXIT;
 }

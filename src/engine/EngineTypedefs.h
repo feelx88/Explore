@@ -7,5 +7,6 @@
 #include <irrlicht/IrrlichtDevice.h>
 
 typedef boost::shared_ptr<irr::IrrlichtDevice> IrrlichtDevicePtr;
+typedef irr::video::IVideoDriver* IVideoDriverPtr;
 
 #endif // ENGINETYPEDEFS_H

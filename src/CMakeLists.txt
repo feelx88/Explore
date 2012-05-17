@@ -1,12 +1,18 @@
-set(Explore_SRCS
-    main.cpp
-    game/Explore.cpp
-    game/ExploreMenu.cpp
-    engine/EngineTypedefs.h
-    engine/EventReceiver.cpp
+file(GLOB Explore_SRCS
+    *.cpp
+    *.h
+    */*.cpp
+    */*.h
 )
 
 add_executable(Explore ${Explore_SRCS})
+
+#Target for including asset files in qt creator tree
+file( GLOB assets
+    config.ini
+)
+
+add_custom_target( Assets SOURCES ${assets} )
 
 #find_package( Irrlicht REQUIRED )
 set( IRRLICHT_LIBRARIES Irrlicht )

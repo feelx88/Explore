@@ -10,18 +10,40 @@ using namespace core;
 
 Explore::Explore()
     : mRunning( true ),
+      mGameState( EGS_MAIN_MENU ),
       mMenu( 0 )
 {
     loadConfig();
     initIrrlicht();
+    initMenu();
 }
 
 int Explore::run()
 {
     while( mRunning && mDevice->run() )
     {
+        mVideoDriver->beginScene();
+
+        switch( mGameState )
+        {
+        case EGS_QUIT:
+            mRunning = false;
+            break;
+        case EGS_MAIN_MENU:
+            mMenu->run();
+            break;
+        case EGS_GAME:
+            break;
+        }
+
+        mVideoDriver->endScene();
     }
     return 0;
+}
+
+void Explore::setGameState( Explore::E_GAME_STATE state )
+{
+    mGameState = state;
 }
 
 void Explore::loadConfig()
@@ -45,7 +67,7 @@ void Explore::initIrrlicht()
 {
     SIrrlichtCreationParameters params;
     std::string deviceType =
-            mConfig.get<std::string>( "Engine.deviceType", "Software" );
+            readConfigValue<std::string>( "Engine.deviceType", "Software" );
 
     if( deviceType == "OpenGL" )
         params.DriverType = video::EDT_OPENGL;
@@ -53,15 +75,21 @@ void Explore::initIrrlicht()
         params.DriverType = video::EDT_BURNINGSVIDEO;
 
     params.WindowSize = dimension2di(
-                mConfig.get<int>( "Engine.windowWidth", 640 ),
-                mConfig.get<int>( "Engine.windowHeight", 480 ) );
-    params.Bits = mConfig.get<int>( "Engine.colorDepth", 16 );
-    params.Fullscreen = mConfig.get<bool>( "Engine.fullscreen", false );
-    params.Vsync = mConfig.get<bool>( "Engine.verticalSync", false );
+                readConfigValue<int>( "Engine.windowWidth", 640 ),
+                readConfigValue<int>( "Engine.windowHeight", 480 ) );
+    params.Bits = readConfigValue<int>( "Engine.colorDepth", 16 );
+    params.Fullscreen = readConfigValue<bool>( "Engine.fullscreen", false );
+    params.Vsync = readConfigValue<bool>( "Engine.verticalSync", false );
 
     params.EventReceiver = new EventReceiver();
 
     mDevice.reset( createDeviceEx( params ) );
+    mVideoDriver = mDevice->getVideoDriver();
 
     saveConfig();
+}
+
+void Explore::initMenu()
+{
+    mMenu.reset( new ExploreMenu( mDevice ) );
 }
