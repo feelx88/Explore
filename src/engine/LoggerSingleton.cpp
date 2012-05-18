@@ -33,6 +33,7 @@ void LoggerSingleton::setStream( std::ostream &stream )
 
 std::string LoggerSingleton::logPrefix()
 {
-    boost::posix_time::time_duration t = boost::posix_time::seconds( clock() / CLOCKS_PER_SEC );
+    boost::posix_time::time_duration t = boost::posix_time::seconds(
+                (int)time( 0 ) % ( 3600 * 24 ) );
     return boost::posix_time::to_simple_string( t ) + " >> ";
 }

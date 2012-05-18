@@ -33,6 +33,7 @@ int Explore::run()
         switch( mGameState )
         {
         case EGS_QUIT:
+            _LOG( "Quit application" );
             mRunning = false;
             break;
         case EGS_MAIN_MENU:
