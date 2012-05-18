@@ -8,6 +8,8 @@
 #include "GameState.h"
 #include "ExploreMenu.h"
 
+class EventReceiver;
+
 class Explore
 {
 public:
@@ -42,6 +44,8 @@ private:
     IVideoDriverPtr mVideoDriver;
     IGUIEnvironmentPtr mGUI;
     PropTreePtr mConfig;
+
+    boost::scoped_ptr<EventReceiver> mEventReceiver;
 
     bool mRunning;
     E_GAME_STATE mGameState;

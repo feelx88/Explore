@@ -10,6 +10,7 @@ using namespace core;
 
 Explore::Explore()
     : mConfig( new boost::property_tree::ptree ),
+      mEventReceiver( new EventReceiver() ),
       mRunning( true ),
       mGameState( EGS_MAIN_MENU ),
       mMenu( 0 )
@@ -21,8 +22,6 @@ Explore::Explore()
 
 Explore::~Explore()
 {
-    delete mDevice->getEventReceiver();
-    mDevice->closeDevice();
     mDevice->drop();
 }
 
@@ -82,7 +81,7 @@ void Explore::initIrrlicht()
     params.Vsync = readConfigValue<bool>( "Engine.verticalSync", false );
     params.AntiAlias = readConfigValue<int>( "Engine.antiAliasing", 0 );
 
-    params.EventReceiver = new EventReceiver();
+    params.EventReceiver = mEventReceiver.get();
 
     mDevice = createDeviceEx( params );
     mVideoDriver = mDevice->getVideoDriver();
