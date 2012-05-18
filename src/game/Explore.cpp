@@ -9,10 +9,10 @@ using namespace irr;
 using namespace core;
 
 Explore::Explore()
-    : mRunning( true ),
+    : mConfig( new boost::property_tree::ptree ),
+      mRunning( true ),
       mGameState( EGS_MAIN_MENU ),
-      mMenu( 0 ),
-      mConfig( new boost::property_tree::ptree )
+      mMenu( 0 )
 {
     loadConfig();
     initIrrlicht();
@@ -21,7 +21,9 @@ Explore::Explore()
 
 Explore::~Explore()
 {
+    delete mDevice->getEventReceiver();
     mDevice->closeDevice();
+    mDevice->drop();
 }
 
 int Explore::run()

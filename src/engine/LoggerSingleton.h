@@ -11,13 +11,14 @@ public:
     static LoggerSingleton& instance();
 
     void setStream( std::ostream &stream );
+    virtual std::string logPrefix();
 
     virtual void Log( std::string message );
 
     template <typename T>
     void Log( std::string message, const T& param )
     {
-        *mStream << message << ":" << param << std::endl;
+        *mStream << logPrefix() << message << ":" << param << std::endl;
     }
 
 protected:
