@@ -1,4 +1,5 @@
 #include "ExploreMenu.h"
+#include "Explore.h"
 #include <engine/LoggerSingleton.h>
 #include <engine/GUITools.h>
 
@@ -6,18 +7,18 @@ using namespace irr;
 using namespace core;
 using namespace gui;
 
-ExploreMenu::ExploreMenu( IrrlichtDevicePtr device, PropTreePtr config )
-    : mDevice( device ),
+ExploreMenu::ExploreMenu( ExplorePtr explore )
+    : mExplore( explore ),
+      mDevice( explore->getIrrlichtDevice() ),
       mVideoDriver( mDevice->getVideoDriver() ),
-      mGUI( mDevice->getGUIEnvironment() ),
-      mConfig( config )
+      mGUI( mDevice->getGUIEnvironment() )
 {
 }
 
 E_GAME_STATE ExploreMenu::run()
 {
-    int windowWidth = mConfig->get<int>( "Engine.windowWidth", 640 );
-    int windowHeight = mConfig->get<int>( "Engine.windowHeight", 480 );
+    int windowWidth = mExplore->readConfigValue<int>( "Engine.windowWidth", 640 );
+    int windowHeight = mExplore->readConfigValue<int>( "Engine.windowHeight", 480 );
 
     IGUIButton *buttonNewGame = GUITools::centerFittingButton(
                 mGUI, L"New Game", windowWidth / 2, windowHeight * 1 / 5 );

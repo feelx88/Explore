@@ -20,11 +20,14 @@ Explore::Explore()
       mGameState( EGS_MAIN_MENU ),
       mMenu( 0 )
 {
-    LoggerSingleton::instance().addStream( *mLogFile );
-    loadConfig();
-    initIrrlicht();
-    initMenu();
-    initGame();
+}
+
+ExplorePtr Explore::create()
+{
+    ExplorePtr p( new Explore );
+    p->init();
+
+    return p;
 }
 
 Explore::~Explore()
@@ -53,6 +56,16 @@ int Explore::run()
     return 0;
 }
 
+IrrlichtDevicePtr Explore::getIrrlichtDevice() const
+{
+    return mDevice;
+}
+
+EventReceiverPtr Explore::getEventReceiver() const
+{
+    return mEventReceiver;
+}
+
 void Explore::loadConfig()
 {
     try
@@ -69,6 +82,15 @@ void Explore::loadConfig()
 void Explore::saveConfig()
 {
     boost::property_tree::ini_parser::write_ini( "config.ini", *mConfig );
+}
+
+void Explore::init()
+{
+    LoggerSingleton::instance().addStream( *mLogFile );
+    loadConfig();
+    initIrrlicht();
+    initMenu();
+    initGame();
 }
 
 void Explore::initIrrlicht()
@@ -106,10 +128,10 @@ void Explore::initIrrlicht()
 
 void Explore::initMenu()
 {
-    mMenu.reset( new ExploreMenu( mDevice, mConfig ) );
+    mMenu.reset( new ExploreMenu( shared_from_this() ) );
 }
 
 void Explore::initGame()
 {
-    mGame.reset( new ExploreGame( mDevice, mConfig, mEventReceiver ) );
+    mGame.reset( new ExploreGame( shared_from_this() ) );
 }

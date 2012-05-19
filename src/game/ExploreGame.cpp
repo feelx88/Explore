@@ -1,12 +1,12 @@
 #include "ExploreGame.h"
+#include "Explore.h"
 #include <engine/LoggerSingleton.h>
 
-ExploreGame::ExploreGame(IrrlichtDevicePtr device, PropTreePtr config,
-                         EventReceiverPtr eventReceiver )
-    : mDevice( device ),
-      mVideoDriver( device->getVideoDriver() ),
-      mEventReceiver( eventReceiver ),
-      mConfig( config )
+ExploreGame::ExploreGame( ExplorePtr explore )
+    : mExplore( explore ),
+      mDevice( explore->getIrrlichtDevice() ),
+      mVideoDriver( mDevice->getVideoDriver() ),
+      mEventReceiver( explore->getEventReceiver() )
 {
 }
 

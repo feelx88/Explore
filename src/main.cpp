@@ -2,7 +2,7 @@
 
 int main( int, char** )
 {
-    Explore game;
-    return game.run();
+    ExplorePtr game = Explore::create();
+    return game->run();
 }
 

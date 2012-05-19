@@ -2,6 +2,7 @@
 #define EXPLORE_H
 
 #include <fstream>
+#include <boost/enable_shared_from_this.hpp>
 
 #include <engine/EngineTypedefs.h>
 #include <engine/LoggerSingleton.h>
@@ -12,10 +13,11 @@ class ExploreGame;
 
 class EventReceiver;
 
-class Explore
+class Explore : public boost::enable_shared_from_this<Explore>
 {
 public:
-    Explore();
+    static ExplorePtr create();
+
     ~Explore();
 
     int run();
@@ -35,10 +37,16 @@ public:
         }
     }
 
+    IrrlichtDevicePtr getIrrlichtDevice() const;
+    EventReceiverPtr getEventReceiver() const;
+
 private:
+    Explore();
+
     void loadConfig();
     void saveConfig();
 
+    void init();
     void initIrrlicht();
     void initMenu();
     void initGame();

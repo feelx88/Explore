@@ -8,17 +8,15 @@
 class ExploreMenu
 {
 public:
-    ExploreMenu(IrrlichtDevicePtr device , PropTreePtr config );
+    ExploreMenu( ExplorePtr explore );
 
     E_GAME_STATE run();
 
 protected:
-
+    ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
     IGUIEnvironmentPtr mGUI;
-
-    PropTreePtr mConfig;
 };
 
 #endif // EXPLOREMENU_H
