@@ -102,5 +102,5 @@ void Explore::initMenu()
 
 void Explore::initGame()
 {
-    mGame.reset( new ExploreGame( mDevice, mConfig ) );
+    mGame.reset( new ExploreGame( mDevice, mConfig, mEventReceiver ) );
 }

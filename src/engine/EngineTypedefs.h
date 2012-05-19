@@ -17,4 +17,8 @@ typedef irr::gui::IGUIEnvironment* IGUIEnvironmentPtr;
 
 typedef irr::gui::IGUIElement* IGUIElementPtr;
 
+#include "EventReceiver.h"
+
+typedef boost::shared_ptr<EventReceiver> EventReceiverPtr;
+
 #endif // ENGINETYPEDEFS_H

@@ -5,6 +5,8 @@ using namespace irr;
 
 EventReceiver::EventReceiver()
 {
+    for( unsigned int x = 0; x < irr::KEY_KEY_CODES_COUNT; ++x )
+        mPressed[x] = false;
 }
 
 bool EventReceiver::OnEvent(const SEvent &event)
@@ -15,5 +17,15 @@ bool EventReceiver::OnEvent(const SEvent &event)
         return true;
     }
 
+    if( event.EventType == EET_KEY_INPUT_EVENT )
+    {
+        mPressed[event.KeyInput.Key] = event.KeyInput.PressedDown;
+    }
+
     return false;
+}
+
+bool EventReceiver::keyPressed(const EKEY_CODE &code) const
+{
+    return mPressed[code];
 }

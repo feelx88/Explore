@@ -7,13 +7,16 @@
 class ExploreGame
 {
 public:
-    ExploreGame( IrrlichtDevicePtr device, PropTreePtr config );
+    ExploreGame(IrrlichtDevicePtr device, PropTreePtr config,
+                 EventReceiverPtr eventReceiver );
 
     E_GAME_STATE run();
 
 private:
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
+
+    EventReceiverPtr mEventReceiver;
 
     PropTreePtr mConfig;
 };

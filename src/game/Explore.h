@@ -46,7 +46,7 @@ private:
     IGUIEnvironmentPtr mGUI;
     PropTreePtr mConfig;
 
-    boost::scoped_ptr<EventReceiver> mEventReceiver;
+    EventReceiverPtr mEventReceiver;
 
     bool mRunning;
     E_GAME_STATE mGameState;
