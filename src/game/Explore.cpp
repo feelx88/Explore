@@ -5,6 +5,9 @@
 
 #include <engine/EventReceiver.h>
 
+#include "ExploreMenu.h"
+#include "ExploreGame.h"
+
 using namespace irr;
 using namespace core;
 
@@ -18,6 +21,7 @@ Explore::Explore()
     loadConfig();
     initIrrlicht();
     initMenu();
+    initGame();
 }
 
 Explore::~Explore()
@@ -39,6 +43,7 @@ int Explore::run()
             mGameState = mMenu->run();
             break;
         case EGS_GAME:
+            mGameState = mGame->run();
             break;
         }
     }
@@ -93,4 +98,9 @@ void Explore::initIrrlicht()
 void Explore::initMenu()
 {
     mMenu.reset( new ExploreMenu( mDevice, mConfig ) );
+}
+
+void Explore::initGame()
+{
+    mGame.reset( new ExploreGame( mDevice, mConfig ) );
 }

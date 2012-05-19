@@ -12,6 +12,7 @@ typedef boost::shared_ptr<boost::property_tree::ptree> PropTreePtr;
 
 typedef irr::IrrlichtDevice* IrrlichtDevicePtr;
 typedef irr::video::IVideoDriver* IVideoDriverPtr;
+typedef irr::scene::ISceneManager* ISceneManagerPtr;
 typedef irr::gui::IGUIEnvironment* IGUIEnvironmentPtr;
 
 typedef irr::gui::IGUIElement* IGUIElementPtr;

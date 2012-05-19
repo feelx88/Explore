@@ -1,12 +1,12 @@
 #ifndef EXPLORE_H
 #define EXPLORE_H
 
-#include <boost/property_tree/ptree.hpp>
-
 #include <engine/EngineTypedefs.h>
 #include <engine/LoggerSingleton.h>
 #include "GameState.h"
-#include "ExploreMenu.h"
+
+class ExploreMenu;
+class ExploreGame;
 
 class EventReceiver;
 
@@ -39,6 +39,7 @@ private:
 
     void initIrrlicht();
     void initMenu();
+    void initGame();
 
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
@@ -51,6 +52,7 @@ private:
     E_GAME_STATE mGameState;
 
     boost::scoped_ptr<ExploreMenu> mMenu;
+    boost::scoped_ptr<ExploreGame> mGame;
 };
 
 #endif // EXPLORE_H

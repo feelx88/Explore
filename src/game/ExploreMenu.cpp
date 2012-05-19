@@ -41,12 +41,19 @@ E_GAME_STATE ExploreMenu::run()
         mVideoDriver->beginScene();
         mGUI->drawAll();
 
-        if( buttonNewGame->isPressed() )
-            _LOG( "New Game button pressed" );
+        //Dummy buttons
         if( buttonLoadGame->isPressed() )
             _LOG( "Load Game button pressed" );
         if( buttonOptions->isPressed() )
             _LOG( "Options button pressed" );
+
+        //Working buttons
+        if( buttonNewGame->isPressed() )
+        {
+            _LOG( "New Game button pressed" );
+            state = EGS_GAME;
+            running = false;
+        }
 
         if( buttonQuit->isPressed() )
         {
