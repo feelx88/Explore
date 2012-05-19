@@ -96,6 +96,11 @@ void Explore::initIrrlicht()
     mVideoDriver = mDevice->getVideoDriver();
     mGUI = mDevice->getGUIEnvironment();
 
+    irr::gui::IGUISkin *skin = mGUI->getSkin();
+    skin->setFont( mGUI->getFont(
+                       readConfigValue<std::string>( "Engine.fontFile", "data/bitstream_vera_sans_12.xml" ).c_str() ) );
+    mGUI->setSkin( skin );
+
     saveConfig();
 }
 

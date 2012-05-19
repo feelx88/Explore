@@ -8,7 +8,7 @@
 
 typedef boost::shared_ptr<boost::property_tree::ptree> PropTreePtr;
 
-#include <irrlicht/IrrlichtDevice.h>
+#include <irrlicht/irrlicht.h>
 
 typedef irr::IrrlichtDevice* IrrlichtDevicePtr;
 typedef irr::video::IVideoDriver* IVideoDriverPtr;

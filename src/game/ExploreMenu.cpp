@@ -1,8 +1,10 @@
 #include "ExploreMenu.h"
 #include <engine/LoggerSingleton.h>
+#include <engine/GUITools.h>
 
 using namespace irr;
 using namespace core;
+using namespace gui;
 
 ExploreMenu::ExploreMenu( IrrlichtDevicePtr device, PropTreePtr config )
     : mDevice( device ),
@@ -14,24 +16,20 @@ ExploreMenu::ExploreMenu( IrrlichtDevicePtr device, PropTreePtr config )
 
 E_GAME_STATE ExploreMenu::run()
 {
-    int windowWidth2 = mConfig->get<int>( "Engine.windowWidth", 640 ) / 2;
-    int windowHeight5 = mConfig->get<int>( "Engine.windowHeight", 480 ) / 5;
+    int windowWidth = mConfig->get<int>( "Engine.windowWidth", 640 );
+    int windowHeight = mConfig->get<int>( "Engine.windowHeight", 480 );
 
-    irr::gui::IGUIButton *buttonNewGame = mGUI->addButton(
-                recti( windowWidth2 - 50, 1 * windowHeight5 - 10,
-                       windowWidth2 + 50, 1 * windowHeight5 + 10 ), 0, -1, L"New Game" );
+    IGUIButton *buttonNewGame = GUITools::centerFittingButton(
+                mGUI, L"New Game", windowWidth / 2, windowHeight * 1 / 5 );
 
-    irr::gui::IGUIButton *buttonLoadGame = mGUI->addButton(
-                recti( windowWidth2 - 50, 2 * windowHeight5 - 10,
-                       windowWidth2 + 50, 2 * windowHeight5 + 10 ), 0, -1, L"Load Game" );
+    IGUIButton *buttonLoadGame = GUITools::centerFittingButton(
+                mGUI, L"Load Game", windowWidth / 2, windowHeight * 2 / 5 );
 
-    irr::gui::IGUIButton *buttonOptions = mGUI->addButton(
-                recti( windowWidth2 - 50, 3 * windowHeight5 - 10,
-                       windowWidth2 + 50, 3 * windowHeight5 + 10 ), 0, -1, L"Options" );
+    IGUIButton *buttonOptions = GUITools::centerFittingButton(
+                mGUI, L"Options", windowWidth / 2, windowHeight * 3 / 5 );
 
-    irr::gui::IGUIButton *buttonQuit = mGUI->addButton(
-                recti( windowWidth2 - 50, 4 * windowHeight5 - 10,
-                       windowWidth2 + 50, 4 * windowHeight5 + 10 ), 0, -1, L"Quit" );
+    IGUIButton *buttonQuit = GUITools::centerFittingButton(
+                mGUI, L"Quit", windowWidth / 2, windowHeight * 4 / 5 );
 
     E_GAME_STATE state = EGS_QUIT;
     bool running = true;

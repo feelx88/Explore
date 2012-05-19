@@ -1,0 +1,11 @@
+build/config.ini
+build/Explore
+*.exe
+*.so
+*.dll
+CMakeFiles
+CMakeCache.txt
+CMakeLists.txt.*
+cmake_install.cmake
+Explore.cbp
+Makefile

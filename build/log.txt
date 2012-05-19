@@ -1,28 +1,381 @@
-10:38:28 >> Irrlicht Engine version 1.7.3
-10:38:28 >> Linux 3.3.6-1-ARCH #1 SMP PREEMPT Sun May 13 09:59:18 UTC 2012 i686
-10:38:28 >> Creating X window...
-10:38:28 >> Using plain X visual
-10:38:28 >> Visual chosen: : 33
-10:38:30 >> New Game button pressed
-10:38:32 >> Escape key pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:33 >> Load Game button pressed
-10:38:34 >> Options button pressed
-10:38:34 >> Options button pressed
-10:38:34 >> Options button pressed
-10:38:34 >> Options button pressed
-10:38:34 >> Options button pressed
-10:38:34 >> Options button pressed
-10:38:34 >> Options button pressed
-10:38:35 >> New Game button pressed
-10:38:36 >> Escape key pressed
-10:38:37 >> Quit button pressed
-10:38:37 >> Quit application
+12:33:22 >> Irrlicht Engine version 1.7.3
+12:33:22 >> Linux 3.3.6-1-ARCH #1 SMP PREEMPT Sun May 13 09:59:18 UTC 2012 i686
+12:33:22 >> Creating X window...
+12:33:22 >> Using plain X visual
+12:33:22 >> Visual chosen: : 33
+12:33:22 >> Loaded texture: /home/feelx/devel/Explore/build/data/bitstream_vera_sans_120.png
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:25 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:26 >> Options button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:29 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:30 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Load Game button pressed
+12:33:31 >> Quit button pressed
+12:33:31 >> Quit application
