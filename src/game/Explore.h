@@ -1,6 +1,8 @@
 #ifndef EXPLORE_H
 #define EXPLORE_H
 
+#include <fstream>
+
 #include <engine/EngineTypedefs.h>
 #include <engine/LoggerSingleton.h>
 #include "GameState.h"
@@ -27,7 +29,7 @@ public:
         }
         catch( boost::property_tree::ptree_bad_path& )
         {
-            _LOG( "Key not found, adding it:", key );
+            _LOG( "Key not found, adding it", key );
             mConfig->put<T>( key, defaultVal );
             return defaultVal;
         }
@@ -45,6 +47,8 @@ private:
     IVideoDriverPtr mVideoDriver;
     IGUIEnvironmentPtr mGUI;
     PropTreePtr mConfig;
+
+    boost::shared_ptr<std::ofstream> mLogFile;
 
     EventReceiverPtr mEventReceiver;
 

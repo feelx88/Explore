@@ -9,7 +9,8 @@ add_executable(Explore ${Explore_SRCS})
 
 #Target for including asset files in qt creator tree
 file( GLOB assets
-    config.ini
+    ../build/config.ini
+    ../build/log.txt
 )
 
 add_custom_target( Assets SOURCES ${assets} )
@@ -23,3 +24,5 @@ target_link_libraries( Explore
                         ${IRRLICHT_LIBRARIES}
                         ${OPENAL_LIBRARIES}
                         ${BULLET_LIBRARIES} )
+
+set_target_properties( Explore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../build )

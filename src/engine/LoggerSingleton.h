@@ -2,31 +2,40 @@
 #define LOGGERSINGLETON_H
 
 #include <ostream>
+#include <list>
+#include <boost/lexical_cast.hpp>
 
-#define _LOG LoggerSingleton::instance().Log
+#define _LOG LoggerSingleton::instance().log
 
 class LoggerSingleton
 {
 public:
     static LoggerSingleton& instance();
 
-    void setStream( std::ostream &stream );
-    virtual std::string logPrefix();
+    void addStream( std::ostream &stream );
+    virtual void logPrefix();
 
-    virtual void Log( std::string message );
+    virtual void log(const std::string &str );
 
     template <typename T>
-    void Log( std::string message, const T& param )
+    void log( const std::string &str, const T& param )
     {
-        *mStream << logPrefix() << message << ":" << param << std::endl;
+        logPrefix();
+        message( str + ": " );
+        message( boost::lexical_cast<std::string>( param ) );
+        newLine();
     }
 
 protected:
+    typedef std::list<std::ostream*> StreamList;
     LoggerSingleton();
     virtual ~LoggerSingleton();
 
+    virtual void message( const std::string &message );
+    virtual void newLine();
+
     static LoggerSingleton sLogger;
-    std::ostream *mStream;
+    StreamList mStreams;
 };
 
 #endif // LOGGERSINGLETON_H

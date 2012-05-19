@@ -38,7 +38,7 @@ E_GAME_STATE ExploreMenu::run()
 
     while( running && mDevice->run() )
     {
-        mVideoDriver->beginScene();
+        mVideoDriver->beginScene( true, true, irr::video::SColor( 255, 100, 100, 100 ) );
         mGUI->drawAll();
 
         //Dummy buttons

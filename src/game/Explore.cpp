@@ -2,6 +2,7 @@
 
 #include <string>
 #include <boost/property_tree/ini_parser.hpp>
+#include <fstream>
 
 #include <engine/EventReceiver.h>
 
@@ -13,11 +14,13 @@ using namespace core;
 
 Explore::Explore()
     : mConfig( new boost::property_tree::ptree ),
+      mLogFile( new std::ofstream( "log.txt" ) ),
       mEventReceiver( new EventReceiver() ),
       mRunning( true ),
       mGameState( EGS_MAIN_MENU ),
       mMenu( 0 )
 {
+    LoggerSingleton::instance().addStream( *mLogFile );
     loadConfig();
     initIrrlicht();
     initMenu();
@@ -58,6 +61,7 @@ void Explore::loadConfig()
     }
     catch( ... )
     {
+        _LOG( "No config file found, creating default one." );
         saveConfig();
     }
 }

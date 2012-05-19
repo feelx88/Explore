@@ -1,24 +1,42 @@
 #include "LoggerSingleton.h"
 #include <iostream>
 #include <ctime>
-#include <boost/lexical_cast.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 LoggerSingleton LoggerSingleton::sLogger;
 
-void LoggerSingleton::Log( std::string message )
+void LoggerSingleton::log(const std::string &str )
 {
-    *mStream << logPrefix() << message << std::endl;
+    logPrefix();
+    message( str );
+    newLine();
 }
 
 LoggerSingleton::LoggerSingleton()
-    : mStream( &std::cout )
 {
-    *mStream << std::endl << logPrefix() << "Logger initialized." << std::endl;
+    mStreams.push_back( &std::cout );
+    newLine();
+    log( "Logger initialized." );
 }
 
 LoggerSingleton::~LoggerSingleton()
 {
+}
+
+void LoggerSingleton::message( const std::string &message )
+{
+    for( StreamList::iterator x = mStreams.begin(); x != mStreams.end(); ++x  )
+    {
+        *( *x ) << message;
+    }
+}
+
+void LoggerSingleton::newLine()
+{
+    for( StreamList::iterator x = mStreams.begin(); x != mStreams.end(); ++x  )
+    {
+        *( *x ) << std::endl;
+    }
 }
 
 LoggerSingleton &LoggerSingleton::instance()
@@ -26,14 +44,14 @@ LoggerSingleton &LoggerSingleton::instance()
     return LoggerSingleton::sLogger;
 }
 
-void LoggerSingleton::setStream( std::ostream &stream )
+void LoggerSingleton::addStream( std::ostream &stream )
 {
-    mStream = &stream;
+    mStreams.push_back( &stream );
 }
 
-std::string LoggerSingleton::logPrefix()
+void LoggerSingleton::logPrefix()
 {
     boost::posix_time::time_duration t = boost::posix_time::seconds(
                 (int)time( 0 ) % ( 3600 * 24 ) );
-    return boost::posix_time::to_simple_string( t ) + " >> ";
+    message( boost::posix_time::to_simple_string( t ) + " >> " );
 }
