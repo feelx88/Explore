@@ -32,7 +32,7 @@ E_GAME_STATE ExploreMenu::run()
     IGUIButton *buttonQuit = GUITools::centerFittingButton(
                 mGUI, L"Quit", windowWidth / 2, windowHeight * 4 / 5 );
 
-    E_GAME_STATE state = EGS_QUIT;
+    E_GAME_STATE state = EGS_MAIN_MENU;
     bool running = true;
 
     while( running && mDevice->run() )

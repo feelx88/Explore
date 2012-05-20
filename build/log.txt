@@ -1,0 +1,10 @@
+09:08:21 >> Irrlicht Engine version 1.7.3
+09:08:21 >> Linux 3.3.6-1-ARCH #1 SMP PREEMPT Sun May 13 09:59:18 UTC 2012 i686
+09:08:21 >> Creating X window...
+09:08:21 >> Using plain X visual
+09:08:21 >> Visual chosen: : 33
+09:08:21 >> Loaded texture: /home/feelx/devel/Explore/build/data/bitstream_vera_sans_120.png
+09:08:23 >> New Game button pressed
+09:08:26 >> Escape key pressed
+09:08:27 >> Quit button pressed
+09:08:27 >> Quit application

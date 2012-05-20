@@ -15,6 +15,7 @@ private:
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
+    ISceneManagerPtr mSceneManager;
 
     EventReceiverPtr mEventReceiver;
 };
