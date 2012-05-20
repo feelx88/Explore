@@ -66,6 +66,11 @@ EventReceiverPtr Explore::getEventReceiver() const
     return mEventReceiver;
 }
 
+BulletWorldPtr Explore::getBulletWorld() const
+{
+    return mBulletWorld;
+}
+
 void Explore::loadConfig()
 {
     try
@@ -125,6 +130,11 @@ void Explore::initIrrlicht()
     mGUI->setSkin( skin );
 
     saveConfig();
+}
+
+void Explore::initBullet()
+{
+
 }
 
 void Explore::initMenu()

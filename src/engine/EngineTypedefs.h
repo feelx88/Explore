@@ -17,6 +17,11 @@ typedef irr::gui::IGUIEnvironment* IGUIEnvironmentPtr;
 
 typedef irr::gui::IGUIElement* IGUIElementPtr;
 
+#include <bullet/btBulletDynamicsCommon.h>
+
+typedef boost::shared_ptr<btDiscreteDynamicsWorld> BulletWorldPtr;
+typedef boost::shared_ptr<btRigidBody> RigidBodyPtr;
+
 #include "EventReceiver.h"
 
 typedef boost::shared_ptr<EventReceiver> EventReceiverPtr;

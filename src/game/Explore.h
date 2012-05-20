@@ -54,6 +54,9 @@ private:
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
     IGUIEnvironmentPtr mGUI;
+
+    BulletWorldPtr mBulletWorld;
+
     PropTreePtr mConfig;
 
     boost::shared_ptr<std::ofstream> mLogFile;
