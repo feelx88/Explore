@@ -111,6 +111,7 @@ void Explore::initIrrlicht()
     params.Fullscreen = readConfigValue<bool>( "Engine.fullscreen", false );
     params.Vsync = readConfigValue<bool>( "Engine.verticalSync", false );
     params.AntiAlias = readConfigValue<int>( "Engine.antiAliasing", 0 );
+    params.Vsync = readConfigValue<bool>( "Engine.verticalSync", false );
 
     params.EventReceiver = mEventReceiver.get();
 

@@ -1,6 +1,7 @@
 #include "ExploreGame.h"
 #include "Explore.h"
 #include <engine/LoggerSingleton.h>
+#include <engine/BulletSceneNodeAnimator.h>
 
 using namespace irr;
 using namespace core;
@@ -23,8 +24,9 @@ E_GAME_STATE ExploreGame::run()
     E_GAME_STATE state = EGS_GAME;
 
     mSceneManager->addCameraSceneNodeFPS();
-    mSceneManager->addCubeSceneNode();
-    mSceneManager->addLightSceneNode( 0, vector3df( 0, 30, 0 ) );
+    mSceneManager->addCubeSceneNode( 1.f );
+    mSceneManager->addLightSceneNode( 0, vector3df( 0, 50, 0 ) );
+    mSceneManager->addTerrainSceneNode( "data/heightmap.png", 0, -1, vector3df( -256, -5, -256 ) );
 
     while( running && mDevice->run() )
     {
