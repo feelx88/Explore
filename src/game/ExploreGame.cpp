@@ -23,10 +23,9 @@ E_GAME_STATE ExploreGame::run()
 
     E_GAME_STATE state = EGS_GAME;
 
-    mSceneManager->addCameraSceneNodeFPS();
     mSceneManager->addCubeSceneNode( 1.f );
-    mSceneManager->addLightSceneNode( 0, vector3df( 0, 50, 0 ) );
-    mSceneManager->addTerrainSceneNode( "data/heightmap.png", 0, -1, vector3df( -256, -5, -256 ) );
+    mSceneManager->addLightSceneNode( mSceneManager->addCameraSceneNodeFPS( 0, 100.f, 0.01f ),
+                                      vector3df(), SColorf( 1, 1, 1 ), 1000.f );
 
     while( running && mDevice->run() )
     {

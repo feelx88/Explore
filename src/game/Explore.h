@@ -39,6 +39,7 @@ public:
 
     IrrlichtDevicePtr getIrrlichtDevice() const;
     EventReceiverPtr getEventReceiver() const;
+    BulletWorldPtr getBulletWorld() const;
 
 private:
     Explore();
@@ -48,6 +49,7 @@ private:
 
     void init();
     void initIrrlicht();
+    void initBullet();
     void initMenu();
     void initGame();
 

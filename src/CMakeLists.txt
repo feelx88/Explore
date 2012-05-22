@@ -11,6 +11,7 @@ add_executable(Explore ${Explore_SRCS})
 file( GLOB assets
     ../build/config.ini
     ../build/log.txt
+    ../.gitignore
 )
 
 add_custom_target( Assets SOURCES ${assets} )
@@ -19,6 +20,8 @@ add_custom_target( Assets SOURCES ${assets} )
 set( IRRLICHT_LIBRARIES Irrlicht )
 find_package( OpenAL REQUIRED )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
+
+include_directories( ${BULLET_INCLUDE_DIR} )
 
 target_link_libraries( Explore
                         ${IRRLICHT_LIBRARIES}

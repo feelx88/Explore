@@ -1,4 +1,5 @@
 build/config.ini
+build/log.txt
 build/Explore
 *.exe
 *.so

@@ -32,6 +32,7 @@ ExplorePtr Explore::create()
 
 Explore::~Explore()
 {
+    mDevice->closeDevice();
     mDevice->drop();
 }
 
@@ -134,7 +135,25 @@ void Explore::initIrrlicht()
 
 void Explore::initBullet()
 {
+    btDefaultCollisionConfiguration* collisionConfiguration =
+            new btDefaultCollisionConfiguration();
 
+    ///use the default collision dispatcher. For parallel processing you can
+    // use a diffent dispatcher (see Extras/BulletMultiThreaded)^
+    btCollisionDispatcher* dispatcher =
+            new	btCollisionDispatcher( collisionConfiguration );
+
+    ///btDbvtBroadphase is a good general purpose broadphase. You
+    // can also try out btAxis3Sweep.
+    btBroadphaseInterface* overlappingPairCache = new btDbvtBroadphase();
+
+    ///the default constraint solver. For parallel processing
+    // you can use a different solver (see Extras/BulletMultiThreaded)
+    btSequentialImpulseConstraintSolver* solver =
+            new btSequentialImpulseConstraintSolver();
+
+    mBulletWorld.reset( new btDiscreteDynamicsWorld(
+                dispatcher, overlappingPairCache, solver, collisionConfiguration ) );
 }
 
 void Explore::initMenu()
