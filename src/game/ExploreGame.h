@@ -18,6 +18,8 @@ private:
     ISceneManagerPtr mSceneManager;
 
     EventReceiverPtr mEventReceiver;
+
+    BulletWorldPtr mBulletWorld;
 };
 
 #endif // EXPLOREGAME_H

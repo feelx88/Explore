@@ -95,6 +95,7 @@ void Explore::init()
     LoggerSingleton::instance().addStream( *mLogFile );
     loadConfig();
     initIrrlicht();
+    initBullet();
     initMenu();
     initGame();
 }
