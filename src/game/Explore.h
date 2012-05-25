@@ -37,6 +37,8 @@ public:
         }
     }
 
+    void setGameState( const E_GAME_STATE &state );
+
     IrrlichtDevicePtr getIrrlichtDevice() const;
     EventReceiverPtr getEventReceiver() const;
     BulletWorldPtr getBulletWorld() const;
@@ -58,6 +60,10 @@ private:
     IGUIEnvironmentPtr mGUI;
 
     BulletWorldPtr mBulletWorld;
+    CollisionConfigurationPtr mCollisionConfiguration;
+    DispatcherPtr mDispatcher;
+    BroadphasePtr mBroadphase;
+    ConstraintSolverPtr mConstraintSolver;
 
     PropTreePtr mConfig;
 

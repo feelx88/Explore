@@ -8,6 +8,8 @@ BulletSceneNodeAnimator::BulletSceneNodeAnimator( BulletWorldPtr world, RigidBod
     : mBulletWorld( world ),
       mRigidBody( body )
 {
+    if( mRigidBody && mBulletWorld )
+        mBulletWorld->addRigidBody( mRigidBody.get() );
 }
 
 BulletSceneNodeAnimator::~BulletSceneNodeAnimator()
@@ -22,16 +24,13 @@ void BulletSceneNodeAnimator::animateNode( ISceneNode *node, u32 )
     mRigidBody->getMotionState()->getWorldTransform( trans );
 
     btVector3 btPos = trans.getOrigin();
-    btQuaternion btRot = trans.getRotation();
+    btQuaternion btQuat = trans.getRotation();
 
     vector3df irrPos = vector3df( btPos.getX(), btPos.getY(), btPos.getZ() );
-    quaternion irrQuat( btRot.getX(), btRot.getY(), btRot.getZ(), btRot.getW() );
-    vector3df irrRot;
-
-    irrQuat.toEuler( irrRot );
+    quaternion irrQuat( -btQuat.getX(), -btQuat.getY(), -btQuat.getZ(), btQuat.getW() );
 
     node->setPosition( irrPos );
-    node->setRotation( irrRot );
+    node->setRotation( irrQuat.getMatrix().getRotationDegrees() );
 }
 
 

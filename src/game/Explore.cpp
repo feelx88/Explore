@@ -57,6 +57,11 @@ int Explore::run()
     return 0;
 }
 
+void Explore::setGameState( const E_GAME_STATE &state )
+{
+    mGameState = state;
+}
+
 IrrlichtDevicePtr Explore::getIrrlichtDevice() const
 {
     return mDevice;
@@ -136,25 +141,25 @@ void Explore::initIrrlicht()
 
 void Explore::initBullet()
 {
-    btDefaultCollisionConfiguration* collisionConfiguration =
-            new btDefaultCollisionConfiguration();
+    mCollisionConfiguration.reset( new btDefaultCollisionConfiguration() );
 
     ///use the default collision dispatcher. For parallel processing you can
     // use a diffent dispatcher (see Extras/BulletMultiThreaded)^
-    btCollisionDispatcher* dispatcher =
-            new	btCollisionDispatcher( collisionConfiguration );
+    mDispatcher.reset( new	btCollisionDispatcher( mCollisionConfiguration.get() ) );
 
     ///btDbvtBroadphase is a good general purpose broadphase. You
     // can also try out btAxis3Sweep.
-    btBroadphaseInterface* overlappingPairCache = new btDbvtBroadphase();
+    mBroadphase.reset( new btDbvtBroadphase() );
 
     ///the default constraint solver. For parallel processing
     // you can use a different solver (see Extras/BulletMultiThreaded)
-    btSequentialImpulseConstraintSolver* solver =
-            new btSequentialImpulseConstraintSolver();
+    mConstraintSolver.reset( new btSequentialImpulseConstraintSolver() );
 
     mBulletWorld.reset( new btDiscreteDynamicsWorld(
-                dispatcher, overlappingPairCache, solver, collisionConfiguration ) );
+                            mDispatcher.get(),
+                            mBroadphase.get(),
+                            mConstraintSolver.get(),
+                            mCollisionConfiguration.get() ) );
 }
 
 void Explore::initMenu()
