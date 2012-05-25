@@ -17,6 +17,7 @@ typedef irr::gui::IGUIEnvironment* IGUIEnvironmentPtr;
 
 typedef irr::gui::IGUIElement* IGUIElementPtr;
 typedef irr::scene::ISceneNode* ISceneNodePtr;
+typedef irr::scene::ICameraSceneNode* ICameraSceneNodePtr;
 typedef boost::shared_ptr<irr::scene::ISceneNodeAnimator> ISceneNodeAnimatorPtr;
 
 #include <bullet/btBulletDynamicsCommon.h>

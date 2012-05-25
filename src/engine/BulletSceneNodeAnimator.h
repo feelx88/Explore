@@ -15,9 +15,16 @@ public:
     irr::scene::ISceneNodeAnimator *createClone(irr::scene::ISceneNode*,
                                                 irr::scene::ISceneManager* );
 
+    void applyToCamera( bool enabled );
+    bool isAppliedToCamera() const;
+
 protected:
     BulletWorldPtr mBulletWorld;
     RigidBodyPtr mRigidBody;
+
+    bool mApplyToCamera;
 };
+
+typedef boost::shared_ptr<BulletSceneNodeAnimator> BulletSceneNodeAnimatorPtr;
 
 #endif // BULLETSCENENODEANIMATOR_H

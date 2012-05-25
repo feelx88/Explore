@@ -10,9 +10,11 @@ public:
     bool OnEvent( const irr::SEvent &event );
 
     bool keyPressed( const irr::EKEY_CODE &code ) const;
+    bool keyClicked( const irr::EKEY_CODE &code );
 
 private:
     bool mPressed[irr::KEY_KEY_CODES_COUNT];
+    bool mClicked[irr::KEY_KEY_CODES_COUNT];
 };
 
 #endif // EVENTRECEIVER_H
