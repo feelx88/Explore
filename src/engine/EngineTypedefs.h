@@ -10,7 +10,19 @@ typedef boost::shared_ptr<boost::property_tree::ptree> PropTreePtr;
 
 #include <irrlicht/irrlicht.h>
 
-typedef irr::IrrlichtDevice* IrrlichtDevicePtr;
+namespace specialDeleters
+{
+struct IrrlichtDeviceDeleter
+{
+    void operator ()( irr::IrrlichtDevice *device )
+    {
+        device->closeDevice();
+        device->drop();
+    }
+};
+}
+
+typedef boost::shared_ptr<irr::IrrlichtDevice> IrrlichtDevicePtr;
 typedef irr::video::IVideoDriver* IVideoDriverPtr;
 typedef irr::scene::ISceneManager* ISceneManagerPtr;
 typedef irr::gui::IGUIEnvironment* IGUIEnvironmentPtr;
@@ -31,6 +43,21 @@ typedef boost::shared_ptr<btConstraintSolver> ConstraintSolverPtr;
 typedef boost::shared_ptr<btRigidBody> RigidBodyPtr;
 typedef boost::shared_ptr<btCollisionShape> CollisionShapePtr;
 typedef boost::shared_ptr<btMotionState> MotionStatePtr;
+
+#include <lua.hpp>
+
+namespace specialDeleters
+{
+struct luaStateDeleter
+{
+    void operator()( lua_State *state )
+    {
+        lua_close( state );
+    }
+};
+}
+
+typedef boost::shared_ptr<lua_State> LuaStatePtr;
 
 #include "EventReceiver.h"
 

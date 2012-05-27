@@ -1,13 +1,15 @@
 #ifndef GUITOOLS_H
 #define GUITOOLS_H
 
+#include "EngineTypedefs.h"
 #include <string>
-#include <irrlicht/irrlicht.h>
 
-class GUITools
+class IrrlichtTools
 {
 public:
-    static irr::gui::IGUIButton *centerFittingButton( irr::gui::IGUIEnvironment *env,
+    static IrrlichtDevicePtr createIrrlichtDevicePtr( irr::IrrlichtDevice *device );
+
+    static irr::gui::IGUIButton *guiCenterFittingButton( irr::gui::IGUIEnvironment *env,
                                                       const std::wstring &label,
                                                        int x, int y );
 };

@@ -1,10 +1,15 @@
-#include "GUITools.h"
+#include "IrrlichtTools.h"
 
 using namespace irr;
 using namespace core;
 using namespace gui;
 
-irr::gui::IGUIButton *GUITools::centerFittingButton( IGUIEnvironment *env,
+IrrlichtDevicePtr IrrlichtTools::createIrrlichtDevicePtr(IrrlichtDevice *device)
+{
+    return IrrlichtDevicePtr( device, specialDeleters::IrrlichtDeviceDeleter() );
+}
+
+irr::gui::IGUIButton *IrrlichtTools::guiCenterFittingButton( IGUIEnvironment *env,
                                                      const std::wstring &label,
                                                      int x, int y )
 {

@@ -1,7 +1,7 @@
 #include "ExploreMenu.h"
 #include "Explore.h"
 #include <engine/LoggerSingleton.h>
-#include <engine/GUITools.h>
+#include <engine/IrrlichtTools.h>
 
 using namespace irr;
 using namespace core;
@@ -20,16 +20,16 @@ E_GAME_STATE ExploreMenu::run()
     int windowWidth = mExplore->readConfigValue<int>( "Engine.windowWidth", 640 );
     int windowHeight = mExplore->readConfigValue<int>( "Engine.windowHeight", 480 );
 
-    IGUIButton *buttonNewGame = GUITools::centerFittingButton(
+    IGUIButton *buttonNewGame = IrrlichtTools::guiCenterFittingButton(
                 mGUI, L"New Game", windowWidth / 2, windowHeight * 1 / 5 );
 
-    IGUIButton *buttonLoadGame = GUITools::centerFittingButton(
+    IGUIButton *buttonLoadGame = IrrlichtTools::guiCenterFittingButton(
                 mGUI, L"Load Game", windowWidth / 2, windowHeight * 2 / 5 );
 
-    IGUIButton *buttonOptions = GUITools::centerFittingButton(
+    IGUIButton *buttonOptions = IrrlichtTools::guiCenterFittingButton(
                 mGUI, L"Options", windowWidth / 2, windowHeight * 3 / 5 );
 
-    IGUIButton *buttonQuit = GUITools::centerFittingButton(
+    IGUIButton *buttonQuit = IrrlichtTools::guiCenterFittingButton(
                 mGUI, L"Quit", windowWidth / 2, windowHeight * 4 / 5 );
 
     E_GAME_STATE state = EGS_MAIN_MENU;

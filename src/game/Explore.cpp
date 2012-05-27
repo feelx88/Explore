@@ -4,6 +4,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <fstream>
 
+#include <engine/IrrlichtTools.h>
 #include <engine/EventReceiver.h>
 
 #include "ExploreMenu.h"
@@ -32,8 +33,6 @@ ExplorePtr Explore::create()
 
 Explore::~Explore()
 {
-    mDevice->closeDevice();
-    mDevice->drop();
 }
 
 int Explore::run()
@@ -127,7 +126,7 @@ void Explore::initIrrlicht()
 
     params.EventReceiver = mEventReceiver.get();
 
-    mDevice = createDeviceEx( params );
+    mDevice = IrrlichtTools::createIrrlichtDevicePtr( createDeviceEx( params ) );
     mVideoDriver = mDevice->getVideoDriver();
     mGUI = mDevice->getGUIEnvironment();
 
