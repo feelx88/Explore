@@ -40,6 +40,25 @@ typedef boost::shared_ptr<btCollisionDispatcher> DispatcherPtr;
 typedef boost::shared_ptr<btBroadphaseInterface> BroadphasePtr;
 typedef boost::shared_ptr<btConstraintSolver> ConstraintSolverPtr;
 
+namespace specialDeleters
+{
+struct RigidBodyDeleter
+{
+    RigidBodyDeleter( BulletWorldPtr world )
+        : mWorld( world )
+    {}
+
+    void operator()( btRigidBody *body )
+    {
+        mWorld->removeRigidBody( body );
+        delete body;
+    }
+
+private:
+    BulletWorldPtr mWorld;
+};
+}
+
 typedef boost::shared_ptr<btRigidBody> RigidBodyPtr;
 typedef boost::shared_ptr<btCollisionShape> CollisionShapePtr;
 typedef boost::shared_ptr<btMotionState> MotionStatePtr;

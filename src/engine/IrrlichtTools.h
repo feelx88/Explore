@@ -1,8 +1,9 @@
-#ifndef GUITOOLS_H
-#define GUITOOLS_H
+#ifndef IRRLICHTTOOLS_H
+#define IRRLICHTTOOLS_H
 
 #include "EngineTypedefs.h"
 #include <string>
+#include <sstream>
 
 class IrrlichtTools
 {
@@ -14,4 +15,21 @@ public:
                                                        int x, int y );
 };
 
-#endif // GUITOOLS_H
+template <typename T, typename ch, typename tr>
+std::basic_ostream<ch, tr> &operator<<( std::basic_ostream<ch,tr> &stream,
+                          const irr::core::vector3d<T> &in )
+{
+    stream << in.X << "," << in.Y << "," << in.Z;
+    return stream;
+}
+
+template <typename T, typename ch, typename tr>
+std::basic_istream<ch, tr> &operator>>( std::basic_istream<ch, tr> &stream,
+                          irr::core::vector3d<T> &out )
+{
+    char tmp;
+    stream >> out.X >> tmp >> out.Y >> tmp >> out.Z;
+    return stream;
+}
+
+#endif // IRRLICHTTOOLS_H

@@ -57,22 +57,6 @@ E_GAME_STATE ExploreGame::run()
             ->addAnimator( anim2.get() );
 //}
 
-//{
-    /*SKeyMap keyMap[4];
-    keyMap[0].Action = EKA_MOVE_FORWARD;
-    keyMap[0].KeyCode = KEY_KEY_W;
-    keyMap[1].Action = EKA_MOVE_BACKWARD;
-    keyMap[1].KeyCode = KEY_KEY_S;
-    keyMap[2].Action = EKA_STRAFE_LEFT;
-    keyMap[2].KeyCode = KEY_KEY_A;
-    keyMap[3].Action = EKA_STRAFE_RIGHT;
-    keyMap[3].KeyCode = KEY_KEY_D;
-
-    ISceneNodePtr camera = mSceneManager->addCameraSceneNodeFPS( 0, 100.f, 0.01f, -1, keyMap, 4 );
-    camera->setPosition( vector3df( 0.f, 5.f, -10.f ) );
-
-    mSceneManager->addLightSceneNode( camera, vector3df(), SColorf( 1, 1, 1 ), 1000.f );*/
-//}
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
                                       SColorf( 1, 1, 1 ), 1000.f );
     Player p( mExplore );
