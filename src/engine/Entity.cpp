@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "PropertyTreeTranslators.h"
 #include "IrrlichtTools.h"
 #include "LoggerSingleton.h"
 #include <boost/property_tree/xml_parser.hpp>
@@ -8,6 +9,14 @@
 Entity::Entity( const PropTreePtr &properties )
     : mProperties( properties )
 {
+    create();
+}
+
+Entity::Entity( const std::string &propFileName )
+    : mProperties( new boost::property_tree::ptree() )
+{
+    boost::property_tree::xml_parser::read_xml( propFileName, *mProperties );
+    create();
 }
 
 void Entity::internalCreate()
@@ -22,29 +31,11 @@ void Entity::internalCreate()
 
 void Entity::internalCreateSceneNode()
 {
+    //mProperties->put( "lol", irr::core::vector3df(), boost::property_tree::VectorTranslator );
 }
 
 void Entity::internalCreateRigidBody()
 {
-}
-
-EntityPtr Entity::create( const PropTreePtr &properties )
-{
-    Entity *e = new Entity( properties );
-    e->internalCreate();
-
-    return EntityPtr( e );
-}
-
-EntityPtr Entity::create( const std::string &propFileName )
-{
-    boost::property_tree::ptree *ptree = new boost::property_tree::ptree();
-    boost::property_tree::xml_parser::read_xml( propFileName, *ptree );
-
-    Entity *e = new Entity( PropTreePtr( ptree ) );
-    e->internalCreate();
-
-    return EntityPtr( e );
 }
 
 Entity::~Entity()

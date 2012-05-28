@@ -15,16 +15,16 @@ public:
                                                        int x, int y );
 };
 
-template <typename T, typename ch, typename tr>
-std::basic_ostream<ch, tr> &operator<<( std::basic_ostream<ch,tr> &stream,
+template <typename T>
+std::ostream &operator<<( std::ostream &stream,
                           const irr::core::vector3d<T> &in )
 {
     stream << in.X << "," << in.Y << "," << in.Z;
     return stream;
 }
 
-template <typename T, typename ch, typename tr>
-std::basic_istream<ch, tr> &operator>>( std::basic_istream<ch, tr> &stream,
+template <typename T>
+std::istream &operator>>( std::istream &stream,
                           irr::core::vector3d<T> &out )
 {
     char tmp;

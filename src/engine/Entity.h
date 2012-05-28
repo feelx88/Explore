@@ -10,11 +10,12 @@ class Entity
 {
 public:
 
-    static EntityPtr create( const PropTreePtr &properties );
-    static EntityPtr create( const std::string &propFileName );
+    Entity( const PropTreePtr &propeties );
+    Entity( const std::string &propFileName );
     virtual ~Entity();
 
 protected:
+
     void create();
     virtual void preCreate();
     virtual void postCreate();
@@ -25,8 +26,6 @@ protected:
     RigidBodyPtr mRigidBody;
 
 private:
-    Entity( const PropTreePtr &propeties );
-
     void internalCreate();
     void internalCreateSceneNode();
     void internalCreateRigidBody();
