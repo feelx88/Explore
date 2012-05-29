@@ -2,6 +2,7 @@
 #define BULLETTOOLS_H
 
 #include "EngineTypedefs.h"
+#include <iostream>
 
 class BulletTools
 {

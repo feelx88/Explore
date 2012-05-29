@@ -10,8 +10,8 @@ class Entity
 {
 public:
 
-    Entity( const PropTreePtr &propeties );
-    Entity( const std::string &propFileName );
+    Entity( IrrlichtDevicePtr device, BulletWorldPtr world, const PropTreePtr &propeties );
+    Entity( IrrlichtDevicePtr device, BulletWorldPtr world, const std::string &propFileName );
     virtual ~Entity();
 
 protected:
@@ -20,15 +20,22 @@ protected:
     virtual void preCreate();
     virtual void postCreate();
 
+    IrrlichtDevicePtr mDevice;
+    ISceneManagerPtr mSceneManager;
+    BulletWorldPtr mWorld;
+
     PropTreePtr mProperties;
     ISceneNodePtr mSceneNode;
     ISceneNodeAnimatorPtr mAnimator;
     RigidBodyPtr mRigidBody;
+    CollisionShapePtr mCollisionShape;
+    MotionStatePtr mMotionState;
 
 private:
     void internalCreate();
     void internalCreateSceneNode();
     void internalCreateRigidBody();
+    void internalCreateCollisionShape();
 };
 
 #endif // ENTITY_H
