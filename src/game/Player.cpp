@@ -44,4 +44,8 @@ void Player::update()
         mRigidBody->applyCentralImpulse( btVector3( 0, 0, 10 ) );
     if( mEventReceiver->keyPressed( KEY_KEY_S ) )
         mRigidBody->applyCentralImpulse( btVector3( 0, 0, -10 ) );
+    if( mEventReceiver->keyPressed( KEY_KEY_A ) )
+        mRigidBody->applyCentralImpulse( btVector3( -10, 0, 0 ) );
+    if( mEventReceiver->keyPressed( KEY_KEY_D ) )
+        mRigidBody->applyCentralImpulse( btVector3( 10, 0, 0 ) );
 }

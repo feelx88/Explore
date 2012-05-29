@@ -3,6 +3,7 @@
 #include "BulletTools.h"
 #include "VectorConverter.h"
 #include "LoggerSingleton.h"
+#include "BulletSceneNodeAnimator.h"
 #include <boost/property_tree/xml_parser.hpp>
 #include <iostream>
 
@@ -37,6 +38,12 @@ void Entity::internalCreate()
     internalCreateSceneNode();
     internalCreateRigidBody();
 
+    if( mSceneNode && mRigidBody )
+    {
+        mAnimator.reset( new BulletSceneNodeAnimator( mWorld, mRigidBody ) );
+        mSceneNode->addAnimator( mAnimator.get() );
+    }
+
     postCreate();
 }
 
@@ -60,9 +67,12 @@ void Entity::internalCreateSceneNode()
             mSceneNode = mSceneManager->addCubeSceneNode( 1.f );
         else if( mesh == "Sphere" )
             mSceneNode = mSceneManager->addSphereSceneNode( 0.5f );
+        else if( mesh == "Camera" )
+            mSceneNode = mSceneManager->addCameraSceneNode();
     }
     else //File
-        mSceneNode = mSceneManager->addMeshSceneNode( mSceneManager->getMesh( mesh.c_str() ) );
+        mSceneNode = mSceneManager->addMeshSceneNode(
+                    mSceneManager->getMesh( mesh.c_str() ) );
 
     if( mSceneNode )
     {
@@ -103,9 +113,9 @@ void Entity::internalCreateRigidBody()
                 mass, mMotionState.get(), mCollisionShape.get() );
 
     if( inertia )
-    {
         info.m_localInertia = VectorConverter::bt( *inertia );
-    }
+    else
+        mCollisionShape->calculateLocalInertia( mass, info.m_localInertia );
 
     mRigidBody.reset( new btRigidBody( info ) );
 
@@ -114,8 +124,6 @@ void Entity::internalCreateRigidBody()
 void Entity::internalCreateCollisionShape()
 {
     std::string type = mProperties->get( "Entity.Body.Shape.<xmlattr>.Type", std::string() );
-
-    //No test, has been tested before
 
     btVector3 scale =
             VectorConverter::bt( mProperties->get( "Entity.Body.Scale", vector3df() ) );
@@ -129,13 +137,13 @@ void Entity::internalCreateCollisionShape()
         {
             btVector3 extents = VectorConverter::bt(
                         mProperties->get( "Entity.Body.Shape.Child.Size", vector3df() ) );
-            mCollisionShape.reset( new btBoxShape( extents ) );
+            mCollisionShape.reset( new btBoxShape( extents / 2.f ) );
             return;
         }
         else if( childType == "Sphere" )
         {
             float radius = mProperties->get( "Entity.Body.Shape.Child.Size", 0.f );
-            mCollisionShape.reset( new btSphereShape( radius ) );
+            mCollisionShape.reset( new btSphereShape( radius / 2.f ) );
             return;
         }
     }

@@ -3,6 +3,7 @@
 #include "Player.h"
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
+#include <engine/Entity.h>
 
 using namespace irr;
 using namespace core;
@@ -25,37 +26,30 @@ E_GAME_STATE ExploreGame::run()
 
     E_GAME_STATE state = EGS_GAME;
 
-    //TODO: create a class for each "block"
-//{
-    CollisionShapePtr s1( new btBoxShape( btVector3( 0.5f, 0.5f, 0.5f ) ) );
-    btTransform trans;
-    trans.setIdentity();
-    trans.setOrigin( btVector3( 0.f, 10.f, 0.f ) );
-    MotionStatePtr ms1( new btDefaultMotionState( trans ) );
-    btRigidBody::btRigidBodyConstructionInfo i1(
-                10.f, ms1.get(),
-                s1.get() );
-    i1.m_collisionShape->calculateLocalInertia( i1.m_mass, i1.m_localInertia );
-    RigidBodyPtr b1( new btRigidBody( i1 ) );
+    PropTreePtr prop( new boost::property_tree::ptree );
+    prop->put( "Entity.Node.Mesh", "$Box" );
+    prop->put( "Entity.Body.Shape.<xmlattr>.Type", "Primitive" );
+    prop->put( "Entity.Body.Shape.Child.Type", "Box" );
 
-    ISceneNodeAnimatorPtr anim1( new BulletSceneNodeAnimator( mBulletWorld, b1 ) );
-    mSceneManager->addCubeSceneNode( 1.f, 0, -1, vector3df( 0.f, 0.f, 10.f ) )
-            ->addAnimator( anim1.get() );
-//}
+    prop->put( "Entity.Body.Mass", "0" );
+    prop->put( "Entity.Node.Scale", "100,1,100" );
+    prop->put( "Entity.Body.Shape.Child.Size", "100,1,100" );
 
-//{
-    CollisionShapePtr s2( new btBoxShape( btVector3( 50.f, 0.5f, 50.f ) ) );
-    MotionStatePtr ms2( new btDefaultMotionState() );
-    btRigidBody::btRigidBodyConstructionInfo i2(
-                0.f, ms2.get(),
-                s2.get() );
-    RigidBodyPtr b2( new btRigidBody( i2 ) );
+    prop->put( "Entity.Body.Position", "0,-1.5,0" );
+    EntityPtr ground( new Entity( mDevice, mBulletWorld, prop ) );
 
-    ISceneNodeAnimatorPtr anim2( new BulletSceneNodeAnimator( mBulletWorld, b2 ) );
-    mSceneManager->addCubeSceneNode( 1.f, 0, -1, vector3df( 0.f, -1.f, 0.f),
-                                     vector3df(), vector3df( 100.f, 1.f, 100.f ) )
-            ->addAnimator( anim2.get() );
-//}
+    prop->put( "Entity.Body.Mass", "20" );
+    prop->put( "Entity.Node.Scale", "4,1,4" );
+    prop->put( "Entity.Body.Shape.Child.Size", "4,1,4" );
+
+    prop->put( "Entity.Body.Position", "20,10,20" );
+    EntityPtr e1( new Entity( mDevice, mBulletWorld, prop ) );
+    prop->put( "Entity.Body.Position", "-20,10,20" );
+    EntityPtr e2( new Entity( mDevice, mBulletWorld, prop ) );
+    prop->put( "Entity.Body.Position", "20,11,20" );
+    EntityPtr e3( new Entity( mDevice, mBulletWorld, prop ) );
+    prop->put( "Entity.Body.Position", "-20,11,20" );
+    EntityPtr e4( new Entity( mDevice, mBulletWorld, prop ) );
 
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
                                       SColorf( 1, 1, 1 ), 1000.f );
