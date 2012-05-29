@@ -31,7 +31,6 @@ void Entity::internalCreate()
 
 void Entity::internalCreateSceneNode()
 {
-    //mProperties->put( "lol", irr::core::vector3df(), boost::property_tree::VectorTranslator );
 }
 
 void Entity::internalCreateRigidBody()

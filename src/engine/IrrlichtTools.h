@@ -15,6 +15,11 @@ public:
                                                        int x, int y );
 };
 
+namespace irr
+{
+namespace core
+{
+
 template <typename T>
 std::ostream &operator<<( std::ostream &stream,
                           const irr::core::vector3d<T> &in )
@@ -30,6 +35,9 @@ std::istream &operator>>( std::istream &stream,
     char tmp;
     stream >> out.X >> tmp >> out.Y >> tmp >> out.Z;
     return stream;
+}
+
+}
 }
 
 #endif // IRRLICHTTOOLS_H
