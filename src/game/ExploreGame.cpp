@@ -4,11 +4,14 @@
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/Entity.h>
+#include <boost/property_tree/xml_parser.hpp>
 
 using namespace irr;
 using namespace core;
 using namespace video;
 using namespace scene;
+
+#define EPATH std::string( "data/Entities/" )
 
 ExploreGame::ExploreGame( ExplorePtr explore )
     : mExplore( explore ),
@@ -26,35 +29,22 @@ E_GAME_STATE ExploreGame::run()
 
     E_GAME_STATE state = EGS_GAME;
 
-    PropTreePtr prop( new boost::property_tree::ptree );
-    prop->put( "Entity.Node.Mesh", "$Box" );
-    prop->put( "Entity.Body.Shape.<xmlattr>.Type", "Primitive" );
-    prop->put( "Entity.Body.Shape.Child.Type", "Box" );
+    EntityPtr e1( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
+    e1->setPosition( vector3df( 10.f, 10.f, 10.f ) );
+    EntityPtr e2( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
+    e2->setPosition( vector3df( 10.f, 12.f, 10.f ) );
+    EntityPtr e3( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
+    e3->setPosition( vector3df( -10.f, 10.f, 10.f ) );
+    EntityPtr e4( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
+    e4->setPosition( vector3df( -10.f, 12.f, 10.f ) );
 
-    prop->put( "Entity.Body.Mass", "0" );
-    prop->put( "Entity.Node.Scale", "100,1,100" );
-    prop->put( "Entity.Body.Shape.Child.Size", "100,1,100" );
-
-    prop->put( "Entity.Body.Position", "0,-1.5,0" );
-    EntityPtr ground( new Entity( mDevice, mBulletWorld, prop ) );
-
-    prop->put( "Entity.Body.Mass", "20" );
-    prop->put( "Entity.Node.Scale", "4,1,4" );
-    prop->put( "Entity.Body.Shape.Child.Size", "4,1,4" );
-
-    prop->put( "Entity.Body.Position", "20,10,20" );
-    EntityPtr e1( new Entity( mDevice, mBulletWorld, prop ) );
-    prop->put( "Entity.Body.Position", "-20,10,20" );
-    EntityPtr e2( new Entity( mDevice, mBulletWorld, prop ) );
-    prop->put( "Entity.Body.Position", "20,11,20" );
-    EntityPtr e3( new Entity( mDevice, mBulletWorld, prop ) );
-    prop->put( "Entity.Body.Position", "-20,11,20" );
-    EntityPtr e4( new Entity( mDevice, mBulletWorld, prop ) );
+    EntityPtr ground( new Entity( mDevice, mBulletWorld,
+                                  EPATH + "TestCube", "Floor" ) );
 
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
                                       SColorf( 1, 1, 1 ), 1000.f );
     Player p( mExplore );
-    p.getRigidBody()->setWorldTransform( btTransform( btQuaternion( 0, 0, 0, 1 ), btVector3( 0, 5, -10 ) ) );
+    p.getEntity()->setPosition( vector3df( 0.f, 5.f, -10.f ) );
 
     btClock clock;
 

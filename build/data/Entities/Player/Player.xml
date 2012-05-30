@@ -1,0 +1,16 @@
+<Entity>
+    <Node>
+        <Mesh>$Camera</Mesh>
+        <OffsetTransform>true</OffsetTransform>
+        <Position>0,1,0</Position>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>1,2,1</Size>
+            </Child>
+        </Shape>
+        <Mass>50</Mass>
+    </Body>
+</Entity>

@@ -1,4 +1,6 @@
 #include "BulletSceneNodeAnimator.h"
+#include "VectorConverter.h"
+#include "QuaternionConverter.h"
 
 using namespace irr;
 using namespace core;
@@ -24,31 +26,24 @@ void BulletSceneNodeAnimator::animateNode( ISceneNode *node, u32 )
     if( !node )
         return;
 
-    btTransform trans;
-    trans.setIdentity();
-    mRigidBody->getMotionState()->getWorldTransform( trans );
+    btTransform trans = mRigidBody->getWorldTransform();
 
-    btVector3 btPos = trans.getOrigin();
-    btQuaternion btQuat = trans.getRotation();
+    vector3df pos = VectorConverter::irr( trans.getOrigin() );
+    matrix4 mat = QuaternionConverter::irr( trans.getRotation() ).getMatrix();
 
-    vector3df irrPos = vector3df( btPos.getX(), btPos.getY(), btPos.getZ() );
-    matrix4 irrMat = quaternion(
-                -btQuat.getX(), -btQuat.getY(),
-                -btQuat.getZ(), btQuat.getW() ).getMatrix();
-
-    node->setPosition( irrPos );
-    node->setRotation( irrMat.getRotationDegrees() );
+    node->setPosition( pos );
+    node->setRotation( mat.getRotationDegrees() );
 
     if( !mApplyToCamera || node->getType() != ESNT_CAMERA )
         return;
 
     vector3df up( 0.f, 1.f, 0.f );
     vector3df target( 0.f, 0.f, 1.f );
-    irrMat.rotateVect( up );
-    irrMat.rotateVect( target );
+    mat.rotateVect( up );
+    mat.rotateVect( target );
 
     static_cast<ICameraSceneNode*>( node )->setUpVector( up );
-    static_cast<ICameraSceneNode*>( node )->setTarget( target + irrPos );
+    static_cast<ICameraSceneNode*>( node )->setTarget( target + pos );
 }
 
 

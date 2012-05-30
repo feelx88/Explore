@@ -10,9 +10,23 @@ class Entity
 {
 public:
 
-    Entity( IrrlichtDevicePtr device, BulletWorldPtr world, const PropTreePtr &propeties );
-    Entity( IrrlichtDevicePtr device, BulletWorldPtr world, const std::string &propFileName );
+    Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
+            const PropTreePtr &propeties );
+    Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
+            const std::string &propFileName, const std::string &nodeName = "" );
     virtual ~Entity();
+
+    ISceneNodePtr getSceneNode() const;
+    ISceneNodeAnimatorPtr getSceneNodeAnimator() const;
+    RigidBodyPtr getRigidBody() const;
+    CollisionShapePtr getCollisionShape() const;
+    PropTreePtr getProperties() const;
+
+    void setPosition( const irr::core::vector3df &pos );
+    boost::optional<irr::core::vector3df> getPosition() const;
+
+    void setRotation( const irr::core::vector3df &rot );
+    boost::optional<irr::core::vector3df> getRotation() const;
 
 protected:
 
@@ -25,7 +39,7 @@ protected:
     BulletWorldPtr mWorld;
 
     PropTreePtr mProperties;
-    ISceneNodePtr mSceneNode;
+    ISceneNodePtr mSceneNode, mChildNode;
     ISceneNodeAnimatorPtr mAnimator;
     RigidBodyPtr mRigidBody;
     CollisionShapePtr mCollisionShape;

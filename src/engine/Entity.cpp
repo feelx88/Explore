@@ -2,6 +2,7 @@
 #include "IrrlichtTools.h"
 #include "BulletTools.h"
 #include "VectorConverter.h"
+#include "QuaternionConverter.h"
 #include "LoggerSingleton.h"
 #include "BulletSceneNodeAnimator.h"
 #include <boost/property_tree/xml_parser.hpp>
@@ -12,7 +13,8 @@ using namespace core;
 using namespace video;
 using namespace scene;
 
-Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world, const PropTreePtr &properties )
+Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
+                const PropTreePtr &properties )
     : mProperties( properties ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
@@ -21,14 +23,38 @@ Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world, const PropTreePt
     create();
 }
 
-Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world, const std::string &propFileName )
+Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
+               const std::string &propFileName , const std::string &nodeName )
     : mProperties( new boost::property_tree::ptree() ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
       mWorld( world )
 {
-    boost::property_tree::xml_parser::read_xml( propFileName, *mProperties );
-    create();
+    std::string fileName = propFileName;
+    if( propFileName.find( ".xml" ) == std::string::npos )
+    {
+        std::string file = propFileName.substr( propFileName.find_last_of( '/' ) );
+        fileName = propFileName + file + ".xml";
+        _LOG( fileName );
+    }
+
+    boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
+
+    if( !nodeName.empty() )
+    {
+        for( boost::property_tree::ptree::iterator x = mProperties->begin();
+             x != mProperties->end(); ++x )
+        {
+            if( x->second.get<std::string>( "<xmlattr>.Name", "" ) != nodeName )
+            {
+                mProperties->erase( x );
+                break;
+            }
+        }
+    }
+
+    if( !mProperties->empty() )
+        create();
 }
 
 void Entity::internalCreate()
@@ -58,6 +84,8 @@ void Entity::internalCreateSceneNode()
     vector3df rotation = mProperties->get( "Entity.Node.Rotation", vector3df() );
     vector3df scale = mProperties->get( "Entity.Node.Scale", vector3df( 1.f ) );
 
+    bool nodeOffset = mProperties->get( "Entity.Node.OffsetTransform", false );
+
     if( mesh.at( 0 ) == '$' )
     {
         //Primitive
@@ -79,6 +107,15 @@ void Entity::internalCreateSceneNode()
         mSceneNode->setPosition( position );
         mSceneNode->setRotation( rotation );
         mSceneNode->setScale( scale );
+
+        if( nodeOffset )
+        {
+            mChildNode = mSceneNode;
+            mSceneNode = mSceneManager->addEmptySceneNode();
+            mChildNode->setParent( mSceneNode );
+        }
+
+        //TODO:Apply more settings like texture etc.
     }
 }
 
@@ -118,6 +155,8 @@ void Entity::internalCreateRigidBody()
         mCollisionShape->calculateLocalInertia( mass, info.m_localInertia );
 
     mRigidBody.reset( new btRigidBody( info ) );
+
+    //TODO:Apply more settings like damping etc.
 
 }
 
@@ -165,6 +204,91 @@ void Entity::internalCreateCollisionShape()
 
 Entity::~Entity()
 {
+}
+
+ISceneNodePtr Entity::getSceneNode() const
+{
+    return mSceneNode;
+}
+
+ISceneNodeAnimatorPtr Entity::getSceneNodeAnimator() const
+{
+    return mAnimator;
+}
+
+RigidBodyPtr Entity::getRigidBody() const
+{
+    return mRigidBody;
+}
+
+CollisionShapePtr Entity::getCollisionShape() const
+{
+    return mCollisionShape;
+}
+
+PropTreePtr Entity::getProperties() const
+{
+    return mProperties;
+}
+
+void Entity::setPosition( const vector3df &pos )
+{
+    if( mRigidBody )
+    {
+        btTransform trans = mRigidBody->getWorldTransform();
+        trans.setOrigin( VectorConverter::bt( pos ) );
+        mRigidBody->setWorldTransform( trans );
+    }
+    else if( mSceneNode )
+    {
+        mSceneNode->setPosition( pos );
+    }
+}
+
+boost::optional<vector3df> Entity::getPosition() const
+{
+    if( mRigidBody )
+    {
+        btTransform trans = mRigidBody->getWorldTransform();
+        return VectorConverter::irr( trans.getOrigin() );
+    }
+    else if( mSceneNode )
+    {
+        return mSceneNode->getPosition();
+    }
+    else
+        return boost::none;
+}
+
+void Entity::setRotation( const vector3df &rot )
+{
+    if( mRigidBody )
+    {
+        btTransform trans = mRigidBody->getWorldTransform();
+        matrix4 m;
+        m.setRotationDegrees( rot );
+        trans.setRotation( QuaternionConverter::bt( quaternion( m ) ) );
+        mRigidBody->setWorldTransform( trans );
+    }
+    else if( mSceneNode )
+    {
+        mSceneNode->setRotation( rot );
+    }
+}
+
+boost::optional<vector3df> Entity::getRotation() const
+{
+    if( mRigidBody )
+    {
+        btTransform trans = mRigidBody->getWorldTransform();
+        return VectorConverter::irr( trans.getOrigin() );
+    }
+    else if( mSceneNode )
+    {
+        return mSceneNode->getRotation();
+    }
+    else
+        return boost::none;
 }
 
 void Entity::create()

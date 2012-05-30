@@ -11,6 +11,7 @@ add_executable(Explore ${Explore_SRCS})
 file( GLOB assets
     ../build/config.ini
     ../build/log.txt
+    ../build/data/*/*/*
     ../.gitignore
 )
 
