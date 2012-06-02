@@ -1,5 +1,8 @@
 #include "Player.h"
+#include <engine/EventReceiver.h>
 #include <engine/LoggerSingleton.h>
+#include <engine/BulletSceneNodeAnimator.h>
+#include <engine/VectorConverter.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 using namespace irr;
@@ -17,6 +20,9 @@ Player::Player( ExplorePtr explore )
     boost::property_tree::xml_parser::read_xml(
                 "data/Entities/Player/Player.xml", *prop );
     mEntity.reset( new Entity( mDevice, mBulletWorld, prop ) );
+    mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
+    mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f );
+    mEntity->getRigidBody()->setAngularFactor( btVector3( 0.f, 0.f, 0.f ) );
 }
 
 Player::~Player()
@@ -30,12 +36,34 @@ EntityPtr Player::getEntity() const
 
 void Player::update()
 {
+    vector3df rot( mEntity->getSceneNode()->getRotation() );
+    rot.Z = 0.f;
+    rot.X += float( mEventReceiver->mouseMoveY() ) / 10.f;
+    rot.Y += float( mEventReceiver->mouseMoveX() ) / 10.f;
+
+    mEntity->getSceneNode()->setRotation( rot );
+
+    matrix4 m = mEntity->getSceneNode()->getAbsoluteTransformation();
+    vector3df target( 0.f, 0.f, 10000.f );
+    m.rotateVect( target );
+    mCamera->setTarget( *( mEntity->getPosition() ) + target );
+
+    vector3df vel( 0.f, 0.f, 0.f );
+
     if( mEventReceiver->keyPressed( KEY_KEY_W ) )
-        mEntity->getRigidBody()->applyCentralImpulse( btVector3( 0, 0, 10 ) );
+        vel.Z += 5;
     if( mEventReceiver->keyPressed( KEY_KEY_S ) )
-        mEntity->getRigidBody()->applyCentralImpulse( btVector3( 0, 0, -10 ) );
+        vel.Z -= 5;
     if( mEventReceiver->keyPressed( KEY_KEY_A ) )
-        mEntity->getRigidBody()->applyCentralImpulse( btVector3( -10, 0, 0 ) );
+        vel.X -= 5;
     if( mEventReceiver->keyPressed( KEY_KEY_D ) )
-        mEntity->getRigidBody()->applyCentralImpulse( btVector3( 10, 0, 0 ) );
+        vel.X += 5;
+
+    m.rotateVect( vel );
+    vel.Y = mEntity->getRigidBody()->getLinearVelocity().getY();
+
+    if( mEventReceiver->keyPressed( KEY_SPACE ) && iszero( vel.Y ) )
+        vel.Y = 5.f;
+
+    mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
 }

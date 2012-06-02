@@ -36,6 +36,23 @@ std::istream &operator>>( std::istream &stream,
     return stream;
 }
 
+template <typename T>
+std::ostream &operator<<( std::ostream &stream,
+                          const irr::core::vector2d<T> &in )
+{
+    stream << in.X << "," << in.Y;
+    return stream;
+}
+
+template <typename T>
+std::istream &operator>>( std::istream &stream,
+                          irr::core::vector2d<T> &out )
+{
+    char tmp;
+    stream >> out.X >> tmp >> out.Y;
+    return stream;
+}
+
 }
 }
 

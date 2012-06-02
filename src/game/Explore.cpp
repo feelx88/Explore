@@ -130,6 +130,10 @@ void Explore::initIrrlicht()
     mVideoDriver = mDevice->getVideoDriver();
     mGUI = mDevice->getGUIEnvironment();
 
+    mEventReceiver->setDevice( mDevice );
+
+    mVideoDriver->getMaterial2D().ZBuffer = false;
+
     irr::gui::IGUISkin *skin = mGUI->getSkin();
     skin->setFont( mGUI->getFont(
                        readConfigValue<std::string>( "Engine.fontFile", "data/bitstream_vera_sans_12.xml" ).c_str() ) );
@@ -159,6 +163,10 @@ void Explore::initBullet()
                             mBroadphase.get(),
                             mConstraintSolver.get(),
                             mCollisionConfiguration.get() ) );
+
+    mBulletDebugDrawer.reset( new BulletIrrlichtDebugDrawer() );
+    mBulletDebugDrawer->driver = mDevice->getVideoDriver();
+    mBulletWorld->setDebugDrawer( mBulletDebugDrawer.get() );
 }
 
 void Explore::initMenu()

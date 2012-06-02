@@ -17,6 +17,7 @@ ExploreMenu::ExploreMenu( ExplorePtr explore )
 
 E_GAME_STATE ExploreMenu::run()
 {
+    mDevice->setWindowCaption( L"Explore - Main Menu" );
     int windowWidth = mExplore->readConfigValue<int>( "Engine.windowWidth", 640 );
     int windowHeight = mExplore->readConfigValue<int>( "Engine.windowHeight", 480 );
 

@@ -45,6 +45,8 @@ protected:
     CollisionShapePtr mCollisionShape;
     MotionStatePtr mMotionState;
 
+    std::string mBasePath;
+
 private:
     void internalCreate();
     void internalCreateSceneNode();

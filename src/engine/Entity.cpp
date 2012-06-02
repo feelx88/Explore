@@ -33,9 +33,13 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
     std::string fileName = propFileName;
     if( propFileName.find( ".xml" ) == std::string::npos )
     {
+        mBasePath = fileName + "/";
         std::string file = propFileName.substr( propFileName.find_last_of( '/' ) );
         fileName = propFileName + file + ".xml";
-        _LOG( fileName );
+    }
+    else
+    {
+        mBasePath = propFileName.substr( 0, propFileName.find_last_of( '/' ) ) + "/";
     }
 
     boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
@@ -66,7 +70,8 @@ void Entity::internalCreate()
 
     if( mSceneNode && mRigidBody )
     {
-        mAnimator.reset( new BulletSceneNodeAnimator( mWorld, mRigidBody ) );
+        BulletSceneNodeAnimator *ani = new BulletSceneNodeAnimator( mWorld, mRigidBody );
+        mAnimator.reset( ani );
         mSceneNode->addAnimator( mAnimator.get() );
     }
 
@@ -80,27 +85,30 @@ void Entity::internalCreateSceneNode()
     if( mesh.empty() )
         return;
 
+    int id = mProperties->get( "Entity.ID", -1 );
+
     vector3df position = mProperties->get( "Entity.Node.Position", vector3df() );
     vector3df rotation = mProperties->get( "Entity.Node.Rotation", vector3df() );
     vector3df scale = mProperties->get( "Entity.Node.Scale", vector3df( 1.f ) );
 
-    bool nodeOffset = mProperties->get( "Entity.Node.OffsetTransform", false );
+    std::string type = mProperties->get(
+                "Entity.Node.Mesh.<xmlattr>.Type", std::string() );
 
-    if( mesh.at( 0 ) == '$' )
+    if( type == "Primitive" )
     {
-        //Primitive
-        mesh = mesh.substr( 1 );
-
         if( mesh == "Box" )
-            mSceneNode = mSceneManager->addCubeSceneNode( 1.f );
+            mSceneNode = mSceneManager->addCubeSceneNode( 1.f, 0, id );
         else if( mesh == "Sphere" )
-            mSceneNode = mSceneManager->addSphereSceneNode( 0.5f );
+            mSceneNode = mSceneManager->addSphereSceneNode( 0.5f, 16, 0, id );
         else if( mesh == "Camera" )
-            mSceneNode = mSceneManager->addCameraSceneNode();
+            mSceneNode = mSceneManager->addCameraSceneNode( 0, vector3df(), vector3df(), id );
     }
     else //File
+    {
+        std::string fileName = mBasePath + mesh;
         mSceneNode = mSceneManager->addMeshSceneNode(
-                    mSceneManager->getMesh( mesh.c_str() ) );
+                    mSceneManager->getMesh( fileName.c_str() ), 0, id );
+    }
 
     if( mSceneNode )
     {
@@ -108,14 +116,32 @@ void Entity::internalCreateSceneNode()
         mSceneNode->setRotation( rotation );
         mSceneNode->setScale( scale );
 
-        if( nodeOffset )
+        boost::optional<boost::property_tree::ptree&> textures =
+                mProperties->get_child_optional( "Entity.Node.Textures" );
+
+        if( textures )
+        {
+            for( boost::property_tree::ptree::iterator x = textures->begin();
+                 x != textures->end(); ++x )
+            {
+                int layer = x->second.get( "<xmlattr>.Layer", 0 );
+                std::string fileName = mBasePath + x->second.data();
+
+                ITexturePtr tex =
+                        mDevice->getVideoDriver()->getTexture( fileName.c_str() );
+                mSceneNode->getMaterial( 0 ).setTexture( layer, tex );
+            }
+        }
+
+        mSceneNode->setMaterialFlag(
+                    EMF_LIGHTING, mProperties->get( "Entity.Node.Material.Lighting", true ) );
+
+        if( mProperties->get( "Entity.Node.OffsetTransform", false ) )
         {
             mChildNode = mSceneNode;
             mSceneNode = mSceneManager->addEmptySceneNode();
             mChildNode->setParent( mSceneNode );
         }
-
-        //TODO:Apply more settings like texture etc.
     }
 }
 
@@ -164,9 +190,6 @@ void Entity::internalCreateCollisionShape()
 {
     std::string type = mProperties->get( "Entity.Body.Shape.<xmlattr>.Type", std::string() );
 
-    btVector3 scale =
-            VectorConverter::bt( mProperties->get( "Entity.Body.Scale", vector3df() ) );
-
     if( type == "Primitive" )
     {
         //Primitive
@@ -177,13 +200,11 @@ void Entity::internalCreateCollisionShape()
             btVector3 extents = VectorConverter::bt(
                         mProperties->get( "Entity.Body.Shape.Child.Size", vector3df() ) );
             mCollisionShape.reset( new btBoxShape( extents / 2.f ) );
-            return;
         }
         else if( childType == "Sphere" )
         {
             float radius = mProperties->get( "Entity.Body.Shape.Child.Size", 0.f );
             mCollisionShape.reset( new btSphereShape( radius / 2.f ) );
-            return;
         }
     }
     else if( type == "Compound" )
@@ -198,8 +219,6 @@ void Entity::internalCreateCollisionShape()
     }
     else
         return;
-
-    mCollisionShape->setLocalScaling( scale );
 }
 
 Entity::~Entity()
@@ -208,7 +227,10 @@ Entity::~Entity()
 
 ISceneNodePtr Entity::getSceneNode() const
 {
-    return mSceneNode;
+    if( !mChildNode )
+        return mSceneNode;
+    else
+        return mChildNode;
 }
 
 ISceneNodeAnimatorPtr Entity::getSceneNodeAnimator() const

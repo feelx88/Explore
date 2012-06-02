@@ -1,6 +1,9 @@
 <Entity Name="Crate">
     <Node>
-        <Mesh>$Box</Mesh>
+        <Mesh Type="Primitive">Box</Mesh>
+        <Textures>
+            <File>crate.jpg</File>
+        </Textures>
     </Node>
     <Body>
         <Shape Type="Primitive">
@@ -15,8 +18,10 @@
 
 <Entity Name="Floor">
     <Node>
-        <Mesh>$Box</Mesh>
-        <Scale>100,1,100</Scale>
+        <Mesh>floor.obj</Mesh>
+        <Material>
+            <Lighting>false</Lighting>
+        </Material>
     </Node>
     <Body>
         <Shape Type="Primitive">

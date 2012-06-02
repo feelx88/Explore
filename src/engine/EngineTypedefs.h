@@ -31,6 +31,7 @@ typedef irr::gui::IGUIElement* IGUIElementPtr;
 typedef irr::scene::ISceneNode* ISceneNodePtr;
 typedef irr::scene::ICameraSceneNode* ICameraSceneNodePtr;
 typedef boost::shared_ptr<irr::scene::ISceneNodeAnimator> ISceneNodeAnimatorPtr;
+typedef irr::video::ITexture* ITexturePtr;
 
 #include <bullet/btBulletDynamicsCommon.h>
 
@@ -78,7 +79,7 @@ struct luaStateDeleter
 
 typedef boost::shared_ptr<lua_State> LuaStatePtr;
 
-#include "EventReceiver.h"
+class EventReceiver;
 
 typedef boost::shared_ptr<EventReceiver> EventReceiverPtr;
 

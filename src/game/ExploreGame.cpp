@@ -29,6 +29,8 @@ E_GAME_STATE ExploreGame::run()
 
     E_GAME_STATE state = EGS_GAME;
 
+    mEventReceiver->lockMouse( true );
+
     EntityPtr e1( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
     e1->setPosition( vector3df( 10.f, 10.f, 10.f ) );
     EntityPtr e2( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
@@ -66,10 +68,16 @@ E_GAME_STATE ExploreGame::run()
 
         p.update();
 
+        //mBulletWorld->debugDrawWorld();
+
         mVideoDriver->endScene();
+
+        mDevice->setWindowCaption( stringw( mVideoDriver->getFPS() ).c_str() );
     }
 
     mSceneManager->clear();
+
+    mEventReceiver->lockMouse( false );
 
     return state;
 }

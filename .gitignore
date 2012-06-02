@@ -10,3 +10,7 @@ CMakeLists.txt.*
 cmake_install.cmake
 Explore.cbp
 Makefile
+*.blend1
+*.blend2
+*.blend3
+*.blend4

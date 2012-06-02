@@ -20,6 +20,7 @@ private:
     IrrlichtDevicePtr mDevice;
     EventReceiverPtr mEventReceiver;
     BulletWorldPtr mBulletWorld;
+    ICameraSceneNodePtr mCamera;
 
     EntityPtr mEntity;
 };
