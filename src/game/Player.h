@@ -16,6 +16,8 @@ public:
     void update();
 
 private:
+    PropTreePtr mProperties;
+
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     EventReceiverPtr mEventReceiver;
@@ -26,6 +28,8 @@ private:
 
     EntityPtr mBullets[10];
     int mCurBullet;
+
+    int mCrossX, mCrossY;
 };
 
 #endif // PLAYER_H

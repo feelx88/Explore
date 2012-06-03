@@ -14,12 +14,13 @@ using namespace video;
 using namespace scene;
 
 Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
-                const PropTreePtr &properties )
+                const PropTreePtr &properties, std::string basePath )
     : mProperties( properties ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
-      mWorld( world )
+      mBulletWorld( world )
 {
+    mBasePath = basePath;
     create();
 }
 
@@ -28,7 +29,7 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
     : mProperties( new boost::property_tree::ptree() ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
-      mWorld( world )
+      mBulletWorld( world )
 {
     std::string fileName = propFileName;
     if( propFileName.find( ".xml" ) == std::string::npos )
@@ -41,6 +42,8 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
     {
         mBasePath = propFileName.substr( 0, propFileName.find_last_of( '/' ) ) + "/";
     }
+
+    _LOG( "Entity base path", mBasePath );
 
     boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
 
@@ -69,7 +72,7 @@ void Entity::internalCreate()
 
     if( mSceneNode && mRigidBody )
     {
-        BulletSceneNodeAnimator *ani = new BulletSceneNodeAnimator( mWorld, mRigidBody );
+        BulletSceneNodeAnimator *ani = new BulletSceneNodeAnimator( mBulletWorld, mRigidBody );
         mAnimator.reset( ani );
         mSceneNode->addAnimator( mAnimator.get() );
     }

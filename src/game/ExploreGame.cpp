@@ -4,6 +4,7 @@
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/Entity.h>
+#include <engine/EntityContainer.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 using namespace irr;
@@ -31,22 +32,16 @@ E_GAME_STATE ExploreGame::run()
 
     mEventReceiver->lockMouse( true );
 
-    EntityPtr e[10];
-    for( int x = 0; x < 10; ++x )
-    {
-        e[x].reset( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
-        e[x]->setPosition( vector3df( 0.f, 1.f + x, 10.f ) );
-    }
-
-    EntityPtr ground( new Entity( mDevice, mBulletWorld,
-                                  EPATH + "TestCube", "Floor" ) );
-
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
                                       SColorf( 1, 1, 1 ), 1000.f );
     Player p( mExplore );
     p.getEntity()->setPosition( vector3df( 0.f, 5.f, -10.f ) );
 
     btClock clock;
+
+    EntityContainerPtr level( new EntityContainer(
+                                  mDevice, mBulletWorld,
+                                  "data/Entities/TestCube/TestCube2.xml" ) );
 
     while( running && mDevice->run() )
     {

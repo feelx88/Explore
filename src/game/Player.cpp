@@ -17,17 +17,22 @@ Player::Player( ExplorePtr explore )
       mBulletWorld( explore->getBulletWorld() ),
       mCurBullet( 0 )
 {
-    PropTreePtr prop( new boost::property_tree::ptree() );
+    mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
-                "data/Entities/Player/Player.xml", *prop );
-    mEntity.reset( new Entity( mDevice, mBulletWorld, prop ) );
+                "data/Entities/Player/Player.xml", *mProperties );
+    mEntity.reset( new Entity( mDevice, mBulletWorld, mProperties ) );
     mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f );
     mEntity->getRigidBody()->setAngularFactor( btVector3( 0.f, 0.f, 0.f ) );
 
     for( int x = 0; x < 10; ++x )
+    {
         mBullets[x].reset( new Entity( mDevice, mBulletWorld,
                                        "data/Entities/TestCube", "Bullet" ) );
+    }
+
+    mCrossX = mDevice->getVideoDriver()->getScreenSize().Width / 2;
+    mCrossY = mDevice->getVideoDriver()->getScreenSize().Height / 2;
 }
 
 Player::~Player()
@@ -82,5 +87,10 @@ void Player::update()
     else if( mCurBullet >= 10 )
         mCurBullet = 0;
 
-
+    mDevice->getVideoDriver()->draw2DLine(
+                vector2di( mCrossX - 10, mCrossY ),
+                vector2di( mCrossX + 10, mCrossY ) );
+    mDevice->getVideoDriver()->draw2DLine(
+                vector2di( mCrossX, mCrossY - 10 ),
+                vector2di( mCrossX, mCrossY + 10 ) );
 }

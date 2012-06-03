@@ -1,0 +1,91 @@
+<Entity Name="Crate1" ID="1">
+    <Node>
+        <Mesh Type="Primitive">Box</Mesh>
+        <Textures>
+            <File>crate.jpg</File>
+        </Textures>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>1,1,1</Size>
+            </Child>
+        </Shape>
+        <Mass>10</Mass>
+        <Position>0,11,0</Position>
+    </Body>
+</Entity>
+<Entity Name="Crate2" ID="2">
+    <Node>
+        <Mesh Type="Primitive">Box</Mesh>
+        <Textures>
+            <File>crate.jpg</File>
+        </Textures>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>1,1,1</Size>
+            </Child>
+        </Shape>
+        <Mass>10</Mass>
+        <Position>0,12,0</Position>
+    </Body>
+</Entity>
+<Entity Name="Crate3" ID="3">
+    <Node>
+        <Mesh Type="Primitive">Box</Mesh>
+        <Textures>
+            <File>crate.jpg</File>
+        </Textures>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>1,1,1</Size>
+            </Child>
+        </Shape>
+        <Mass>10</Mass>
+        <Position>0,13,0</Position>
+    </Body>
+</Entity>
+<Entity Name="Crate4" ID="4">
+    <Node>
+        <Mesh Type="Primitive">Box</Mesh>
+        <Textures>
+            <File>crate.jpg</File>
+        </Textures>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>1,1,1</Size>
+            </Child>
+        </Shape>
+        <Mass>10</Mass>
+        <Position>0,14,0</Position>
+    </Body>
+</Entity>
+
+<Entity Name="Floor" ID="5">
+    <Node>
+        <Mesh>floor.obj</Mesh>
+        <Material>
+            <Lighting>false</Lighting>
+        </Material>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>100,1,100</Size>
+            </Child>
+        </Shape>
+        <Position>0,-1,0</Position>
+        <Mass>0</Mass>
+    </Body>
+</Entity>

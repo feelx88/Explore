@@ -10,8 +10,8 @@ class Entity
 {
 public:
 
-    Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
-            const PropTreePtr &propeties );
+    Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
+           const PropTreePtr &propeties, std::string basePath = "" );
     Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
             const std::string &propFileName, const std::string &nodeName = "" );
     virtual ~Entity();
@@ -36,7 +36,7 @@ protected:
 
     IrrlichtDevicePtr mDevice;
     ISceneManagerPtr mSceneManager;
-    BulletWorldPtr mWorld;
+    BulletWorldPtr mBulletWorld;
 
     PropTreePtr mProperties;
     ISceneNodePtr mSceneNode, mChildNode;
