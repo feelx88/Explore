@@ -50,10 +50,9 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
              x != mProperties->end(); ++x )
         {
             if( x->second.get<std::string>( "<xmlattr>.Name", "" ) != nodeName )
-            {
                 mProperties->erase( x );
+            else
                 break;
-            }
         }
     }
 

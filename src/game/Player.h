@@ -23,6 +23,9 @@ private:
     ICameraSceneNodePtr mCamera;
 
     EntityPtr mEntity;
+
+    EntityPtr mBullets[10];
+    int mCurBullet;
 };
 
 #endif // PLAYER_H

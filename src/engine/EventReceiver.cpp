@@ -17,9 +17,15 @@ EventReceiver::EventReceiver()
         mPressed[x] = false;
         mClicked[x] = false;
     }
+
+    for( unsigned int x = 0; x < 3; ++x )
+    {
+        mMousePressed[x] = false;
+        mMouseClicked[x] = false;
+    }
 }
 
-void EventReceiver::setDevice(IrrlichtDevicePtr device)
+void EventReceiver::setDevice( IrrlichtDevicePtr device )
 {
     mDevice = device;
 
@@ -51,6 +57,17 @@ bool EventReceiver::OnEvent( const SEvent &event )
 
     if( event.EventType == EET_MOUSE_INPUT_EVENT )
     {
+        if( event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP )
+            mMouseClicked[0] = true;
+        else if( event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP )
+            mMouseClicked[1] = true;
+        else if( event.MouseInput.Event == EMIE_MMOUSE_LEFT_UP )
+            mMouseClicked[2] = true;
+
+        mMousePressed[0] = event.MouseInput.isLeftPressed();
+        mMousePressed[1] = event.MouseInput.isRightPressed();
+        mMousePressed[2] = event.MouseInput.isMiddlePressed();
+
         if( mMouseLocked &&
                 event.MouseInput.X == mWinWidth / 2 &&
                 event.MouseInput.Y == mWinHeight / 2 )
@@ -78,19 +95,37 @@ bool EventReceiver::OnEvent( const SEvent &event )
     return false;
 }
 
-bool EventReceiver::keyPressed(const EKEY_CODE &code) const
+bool EventReceiver::keyPressed( const EKEY_CODE &code ) const
 {
     return mPressed[code];
 }
 
-bool EventReceiver::keyClicked(const EKEY_CODE &code)
+bool EventReceiver::keyClicked( const EKEY_CODE &code )
 {
     bool click = mClicked[code];
     mClicked[code] = false;
     return click;
 }
 
-void EventReceiver::lockMouse(bool lock , bool changeVisibility )
+bool EventReceiver::mousePressed( const unsigned int &buttonNum ) const
+{
+    if( buttonNum > 3 )
+        return false;
+
+    return mMousePressed[buttonNum];
+}
+
+bool EventReceiver::mouseClicked( const unsigned int &buttonNum )
+{
+    if( buttonNum > 3 )
+        return false;
+
+    bool click = mMouseClicked[buttonNum];
+    mMouseClicked[buttonNum] = false;
+    return click;
+}
+
+void EventReceiver::lockMouse( bool lock, bool changeVisibility )
 {
     mMouseLocked = lock;
 

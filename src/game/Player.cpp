@@ -14,7 +14,8 @@ Player::Player( ExplorePtr explore )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
       mEventReceiver( explore->getEventReceiver() ),
-      mBulletWorld( explore->getBulletWorld() )
+      mBulletWorld( explore->getBulletWorld() ),
+      mCurBullet( 0 )
 {
     PropTreePtr prop( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
@@ -23,6 +24,10 @@ Player::Player( ExplorePtr explore )
     mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f );
     mEntity->getRigidBody()->setAngularFactor( btVector3( 0.f, 0.f, 0.f ) );
+
+    for( int x = 0; x < 10; ++x )
+        mBullets[x].reset( new Entity( mDevice, mBulletWorld,
+                                       "data/Entities/TestCube", "Bullet" ) );
 }
 
 Player::~Player()
@@ -44,9 +49,9 @@ void Player::update()
     mEntity->getSceneNode()->setRotation( rot );
 
     matrix4 m = mEntity->getSceneNode()->getAbsoluteTransformation();
-    vector3df target( 0.f, 0.f, 10000.f );
+    vector3df target( 0.f, 0.f, 1.f );
     m.rotateVect( target );
-    mCamera->setTarget( *( mEntity->getPosition() ) + target );
+    mCamera->setTarget( *( mEntity->getPosition() ) + target * 10000.f );
 
     vector3df vel( 0.f, 0.f, 0.f );
 
@@ -66,4 +71,16 @@ void Player::update()
         vel.Y = 5.f;
 
     mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
+
+    if( mCurBullet < 10 && mEventReceiver->mouseClicked( 0 ) )
+    {
+        mBullets[mCurBullet]->setPosition( mEntity->getSceneNode()->getAbsolutePosition() + target );
+        mBullets[mCurBullet]->getRigidBody()->setLinearVelocity( btVector3( 0, 0, 0 ) );
+        mBullets[mCurBullet]->getRigidBody()->applyCentralImpulse( VectorConverter::bt( target * 50.f ) );
+        ++mCurBullet;
+    }
+    else if( mCurBullet >= 10 )
+        mCurBullet = 0;
+
+
 }

@@ -55,7 +55,8 @@ E_GAME_STATE ExploreMenu::run()
             running = false;
         }
 
-        if( buttonQuit->isPressed() )
+        if( buttonQuit->isPressed() ||
+                mExplore->getEventReceiver()->keyClicked( KEY_ESCAPE ) )
         {
             _LOG( "Quit button pressed" );
             state = EGS_QUIT;

@@ -31,14 +31,12 @@ E_GAME_STATE ExploreGame::run()
 
     mEventReceiver->lockMouse( true );
 
-    EntityPtr e1( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
-    e1->setPosition( vector3df( 10.f, 10.f, 10.f ) );
-    EntityPtr e2( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
-    e2->setPosition( vector3df( 10.f, 12.f, 10.f ) );
-    EntityPtr e3( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
-    e3->setPosition( vector3df( -10.f, 10.f, 10.f ) );
-    EntityPtr e4( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
-    e4->setPosition( vector3df( -10.f, 12.f, 10.f ) );
+    EntityPtr e[10];
+    for( int x = 0; x < 10; ++x )
+    {
+        e[x].reset( new Entity( mDevice, mBulletWorld, EPATH + "TestCube" ) );
+        e[x]->setPosition( vector3df( 0.f, 1.f + x, 10.f ) );
+    }
 
     EntityPtr ground( new Entity( mDevice, mBulletWorld,
                                   EPATH + "TestCube", "Floor" ) );
@@ -59,7 +57,7 @@ E_GAME_STATE ExploreGame::run()
         mVideoDriver->beginScene( true, true, SColor( 255, 0, 0, 255 ) );
         mSceneManager->drawAll();
 
-        if( mEventReceiver->keyPressed( irr::KEY_ESCAPE ) )
+        if( mEventReceiver->keyClicked( irr::KEY_ESCAPE ) )
         {
             _LOG( "Escape key pressed" );
             state = EGS_MAIN_MENU;
