@@ -1,6 +1,7 @@
 #include "ExploreGame.h"
 #include "Explore.h"
 #include "Player.h"
+#include <engine/IrrlichtTools.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/Entity.h>
@@ -34,14 +35,16 @@ E_GAME_STATE ExploreGame::run()
 
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
                                       SColorf( 1, 1, 1 ), 1000.f );
-    Player p( mExplore );
-    p.getEntity()->setPosition( vector3df( 0.f, 5.f, -10.f ) );
-
-    btClock clock;
 
     EntityContainerPtr level( new EntityContainer(
                                   mDevice, mBulletWorld,
-                                  "data/Entities/TestCube/TestCube2.xml" ) );
+                                  "data/Maps/TestMap1" ) );
+
+    Player p( mExplore );
+    p.getEntity()->setPosition(
+                level->getProperties()->get( "Spawn.Position", vector3df() ) );
+
+    btClock clock;
 
     while( running && mDevice->run() )
     {

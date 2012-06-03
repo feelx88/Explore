@@ -17,8 +17,10 @@ public:
     EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
                     PropTreePtr properties, std::string basePath = "" );
 
-    EntityPtr getEntity( const int &id );
-    EntityPtr getEntity( const std::string &name );
+    EntityPtr getEntity( const int &id ) const;
+    EntityPtr getEntity( const std::string &name ) const;
+
+    PropTreePtr getProperties() const;
 private:
     void create();
 

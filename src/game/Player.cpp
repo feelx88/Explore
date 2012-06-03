@@ -51,6 +51,11 @@ void Player::update()
     rot.X += float( mEventReceiver->mouseMoveY() ) / 10.f;
     rot.Y += float( mEventReceiver->mouseMoveX() ) / 10.f;
 
+    if( rot.X < -89.f )
+        rot.X = -89.f;
+    if( rot.X > +89.f )
+        rot.X = +89.f;
+
     mEntity->getSceneNode()->setRotation( rot );
 
     matrix4 m = mEntity->getSceneNode()->getAbsoluteTransformation();
@@ -89,8 +94,10 @@ void Player::update()
 
     mDevice->getVideoDriver()->draw2DLine(
                 vector2di( mCrossX - 10, mCrossY ),
-                vector2di( mCrossX + 10, mCrossY ) );
+                vector2di( mCrossX + 10, mCrossY ),
+                SColor( 255, 0, 255, 0 ) );
     mDevice->getVideoDriver()->draw2DLine(
                 vector2di( mCrossX, mCrossY - 10 ),
-                vector2di( mCrossX, mCrossY + 10 ) );
+                vector2di( mCrossX, mCrossY + 10 ),
+                SColor( 255, 0, 255, 0 ) );
 }

@@ -33,14 +33,19 @@ EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world
     create();
 }
 
-EntityPtr EntityContainer::getEntity( const int &id )
+EntityPtr EntityContainer::getEntity( const int &id ) const
 {
     return mEntities.at( id );
 }
 
-EntityPtr EntityContainer::getEntity( const std::string &name )
+EntityPtr EntityContainer::getEntity( const std::string &name ) const
 {
     return mEntities.at( mIDs.at( name ) );
+}
+
+PropTreePtr EntityContainer::getProperties() const
+{
+    return mProperties;
 }
 
 void EntityContainer::create()

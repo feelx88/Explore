@@ -16,25 +16,6 @@
     </Body>
 </Entity>
 
-<Entity Name="Floor">
-    <Node>
-        <Mesh>floor.obj</Mesh>
-        <Material>
-            <Lighting>false</Lighting>
-        </Material>
-    </Node>
-    <Body>
-        <Shape Type="Primitive">
-            <Child>
-                <Type>Box</Type>
-                <Size>100,1,100</Size>
-            </Child>
-        </Shape>
-        <Position>0,-1,0</Position>
-        <Mass>0</Mass>
-    </Body>
-</Entity>
-
 <Entity Name="Bullet">
     <Node>
         <Mesh Type="Primitive">Sphere</Mesh>

@@ -1,3 +1,24 @@
+<Spawn>
+    <Position>0,0,-30</Position>
+</Spawn>
+<Entity Name="Crate0" ID="0">
+    <Node>
+        <Mesh Type="Primitive">Box</Mesh>
+        <Textures>
+            <File>crate.jpg</File>
+        </Textures>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>1,1,1</Size>
+            </Child>
+        </Shape>
+        <Mass>10</Mass>
+        <Position>0,0,0</Position>
+    </Body>
+</Entity>
 <Entity Name="Crate1" ID="1">
     <Node>
         <Mesh Type="Primitive">Box</Mesh>
@@ -13,7 +34,7 @@
             </Child>
         </Shape>
         <Mass>10</Mass>
-        <Position>0,11,0</Position>
+        <Position>0,1,0</Position>
     </Body>
 </Entity>
 <Entity Name="Crate2" ID="2">
@@ -31,7 +52,7 @@
             </Child>
         </Shape>
         <Mass>10</Mass>
-        <Position>0,12,0</Position>
+        <Position>0,2,0</Position>
     </Body>
 </Entity>
 <Entity Name="Crate3" ID="3">
@@ -49,7 +70,7 @@
             </Child>
         </Shape>
         <Mass>10</Mass>
-        <Position>0,13,0</Position>
+        <Position>0,3,0</Position>
     </Body>
 </Entity>
 <Entity Name="Crate4" ID="4">
@@ -67,7 +88,7 @@
             </Child>
         </Shape>
         <Mass>10</Mass>
-        <Position>0,14,0</Position>
+        <Position>0,4,0</Position>
     </Body>
 </Entity>
 
