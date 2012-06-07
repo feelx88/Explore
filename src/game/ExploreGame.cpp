@@ -2,6 +2,7 @@
 #include "Explore.h"
 #include "Player.h"
 #include <engine/IrrlichtTools.h>
+#include <engine/PathTools.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/Entity.h>

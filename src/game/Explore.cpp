@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include <engine/IrrlichtTools.h>
+#include <engine/PathTools.h>
 #include <engine/LuaTools.h>
 #include <engine/EventReceiver.h>
 
@@ -91,6 +92,18 @@ void Explore::loadConfig()
     {
         _LOG( "No config file found, creating default one." );
         saveConfig();
+    }
+
+    boost::optional<boost::property_tree::ptree&> paths =
+            mConfig->get_child_optional( "Paths" );
+
+    if( paths )
+    {
+        for( boost::property_tree::ptree::iterator x = ( *paths ).begin();
+             x != ( *paths ).end(); ++x )
+        {
+            PathTools::addPath( x->second.data() );
+        }
     }
 }
 

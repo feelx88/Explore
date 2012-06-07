@@ -24,6 +24,7 @@ set( IRRLICHT_LIBRARIES Irrlicht )
 find_package( OpenAL REQUIRED )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
 find_package( Lua51 REQUIRED )
+find_package( Boost COMPONENTS system filesystem REQUIRED )
 
 include_directories( ${BULLET_INCLUDE_DIR} )
 
@@ -31,6 +32,7 @@ target_link_libraries( Explore
                         ${IRRLICHT_LIBRARIES}
                         ${OPENAL_LIBRARIES}
                         ${BULLET_LIBRARIES}
-                        ${LUA_LIBRARIES} )
+                        ${LUA_LIBRARIES}
+                        ${Boost_LIBRARIES} )
 
 set_target_properties( Explore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../build )

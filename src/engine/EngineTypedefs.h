@@ -8,6 +8,10 @@
 
 typedef boost::shared_ptr<boost::property_tree::ptree> PropTreePtr;
 
+#include <string>
+#include <vector>
+typedef std::vector<std::string> StringVector;
+
 #include <irrlicht/irrlicht.h>
 
 namespace specialDeleters
