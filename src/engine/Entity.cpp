@@ -138,6 +138,15 @@ void Entity::internalCreateSceneNode()
         mSceneNode->setMaterialFlag(
                     EMF_LIGHTING, mProperties->get( "Entity.Node.Material.Lighting", true ) );
 
+        boost::optional<SColor> color =
+                mProperties->get_optional<SColor>( "Entity.Node.Material.Color" );
+
+        if( color )
+        {
+            mSceneNode->getMaterial( 0 ).DiffuseColor = *color;
+            mSceneNode->getMaterial( 0 ).SpecularColor = *color;
+        }
+
         if( mProperties->get( "Entity.Node.OffsetTransform", false ) )
         {
             mChildNode = mSceneNode;

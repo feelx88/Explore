@@ -11,6 +11,6 @@ enum E_GAME_STATE
 };
 
 class Explore;
-typedef boost::shared_ptr<Explore> ExplorePtr;
+typedef Explore* ExplorePtr;
 
 #endif // GAMESTATE_H

@@ -26,6 +26,8 @@ public:
     int mouseMoveX() const;
     int mouseMoveY() const;
 
+    int mouseWheelY();
+
 private:
     IrrlichtDevicePtr mDevice;
 
@@ -34,7 +36,7 @@ private:
     bool mMousePressed[3];
     bool mMouseClicked[3];
     bool mMouseLocked;
-    int mMouseX, mMouseY, mMouseMoveX, mMouseMoveY;
+    int mMouseX, mMouseY, mMouseMoveX, mMouseMoveY, mMouseWheelY;
     int mWinWidth, mWinHeight;
 };
 

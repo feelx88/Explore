@@ -9,13 +9,18 @@
 typedef boost::unordered::unordered_map<int,EntityPtr> EntityMap;
 typedef boost::unordered::unordered_map<std::string,int> IDMap;
 
+class EntityContainer;
+typedef boost::shared_ptr<EntityContainer> EntityContainerPtr;
+
 class EntityContainer
 {
 public:
     EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
-                     std::string propFileName );
+                    std::string propFileName = "" );
     EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
                     PropTreePtr properties, std::string basePath = "" );
+
+    void addEntity( EntityPtr entity, const int &id, const std::string &name = "" );
 
     EntityPtr getEntity( const int &id ) const;
     EntityPtr getEntity( const std::string &name ) const;
@@ -33,7 +38,5 @@ private:
 
     std::string mBasePath;
 };
-
-typedef boost::shared_ptr<EntityContainer> EntityContainerPtr;
 
 #endif // ENTITYCONTAINER_H

@@ -16,10 +16,13 @@ private:
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
     ISceneManagerPtr mSceneManager;
+    IGUIEnvironmentPtr mGUI;
 
     EventReceiverPtr mEventReceiver;
 
     BulletWorldPtr mBulletWorld;
+
+    LuaStatePtr mLua;
 };
 
 #endif // EXPLOREGAME_H

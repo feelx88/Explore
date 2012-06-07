@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include <engine/IrrlichtTools.h>
+#include <engine/LuaTools.h>
 #include <engine/EventReceiver.h>
 
 #include "ExploreMenu.h"
@@ -21,14 +22,13 @@ Explore::Explore()
       mGameState( EGS_MAIN_MENU ),
       mMenu( 0 )
 {
-}
-
-ExplorePtr Explore::create()
-{
-    ExplorePtr p( new Explore );
-    p->init();
-
-    return p;
+    LoggerSingleton::instance().addStream( *mLogFile );
+    loadConfig();
+    initIrrlicht();
+    initBullet();
+    initLua();
+    initMenu();
+    initGame();
 }
 
 Explore::~Explore()
@@ -76,6 +76,11 @@ BulletWorldPtr Explore::getBulletWorld() const
     return mBulletWorld;
 }
 
+LuaStatePtr Explore::getLuaVM() const
+{
+    return mLua;
+}
+
 void Explore::loadConfig()
 {
     try
@@ -92,16 +97,6 @@ void Explore::loadConfig()
 void Explore::saveConfig()
 {
     boost::property_tree::ini_parser::write_ini( "config.ini", *mConfig );
-}
-
-void Explore::init()
-{
-    LoggerSingleton::instance().addStream( *mLogFile );
-    loadConfig();
-    initIrrlicht();
-    initBullet();
-    initMenu();
-    initGame();
 }
 
 void Explore::initIrrlicht()
@@ -169,12 +164,17 @@ void Explore::initBullet()
     mBulletWorld->setDebugDrawer( mBulletDebugDrawer.get() );
 }
 
+void Explore::initLua()
+{
+    mLua = LuaTools::createLuaVM();
+}
+
 void Explore::initMenu()
 {
-    mMenu.reset( new ExploreMenu( shared_from_this() ) );
+    mMenu.reset( new ExploreMenu( this ) );
 }
 
 void Explore::initGame()
 {
-    mGame.reset( new ExploreGame( shared_from_this() ) );
+    mGame.reset( new ExploreGame( this ) );
 }

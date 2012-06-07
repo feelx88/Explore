@@ -6,12 +6,14 @@
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/Entity.h>
 #include <engine/EntityContainer.h>
+#include <engine/LuaScript.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 using namespace irr;
 using namespace core;
 using namespace video;
 using namespace scene;
+using namespace gui;
 
 #define EPATH std::string( "data/Entities/" )
 
@@ -21,7 +23,9 @@ ExploreGame::ExploreGame( ExplorePtr explore )
       mVideoDriver( mDevice->getVideoDriver() ),
       mSceneManager( mDevice->getSceneManager() ),
       mEventReceiver( explore->getEventReceiver() ),
-      mBulletWorld( explore->getBulletWorld() )
+      mGUI( mDevice->getGUIEnvironment() ),
+      mBulletWorld( explore->getBulletWorld() ),
+      mLua( explore->getLuaVM() )
 {
 }
 
@@ -54,6 +58,7 @@ E_GAME_STATE ExploreGame::run()
 
         mVideoDriver->beginScene( true, true, SColor( 255, 0, 0, 255 ) );
         mSceneManager->drawAll();
+        mGUI->drawAll();
 
         if( mEventReceiver->keyClicked( irr::KEY_ESCAPE ) )
         {

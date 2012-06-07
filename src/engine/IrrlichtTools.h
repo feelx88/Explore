@@ -20,7 +20,7 @@ namespace core
 {
 
 template <typename T>
-std::ostream &operator<<( std::ostream &stream,
+static std::ostream &operator<<( std::ostream &stream,
                           const irr::core::vector3d<T> &in )
 {
     stream << in.X << "," << in.Y << "," << in.Z;
@@ -28,7 +28,7 @@ std::ostream &operator<<( std::ostream &stream,
 }
 
 template <typename T>
-std::istream &operator>>( std::istream &stream,
+static std::istream &operator>>( std::istream &stream,
                           irr::core::vector3d<T> &out )
 {
     char tmp;
@@ -37,7 +37,7 @@ std::istream &operator>>( std::istream &stream,
 }
 
 template <typename T>
-std::ostream &operator<<( std::ostream &stream,
+static std::ostream &operator<<( std::ostream &stream,
                           const irr::core::vector2d<T> &in )
 {
     stream << in.X << "," << in.Y;
@@ -45,11 +45,36 @@ std::ostream &operator<<( std::ostream &stream,
 }
 
 template <typename T>
-std::istream &operator>>( std::istream &stream,
+static std::istream &operator>>( std::istream &stream,
                           irr::core::vector2d<T> &out )
 {
     char tmp;
     stream >> out.X >> tmp >> out.Y;
+    return stream;
+}
+
+}
+
+namespace video
+{
+
+static std::ostream &operator<<( std::ostream &stream,
+                          const irr::video::SColor &in )
+{
+    stream << in.getAlpha() << ","
+           << in.getRed() << ","
+           << in.getGreen() << ","
+           << in.getBlue();
+    return stream;
+}
+
+static std::istream &operator>>( std::istream &stream,
+                          irr::video::SColor &out )
+{
+    char tmp;
+    int a, r, g, b;
+    stream >> a >> tmp >> r >> tmp >> g >> tmp >> b;
+    out.set( a, r, g, b );
     return stream;
 }
 

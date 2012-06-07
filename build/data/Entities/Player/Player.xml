@@ -14,3 +14,6 @@
         <Mass>50</Mass>
     </Body>
 </Entity>
+<Crosshair>
+    <Color>128,0,255,0</Color>
+</Crosshair>

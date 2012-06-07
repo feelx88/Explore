@@ -90,6 +90,8 @@ bool EventReceiver::OnEvent( const SEvent &event )
             mMouseX = event.MouseInput.X;
             mMouseY = event.MouseInput.Y;
         }
+
+        mMouseWheelY = event.MouseInput.Wheel;
     }
 
     return false;
@@ -165,4 +167,10 @@ int EventReceiver::mouseMoveX() const
 int EventReceiver::mouseMoveY() const
 {
     return mMouseMoveY;
+}
+
+int EventReceiver::mouseWheelY()
+{
+    return mMouseWheelY;
+    mMouseWheelY = 0;
 }

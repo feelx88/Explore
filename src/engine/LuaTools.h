@@ -8,6 +8,7 @@ class LuaTools
 {
 public:
     static LuaStatePtr createLuaVM();
+    static void execString(LuaStatePtr lua, const std::string &script );
 };
 
 #endif // LUATOOLS_H

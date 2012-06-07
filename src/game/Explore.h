@@ -9,6 +9,12 @@
 #include <engine/LoggerSingleton.h>
 #include "GameState.h"
 
+class Player;
+class Item;
+
+typedef Player* PlayerPtr;
+typedef boost::shared_ptr<Item> ItemPtr;
+
 class ExploreMenu;
 class ExploreGame;
 
@@ -53,11 +59,11 @@ public:
 };
 
 
-class Explore : public boost::enable_shared_from_this<Explore>
+class Explore
 {
 public:
-    static ExplorePtr create();
 
+    Explore();
     ~Explore();
 
     int run();
@@ -82,16 +88,16 @@ public:
     IrrlichtDevicePtr getIrrlichtDevice() const;
     EventReceiverPtr getEventReceiver() const;
     BulletWorldPtr getBulletWorld() const;
+    LuaStatePtr getLuaVM() const;
 
 private:
-    Explore();
 
     void loadConfig();
     void saveConfig();
 
-    void init();
     void initIrrlicht();
     void initBullet();
+    void initLua();
     void initMenu();
     void initGame();
 
@@ -104,6 +110,8 @@ private:
     DispatcherPtr mDispatcher;
     BroadphasePtr mBroadphase;
     ConstraintSolverPtr mConstraintSolver;
+
+    LuaStatePtr mLua;
 
     PropTreePtr mConfig;
 

@@ -3,6 +3,8 @@ file(GLOB Explore_SRCS
     *.h
     */*.cpp
     */*.h
+    */*/*.cpp
+    */*/*.h
 )
 
 add_executable(Explore ${Explore_SRCS})

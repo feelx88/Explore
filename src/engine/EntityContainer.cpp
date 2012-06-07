@@ -5,8 +5,14 @@
 EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world,
                                  std::string propFileName )
     : mDevice( device ),
-      mBulletWorld( world )
+      mBulletWorld( world ),
+      mBasePath( "" )
 {
+    mProperties.reset( new boost::property_tree::ptree() );
+
+    if( propFileName.empty() )
+        return;
+
     if( propFileName.find( ".xml" ) == std::string::npos )
     {
         mBasePath = propFileName + "/";
@@ -18,7 +24,6 @@ EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world
         mBasePath = propFileName.substr( 0, propFileName.find_last_of( '/' ) ) + "/";
     }
 
-    mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml( propFileName, *mProperties );
     create();
 }
@@ -31,6 +36,12 @@ EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world
 {
     mBasePath = basePath;
     create();
+}
+
+void EntityContainer::addEntity( EntityPtr entity, const int &id, const std::string &name )
+{
+    mEntities.insert( std::make_pair( id, entity ) );
+    mIDs.insert( std::make_pair( name, id ) );
 }
 
 EntityPtr EntityContainer::getEntity( const int &id ) const
