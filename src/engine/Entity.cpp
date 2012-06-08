@@ -14,6 +14,10 @@ using namespace core;
 using namespace video;
 using namespace scene;
 
+EntitySet Entity::sEntitySet;
+BodyEntityMap Entity::sBodyEntityMap;
+NodeEntityMap Entity::sNodeEntityMap;
+
 Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
                 const PropTreePtr &properties, std::string basePath )
     : mProperties( properties ),
@@ -256,6 +260,20 @@ void Entity::internalCreateCollisionShape()
         return;
 }
 
+void Entity::globalInsertEntity( EntityPtr entity )
+{
+    sEntitySet.insert( entity );
+    sBodyEntityMap.insert( std::make_pair( entity->getRigidBody(), entity ) );
+    sNodeEntityMap.insert( std::make_pair( entity->getSceneNode(), entity ) );
+}
+
+void Entity::globalRemoveEntity( EntityPtr entity )
+{
+    sBodyEntityMap.erase( entity->getRigidBody() );
+    sNodeEntityMap.erase( entity->getSceneNode() );
+    sEntitySet.erase( entity );
+}
+
 Entity::~Entity()
 {
 }
@@ -346,6 +364,24 @@ boost::optional<vector3df> Entity::getRotation() const
     }
     else
         return boost::none;
+}
+
+boost::optional<EntityPtr> Entity::getEntity( RigidBodyPtr body )
+{
+    BodyEntityMap::iterator it = sBodyEntityMap.find( body );
+    if( it == sBodyEntityMap.end() )
+        return boost::none;
+    else
+        return it->second;
+}
+
+boost::optional<EntityPtr> Entity::getEntity( ISceneNodePtr node )
+{
+    NodeEntityMap::iterator it = sNodeEntityMap.find( node );
+    if( it == sNodeEntityMap.end() )
+        return boost::none;
+    else
+        return it->second;
 }
 
 void Entity::create()

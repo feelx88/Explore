@@ -30,6 +30,7 @@ typedef boost::shared_ptr<irr::IrrlichtDevice> IrrlichtDevicePtr;
 typedef irr::video::IVideoDriver* IVideoDriverPtr;
 typedef irr::scene::ISceneManager* ISceneManagerPtr;
 typedef irr::gui::IGUIEnvironment* IGUIEnvironmentPtr;
+typedef irr::scene::ISceneCollisionManager* ISceneCollisionManagerPtr;
 
 typedef irr::gui::IGUIElement* IGUIElementPtr;
 typedef irr::scene::ISceneNode* ISceneNodePtr;
