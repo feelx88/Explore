@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "IrrlichtTools.h"
 #include "BulletTools.h"
+#include "PathTools.h"
 #include "VectorConverter.h"
 #include "QuaternionConverter.h"
 #include "LoggerSingleton.h"
@@ -20,7 +21,7 @@ Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
       mSceneManager( device->getSceneManager() ),
       mBulletWorld( world )
 {
-    mBasePath = basePath;
+    mBasePath = PathTools::getAbsolutePath( basePath );
     create();
 }
 
@@ -31,17 +32,9 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
       mSceneManager( device->getSceneManager() ),
       mBulletWorld( world )
 {
-    std::string fileName = propFileName;
-    if( propFileName.find( ".xml" ) == std::string::npos )
-    {
-        mBasePath = fileName + "/";
-        std::string file = propFileName.substr( propFileName.find_last_of( '/' ) );
-        fileName = propFileName + file + ".xml";
-    }
-    else
-    {
-        mBasePath = propFileName.substr( 0, propFileName.find_last_of( '/' ) ) + "/";
-    }
+    std::string fileName =
+            PathTools::getAbsoluteFileNameFromFolder( propFileName, "xml" );
+    mBasePath = PathTools::getBasePathFromFile( fileName );
 
     _LOG( "Entity base path", mBasePath );
 
@@ -107,7 +100,7 @@ void Entity::internalCreateSceneNode()
     }
     else //File
     {
-        std::string fileName = mBasePath + mesh;
+        std::string fileName = PathTools::getAbsolutePath( mesh, mBasePath );
         mSceneNode = mSceneManager->addMeshSceneNode(
                     mSceneManager->getMesh( fileName.c_str() ), 0, id );
     }
@@ -127,7 +120,8 @@ void Entity::internalCreateSceneNode()
                  x != textures->end(); ++x )
             {
                 int layer = x->second.get( "<xmlattr>.Layer", 0 );
-                std::string fileName = mBasePath + x->second.data();
+                std::string fileName =
+                        PathTools::getAbsolutePath( x->second.data(), mBasePath );
 
                 ITexturePtr tex =
                         mDevice->getVideoDriver()->getTexture( fileName.c_str() );
@@ -173,6 +167,9 @@ void Entity::internalCreateRigidBody()
             VectorConverter::bt( mProperties->get( "Entity.Body.Position", nullVec ) );
     btVector3 rotation =
             VectorConverter::bt( mProperties->get( "Entity.Body.Rotation", nullVec ) );
+
+    rotation *= DEGTORAD;
+
     float mass = mProperties->get( "Entity.Body.Mass", float( 0.f ) );
     boost::optional<vector3df> inertia =
             mProperties->get_optional<vector3df>( "Entity.Body.Inertia" );
@@ -180,7 +177,7 @@ void Entity::internalCreateRigidBody()
     btTransform trans;
     trans.setIdentity();
     trans.setOrigin( position );
-    trans.setRotation( btQuaternion( rotation.getZ(), rotation.getY(), rotation.getX() ) );
+    trans.setRotation( btQuaternion( rotation.getY(), rotation.getX(), rotation.getZ() ) );
     mMotionState.reset( new btDefaultMotionState( trans ) );
 
     btRigidBody::btRigidBodyConstructionInfo info(
@@ -192,6 +189,8 @@ void Entity::internalCreateRigidBody()
         mCollisionShape->calculateLocalInertia( mass, info.m_localInertia );
 
     mRigidBody.reset( new btRigidBody( info ) );
+
+    mRigidBody->setFriction( mProperties->get( "Entity.Body.Friction", 0.5f ) );
 
     //TODO:Apply more settings like damping etc.
 
@@ -222,6 +221,31 @@ void Entity::internalCreateCollisionShape()
     {
         //Compound
         //TODO:Compound shape
+    }
+    else if( type=="Mesh" )
+    {
+        btTriangleMesh *collisionMesh = new btTriangleMesh();
+
+        IMesh *mesh = static_cast<IMeshSceneNode*>( mSceneNode )->getMesh();
+
+        for( unsigned int x = 0; x < mesh->getMeshBufferCount(); ++x )
+        {
+            scene::IMeshBuffer *buffer = mesh->getMeshBuffer( x );
+
+            unsigned short *i = buffer->getIndices();
+
+            video::S3DVertex *v = static_cast<video::S3DVertex*>( buffer->getVertices() );
+
+            for( unsigned int y = 0; y < buffer->getIndexCount(); y += 3 )
+            {
+                btVector3 p0( v[i[y + 0]].Pos.X, v[i[y + 0]].Pos.Y, v[i[y + 0]].Pos.Z );
+                btVector3 p1( v[i[y + 1]].Pos.X, v[i[y + 1]].Pos.Y, v[i[y + 1]].Pos.Z );
+                btVector3 p2( v[i[y + 2]].Pos.X, v[i[y + 2]].Pos.Y, v[i[y + 2]].Pos.Z );
+                collisionMesh->addTriangle( p0, p1, p2 );
+            }
+        }
+
+        mCollisionShape.reset( new btBvhTriangleMeshShape( collisionMesh, true ) );
     }
     else if( type == "File" )
     {
@@ -331,10 +355,8 @@ void Entity::create()
 
 void Entity::preCreate()
 {
-    _LOG( "Empty Entity::preCreate()-stub" );
 }
 
 void Entity::postCreate()
 {
-    _LOG( "Empty Entity::postCreate()-stub" );
 }

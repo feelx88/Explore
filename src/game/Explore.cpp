@@ -143,9 +143,15 @@ void Explore::initIrrlicht()
     mVideoDriver->getMaterial2D().ZBuffer = false;
 
     irr::gui::IGUISkin *skin = mGUI->getSkin();
+
     skin->setFont( mGUI->getFont(
                        readConfigValue<std::string>( "Engine.fontFile", "data/bitstream_vera_sans_12.xml" ).c_str() ) );
     mGUI->setSkin( skin );
+
+    mDevice->getSceneManager()->getParameters()->setAttribute(
+                irr::scene::OBJ_TEXTURE_PATH,
+                PathTools::getAbsolutePath(
+                    mConfig->get<std::string>( "Paths.TexturePath", "" ) ).c_str() );
 
     saveConfig();
 }

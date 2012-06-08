@@ -1,4 +1,5 @@
 #include "Item.h"
+#include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 using namespace irr;
@@ -14,8 +15,12 @@ Item::Item(ExplorePtr explore, Player *owner, std::string fileName )
     if( fileName.empty() )
         return;
 
+    fileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
+
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
+
+    mBasePath = PathTools::getBasePathFromFile( fileName );
 
     create();
     loadIcon();
@@ -44,7 +49,9 @@ void Item::create()
 
 void Item::loadIcon()
 {
-    std::string iconFileName = mProperties->get( "Item.Icon", "data/Textures/defaultIcon.png" );
+    std::string iconFileName = PathTools::getAbsolutePath( "defaultIcon.png" );
+    iconFileName = mProperties->get( "Item.Icon", iconFileName );
+    iconFileName = PathTools::getAbsolutePath( iconFileName, mBasePath );
 
     mIcon = mDevice->getVideoDriver()->getTexture( iconFileName.c_str() );
 }

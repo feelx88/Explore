@@ -1,20 +1,23 @@
 <Item>
-    <Icon>data/Items/SimpleGun/icon.png</Icon>
+    <Icon>icon.png</Icon>
 </Item>
 
 <Entity Name="Bullet">
     <Node>
         <Mesh Type="Primitive">Sphere</Mesh>
-        <Scale>0.5,0.5,0.5</Scale>
+        <Scale>0.2,0.2,0.2</Scale>
         <Material>
-            <Color>255,255,0,0</Color>
+            <Color>100,255,0,0</Color>
         </Material>
+        <Textures>
+            <Texture>defaultIcon.png</Texture>
+        </Textures>
     </Node>
     <Body>
         <Shape Type="Primitive">
             <Child>
                 <Type>Sphere</Type>
-                <Size>0.5</Size>
+                <Size>1</Size>
             </Child>
         </Shape>
         <Mass>1</Mass>

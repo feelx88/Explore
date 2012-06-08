@@ -16,9 +16,9 @@ class EntityContainer
 {
 public:
     EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
-                    std::string propFileName = "" );
+                    const std::string &propFileName = "" );
     EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
-                    PropTreePtr properties, std::string basePath = "" );
+                    PropTreePtr properties, const std::string &basePath = "" );
 
     void addEntity( EntityPtr entity, const int &id, const std::string &name = "" );
 

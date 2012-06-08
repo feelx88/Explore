@@ -33,6 +33,7 @@ protected:
     LuaStatePtr mLua;
 
     PropTreePtr mProperties;
+    std::string mBasePath;
     EntityContainerPtr mEntities;
 
     PlayerPtr mOwner;

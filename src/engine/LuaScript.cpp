@@ -1,5 +1,6 @@
 #include "LuaScript.h"
 #include "LuaTools.h"
+#include "PathTools.h"
 #include <fstream>
 
 LuaScript::LuaScript( LuaStatePtr lua, const std::string &script, bool isFile )
@@ -8,7 +9,8 @@ LuaScript::LuaScript( LuaStatePtr lua, const std::string &script, bool isFile )
 {
     if( isFile )
     {
-        std::ifstream file( script.c_str() );
+        std::string fileName = PathTools::getAbsolutePath( script );
+        std::ifstream file( fileName.c_str() );
 
         while( file.good() )
         {

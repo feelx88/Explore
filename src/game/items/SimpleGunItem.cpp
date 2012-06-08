@@ -1,5 +1,6 @@
 #include "SimpleGunItem.h"
 #include "../Player.h"
+#include <engine/PathTools.h>
 #include <engine/VectorConverter.h>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -11,14 +12,16 @@ SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner )
     : Item( explore, owner, "" ),
       mCurBullet( 0 )
 {
+    std::string fileName = PathTools::getAbsoluteFileNameFromFolder( "SimpleGun", "xml" );
+    mBasePath = PathTools::getBasePathFromFile( fileName );
+
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
-                "data/Items/SimpleGun/SimpleGun.xml", *mProperties );
+                fileName, *mProperties );
 
     for( int x = 0; x < 10; ++x )
     {
-        mBullets[x].reset( new Entity( mDevice, mBulletWorld,
-                                       "data/Items/SimpleGun/SimpleGun.xml", "Bullet" ) );
+        mBullets[x].reset( new Entity( mDevice, mBulletWorld, fileName, "Bullet" ) );
     }
 
     dimension2du winSize =

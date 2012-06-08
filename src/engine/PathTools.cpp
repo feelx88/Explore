@@ -1,20 +1,57 @@
 #include "PathTools.h"
 
+using namespace boost;
+using namespace filesystem3;
+
 PathVector PathTools::sPaths;
 
-std::string PathTools::getAbsolutePath( std::string fileName )
+std::string PathTools::getAbsolutePath( const std::string &fileName,
+                                        const std::string &additionalBasePath )
 {
-    boost::filesystem3::path file( fileName );
+    path file( fileName );
+
+    if( !additionalBasePath.empty() )
+    {
+        path x( additionalBasePath );
+        if( exists( x / file ) )
+            return absolute( x / file ).string();
+    }
+
+    if( exists( file ) )
+        return absolute( file ).string();
+
     for( PathVector::iterator x = sPaths.begin(); x != sPaths.end(); ++x )
     {
-        if( boost::filesystem3::exists( *x / file ) )
-            return boost::filesystem3::absolute( *x / file ).string();
+        if( exists( *x / file ) )
+            return absolute( *x / file ).string();
     }
 
     return fileName;
 }
 
-void PathTools::addPath( std::string path )
+void PathTools::addPath( const std::string &pathName )
 {
-    sPaths.push_back( boost::filesystem3::path( path ) );
+    sPaths.push_back( path( pathName ) );
+}
+
+std::string PathTools::getAbsoluteFileNameFromFolder( const std::string &folder,
+                                                      const std::string &extension )
+{
+    path p( getAbsolutePath( folder ) );
+    if( is_directory( p ) )
+    {
+        p /= p.stem();
+        p.replace_extension( std::string( "." ) + extension );
+    }
+
+    return p.string();
+}
+
+std::string PathTools::getBasePathFromFile( const std::string &fileName )
+{
+    path f( fileName );
+    if( is_directory( f ) )
+        return fileName;
+    else
+        return f.parent_path().string();
 }

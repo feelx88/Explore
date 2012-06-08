@@ -1,9 +1,10 @@
 #include "EntityContainer.h"
 #include "LoggerSingleton.h"
+#include "PathTools.h"
 #include <boost/property_tree/xml_parser.hpp>
 
 EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world,
-                                 std::string propFileName )
+                                  const std::string &propFileName )
     : mDevice( device ),
       mBulletWorld( world ),
       mBasePath( "" )
@@ -13,28 +14,20 @@ EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world
     if( propFileName.empty() )
         return;
 
-    if( propFileName.find( ".xml" ) == std::string::npos )
-    {
-        mBasePath = propFileName + "/";
-        std::string file = propFileName.substr( propFileName.find_last_of( '/' ) );
-        propFileName = propFileName + file + ".xml";
-    }
-    else
-    {
-        mBasePath = propFileName.substr( 0, propFileName.find_last_of( '/' ) ) + "/";
-    }
+    std::string fileName = PathTools::getAbsoluteFileNameFromFolder( propFileName, "xml" );
+    mBasePath = PathTools::getBasePathFromFile( fileName );
 
-    boost::property_tree::xml_parser::read_xml( propFileName, *mProperties );
+    boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
     create();
 }
 
 EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world,
-                                  PropTreePtr properties, std::string basePath )
+                                  PropTreePtr properties, const std::string &basePath )
     : mDevice( device ),
       mBulletWorld( world ),
       mProperties( properties )
 {
-    mBasePath = basePath;
+    mBasePath = PathTools::getAbsolutePath( basePath );
     create();
 }
 

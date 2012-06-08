@@ -43,21 +43,25 @@ E_GAME_STATE ExploreGame::run()
 
     EntityContainerPtr level( new EntityContainer(
                                   mDevice, mBulletWorld,
-                                  "data/Maps/TestMap1" ) );
+                                  PathTools::getAbsolutePath( "TestMap1" ) ) );
+
+    vector3df spawnPos =
+            level->getProperties()->get( "Spawn.Position", vector3df() );
 
     Player p( mExplore );
-    p.getEntity()->setPosition(
-                level->getProperties()->get( "Spawn.Position", vector3df() ) );
+    p.getEntity()->setPosition( spawnPos );
+
+    mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
     btClock clock;
 
     while( running && mDevice->run() )
     {
         mBulletWorld->stepSimulation(
-                    float( clock.getTimeMilliseconds() ) / 1000.f, 100, 1.f / 120.f );
+                    float( clock.getTimeMilliseconds() ) / 1000.f, 50 );
         clock.reset();
 
-        mVideoDriver->beginScene( true, true, SColor( 255, 0, 0, 255 ) );
+        mVideoDriver->beginScene( true, true, SColor( 255, 0, 0, 0 ) );
         mSceneManager->drawAll();
         mGUI->drawAll();
 

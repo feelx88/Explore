@@ -10,6 +10,13 @@ enum E_GAME_STATE
     EGS_GAME
 };
 
+enum E_ITEM_ACTION
+{
+    EIA_FIRST_ACTION = 0,
+    EIA_SECOND_ACTION,
+    EIA_USE_ACTION
+};
+
 class Explore;
 typedef Explore* ExplorePtr;
 

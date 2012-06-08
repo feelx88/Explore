@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <engine/IrrlichtTools.h>
 #include <engine/EventReceiver.h>
+#include <engine/PathTools.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/VectorConverter.h>
@@ -23,7 +24,7 @@ Player::Player( ExplorePtr explore )
 {
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
-                "data/Entities/Player/Player.xml", *mProperties );
+                PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ), *mProperties );
     mEntity.reset( new Entity( mDevice, mBulletWorld, mProperties ) );
     mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f );
@@ -112,13 +113,13 @@ void Player::processControls()
     vector3df vel( 0.f, 0.f, 0.f );
 
     if( mEventReceiver->keyPressed( KEY_KEY_W ) )
-        vel.Z += 5;
+        vel.Z += 10;
     if( mEventReceiver->keyPressed( KEY_KEY_S ) )
-        vel.Z -= 5;
+        vel.Z -= 10;
     if( mEventReceiver->keyPressed( KEY_KEY_A ) )
-        vel.X -= 5;
+        vel.X -= 10;
     if( mEventReceiver->keyPressed( KEY_KEY_D ) )
-        vel.X += 5;
+        vel.X += 10;
 
     vel = rotateToDirection( vel );
     vel.Y = mEntity->getRigidBody()->getLinearVelocity().getY();
@@ -131,9 +132,9 @@ void Player::processControls()
     if( mActiveItem != -1 )
     {
         if( mEventReceiver->mouseClicked( 0 ) )
-            mInventory.at( mActiveItem )->startAction( 0 );
+            mInventory.at( mActiveItem )->startAction( EIA_FIRST_ACTION );
         if( mEventReceiver->mouseClicked( 1 ) )
-            mInventory.at( mActiveItem )->startAction( 1 );
+            mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
     }
 }
 

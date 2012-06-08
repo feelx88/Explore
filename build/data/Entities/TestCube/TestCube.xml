@@ -1,6 +1,7 @@
 <Entity Name="Crate">
     <Node>
         <Mesh Type="Primitive">Box</Mesh>
+        <Scale>2,2,2</Scale>
         <Textures>
             <File>crate.jpg</File>
         </Textures>
@@ -9,9 +10,9 @@
         <Shape Type="Primitive">
             <Child>
                 <Type>Box</Type>
-                <Size>1,1,1</Size>
+                <Size>2,2,2</Size>
             </Child>
         </Shape>
-        <Mass>10</Mass>
+        <Mass>30</Mass>
     </Body>
 </Entity>

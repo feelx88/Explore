@@ -8,10 +8,10 @@
         <Shape Type="Primitive">
             <Child>
                 <Type>Sphere</Type>
-                <Size>1</Size>
+                <Size>2</Size>
             </Child>
         </Shape>
-        <Mass>50</Mass>
+        <Mass>100</Mass>
     </Body>
 </Entity>
 <Crosshair>
