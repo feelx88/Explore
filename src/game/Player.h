@@ -58,13 +58,13 @@ private:
 
     EntityPtr mEntity;
     ItemVector mInventory;
-    int mActiveItem;
+    int mActiveItem, mNumItems;
 
     int mCrossX, mCrossY;
     irr::video::SColor mCrossColor;
 
     IGUIElementPtr mItemWin;
-    irr::gui::IGUIImage *mItemIcons[10];
+    irr::gui::IGUIButton *mItemIcons[10];
 };
 
 #endif // PLAYER_H

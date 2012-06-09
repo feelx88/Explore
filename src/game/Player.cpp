@@ -96,6 +96,7 @@ void Player::addItems()
     mInventory.push_back( ItemPtr( new SimpleGunItem( mExplore, this ) ) );
     mInventory.push_back( ItemPtr( new SimpleForceGunItem( mExplore, this ) ) );
 
+    mNumItems = mInventory.size();
     mActiveItem = mInventory.empty() ? -1 : 0;
 
     if( mActiveItem >= 0 )
@@ -116,17 +117,17 @@ void Player::createGUI()
 
     for( int x = 0; x < mInventory.size(); ++x )
     {
-        IGUIImage *img = mDevice->getGUIEnvironment()->addImage(
+        IGUIButton *img = mDevice->getGUIEnvironment()->addButton(
                     recti( x * 32 + 1, 1, ( x + 1 ) * 32 + 1, 33 ), win );
         img->setImage( mInventory.at( x )->getIcon() );
         img->setUseAlphaChannel( true );
 
-        img->setColor( SColor( 100, 0, 0, 0 ) );
+        img->setDrawBorder( false );
 
         mItemIcons[x] = img;
     }
 
-    mItemIcons[mActiveItem]->setColor( SColor( 255, 255, 255, 255 ) );
+    mItemIcons[mActiveItem]->setDrawBorder( true );
 
     mItemWin = win;
 }
@@ -159,26 +160,40 @@ void Player::processControls()
         if( mEventReceiver->keyClicked( KEY_KEY_E ) )
         {
             mInventory.at( mActiveItem )->setGUIVisible( false );
-            mItemIcons[mActiveItem]->setColor( SColor( 100, 0, 0, 0 ) );
+            mItemIcons[mActiveItem]->setDrawBorder( false );
 
             ++mActiveItem;
             if( mActiveItem >= mInventory.size() )
                 mActiveItem = 0;
 
             mInventory.at( mActiveItem )->setGUIVisible( true );
-            mItemIcons[mActiveItem]->setColor( SColor( 255, 255, 255, 255 ) );
+            mItemIcons[mActiveItem]->setDrawBorder( true );
         }
         if( mEventReceiver->keyClicked( KEY_KEY_Q ) )
         {
             mInventory.at( mActiveItem )->setGUIVisible( false );
-            mItemIcons[mActiveItem]->setColor( SColor( 100, 0, 0, 0 ) );
+            mItemIcons[mActiveItem]->setDrawBorder( false );
 
             --mActiveItem;
             if( mActiveItem < 0 )
                 mActiveItem = mInventory.size() - 1;
 
             mInventory.at( mActiveItem )->setGUIVisible( true );
-            mItemIcons[mActiveItem]->setColor( SColor( 255, 255, 255, 255 ) );
+            mItemIcons[mActiveItem]->setDrawBorder( true );
+        }
+    }
+
+    for( int x = 0; x < mNumItems; ++x )
+    {
+        if( mItemIcons[x]->isPressed() )
+        {
+            mInventory.at( mActiveItem )->setGUIVisible( false );
+            mItemIcons[mActiveItem]->setDrawBorder( false );
+
+            mActiveItem = x;
+
+            mInventory.at( mActiveItem )->setGUIVisible( true );
+            mItemIcons[mActiveItem]->setDrawBorder( true );
         }
     }
 

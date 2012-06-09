@@ -149,6 +149,12 @@ void EventReceiver::lockMouse( bool lock, bool changeVisibility )
 {
     mMouseLocked = lock;
 
+    for( int x = 0; x < 3; ++x )
+    {
+        mMouseClicked[x] = false;
+        mMousePressed[x] = false;
+    }
+
     if( changeVisibility )
         mDevice->getCursorControl()->setVisible( !lock );
 
