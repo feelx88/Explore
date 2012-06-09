@@ -108,7 +108,8 @@ void Player::addItems()
 
 void Player::createGUI()
 {
-    IGUIWindow *win = mDevice->getGUIEnvironment()->addWindow( recti( 0, 0, 10 * 32, 32 ) );
+    IGUIWindow *win = mDevice->getGUIEnvironment()->addWindow(
+                recti( 0, 0, 10 * 32 + 2, 32 + 2 ) );
     win->setDrawTitlebar( false );
     win->getCloseButton()->remove();
     win->move( vector2di( 10 * 32, 0 ) );
@@ -116,7 +117,7 @@ void Player::createGUI()
     for( int x = 0; x < mInventory.size(); ++x )
     {
         IGUIImage *img = mDevice->getGUIEnvironment()->addImage(
-                    recti( x * 32, 0, ( x + 1 ) * 32, 32 ), win );
+                    recti( x * 32 + 1, 1, ( x + 1 ) * 32 + 1, 33 ), win );
         img->setImage( mInventory.at( x )->getIcon() );
         img->setUseAlphaChannel( true );
 
@@ -132,43 +133,24 @@ void Player::createGUI()
 
 void Player::processControls()
 {
-    vector3df rot( mEntity->getSceneNode()->getRotation() );
-    rot.Z = 0.f;
-    rot.X += float( mEventReceiver->mouseMoveY() ) / 10.f;
-    rot.Y += float( mEventReceiver->mouseMoveX() ) / 10.f;
-
-    if( rot.X < -89.f )
-        rot.X = -89.f;
-    if( rot.X > +89.f )
-        rot.X = +89.f;
-
-    mEntity->getSceneNode()->setRotation( rot );
-
-    vector3df target = rotateToDirection();
-
-    mCamera->setTarget( *( mEntity->getPosition() ) + target * 10000.f );
-
-    vector3df vel( 0.f, 0.f, 0.f );
-
-    if( mEventReceiver->keyPressed( KEY_KEY_W ) )
-        vel.Z += 10;
-    if( mEventReceiver->keyPressed( KEY_KEY_S ) )
-        vel.Z -= 10;
-    if( mEventReceiver->keyPressed( KEY_KEY_A ) )
-        vel.X -= 10;
-    if( mEventReceiver->keyPressed( KEY_KEY_D ) )
-        vel.X += 10;
-
-    vel = rotateToDirection( vel );
-    vel.Y = mEntity->getRigidBody()->getLinearVelocity().getY();
-
-    if( mEventReceiver->keyPressed( KEY_SPACE ) && iszero( vel.Y ) )
-        vel.Y = 5.f;
-
-    mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
-
-    if( mActiveItem != -1 )
+    if( mEventReceiver->isMouseLocked() )
     {
+        vector3df rot( mEntity->getSceneNode()->getRotation() );
+        rot.Z = 0.f;
+        rot.X += float( mEventReceiver->mouseMoveY() ) / 10.f;
+        rot.Y += float( mEventReceiver->mouseMoveX() ) / 10.f;
+
+        if( rot.X < -89.f )
+            rot.X = -89.f;
+        if( rot.X > +89.f )
+            rot.X = +89.f;
+
+        mEntity->getSceneNode()->setRotation( rot );
+
+        vector3df target = rotateToDirection();
+
+        mCamera->setTarget( *( mEntity->getPosition() ) + target * 10000.f );
+
         if( mEventReceiver->mouseClicked( 0 ) )
             mInventory.at( mActiveItem )->startAction( EIA_FIRST_ACTION );
         if( mEventReceiver->mouseClicked( 1 ) )
@@ -199,6 +181,28 @@ void Player::processControls()
             mItemIcons[mActiveItem]->setColor( SColor( 255, 255, 255, 255 ) );
         }
     }
+
+    vector3df vel( 0.f, 0.f, 0.f );
+
+    if( mEventReceiver->keyPressed( KEY_KEY_W ) )
+        vel.Z += 10;
+    if( mEventReceiver->keyPressed( KEY_KEY_S ) )
+        vel.Z -= 10;
+    if( mEventReceiver->keyPressed( KEY_KEY_A ) )
+        vel.X -= 10;
+    if( mEventReceiver->keyPressed( KEY_KEY_D ) )
+        vel.X += 10;
+
+    vel = rotateToDirection( vel );
+    vel.Y = mEntity->getRigidBody()->getLinearVelocity().getY();
+
+    if( mEventReceiver->keyPressed( KEY_SPACE ) && iszero( vel.Y ) )
+        vel.Y = 5.f;
+
+    mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
+
+    if( mEventReceiver->keyClicked( KEY_TAB ) )
+        mEventReceiver->lockMouse( !mEventReceiver->isMouseLocked() );
 }
 
 void Player::drawCrosshair()

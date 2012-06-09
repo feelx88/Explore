@@ -1,5 +1,5 @@
 <Item>
     <Icon>icon.png</Icon>
     <RayDistance>100</RayDistance>
-    <ForceMultiplicator>10</ForceMultiplicator>
+    <ForceMultiplicator>1</ForceMultiplicator>
 </Item>
