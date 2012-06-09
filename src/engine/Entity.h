@@ -8,9 +8,9 @@
 class Entity;
 typedef boost::shared_ptr<Entity> EntityPtr;
 
-typedef boost::unordered::unordered_map<RigidBodyPtr, EntityPtr> BodyEntityMap;
-typedef boost::unordered::unordered_map<ISceneNodePtr, EntityPtr> NodeEntityMap;
-typedef boost::unordered::unordered_set<EntityPtr> EntitySet;
+typedef boost::unordered::unordered_map<btRigidBody*, Entity*> BodyEntityMap;
+typedef boost::unordered::unordered_map<irr::scene::ISceneNode*, Entity*> NodeEntityMap;
+typedef boost::unordered::unordered_set<Entity*> EntitySet;
 
 class Entity
 {
@@ -34,8 +34,8 @@ public:
     void setRotation( const irr::core::vector3df &rot );
     boost::optional<irr::core::vector3df> getRotation() const;
 
-    static boost::optional<EntityPtr> getEntity( RigidBodyPtr body );
-    static boost::optional<EntityPtr> getEntity( ISceneNodePtr node );
+    static boost::optional<Entity*> getEntity( btRigidBody *body );
+    static boost::optional<Entity*> getEntity( irr::scene::ISceneNode *node );
 
 protected:
 
@@ -62,8 +62,8 @@ private:
     void internalCreateRigidBody();
     void internalCreateCollisionShape();
 
-    static void globalInsertEntity( EntityPtr entity );
-    static void globalRemoveEntity( EntityPtr entity );
+    static void globalInsertEntity( Entity *entity );
+    static void globalRemoveEntity( Entity *entity );
 
     static EntitySet sEntitySet;
     static BodyEntityMap sBodyEntityMap;

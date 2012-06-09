@@ -7,10 +7,10 @@
 class EntityTools
 {
 public:
-    static boost::optional<EntityPtr> getFirstEntityInRay( IrrlichtDevicePtr device,
+    static boost::optional<Entity*> getFirstEntityInRay( IrrlichtDevicePtr device,
                                                            const irr::core::line3df &ray,
                                                            irr::core::vector3df &outPoint );
-    static boost::optional<EntityPtr> getFirstEntityInRay( BulletWorldPtr world,
+    static boost::optional<Entity*> getFirstEntityInRay( BulletWorldPtr world,
                                                            const irr::core::line3df &ray,
                                                            irr::core::vector3df &outPoint );
 };

@@ -260,16 +260,16 @@ void Entity::internalCreateCollisionShape()
         return;
 }
 
-void Entity::globalInsertEntity( EntityPtr entity )
+void Entity::globalInsertEntity( Entity *entity )
 {
     sEntitySet.insert( entity );
-    sBodyEntityMap.insert( std::make_pair( entity->getRigidBody(), entity ) );
+    sBodyEntityMap.insert( std::make_pair( entity->getRigidBody().get(), entity ) );
     sNodeEntityMap.insert( std::make_pair( entity->getSceneNode(), entity ) );
 }
 
-void Entity::globalRemoveEntity( EntityPtr entity )
+void Entity::globalRemoveEntity( Entity *entity )
 {
-    sBodyEntityMap.erase( entity->getRigidBody() );
+    sBodyEntityMap.erase( entity->getRigidBody().get() );
     sNodeEntityMap.erase( entity->getSceneNode() );
     sEntitySet.erase( entity );
 }
@@ -366,16 +366,17 @@ boost::optional<vector3df> Entity::getRotation() const
         return boost::none;
 }
 
-boost::optional<EntityPtr> Entity::getEntity( RigidBodyPtr body )
+boost::optional<Entity*> Entity::getEntity( btRigidBody *body )
 {
     BodyEntityMap::iterator it = sBodyEntityMap.find( body );
+
     if( it == sBodyEntityMap.end() )
         return boost::none;
     else
         return it->second;
 }
 
-boost::optional<EntityPtr> Entity::getEntity( ISceneNodePtr node )
+boost::optional<Entity*> Entity::getEntity( ISceneNode *node )
 {
     NodeEntityMap::iterator it = sNodeEntityMap.find( node );
     if( it == sNodeEntityMap.end() )
@@ -387,6 +388,8 @@ boost::optional<EntityPtr> Entity::getEntity( ISceneNodePtr node )
 void Entity::create()
 {
     internalCreate();
+
+    globalInsertEntity( this );
 }
 
 void Entity::preCreate()

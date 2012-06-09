@@ -1,5 +1,6 @@
 #include "Player.h"
 #include <engine/IrrlichtTools.h>
+#include <engine/EntityTools.h>
 #include <engine/EventReceiver.h>
 #include <engine/PathTools.h>
 #include <engine/LoggerSingleton.h>
@@ -52,9 +53,10 @@ Player::Player( ExplorePtr explore )
 
     for( int x = 0; x < mInventory.size(); ++x )
     {
-        mDevice->getGUIEnvironment()->addImage(
-                    recti( x * 32, 0, ( x + 1 ) * 32, 32 ), win )
-                ->setImage( mInventory.at( x )->getIcon() );
+        IGUIImage *img = mDevice->getGUIEnvironment()->addImage(
+                    recti( x * 32, 0, ( x + 1 ) * 32, 32 ), win );
+        img->setImage( mInventory.at( x )->getIcon() );
+        img->setUseAlphaChannel( true );
     }
 
     mItemWin = win;
@@ -135,6 +137,24 @@ void Player::processControls()
             mInventory.at( mActiveItem )->startAction( EIA_FIRST_ACTION );
         if( mEventReceiver->mouseClicked( 1 ) )
             mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
+    }
+
+    if( mEventReceiver->keyClicked( KEY_KEY_Q ) )
+    {
+        line3df ray;
+        ray.start = *( mEntity->getPosition() ) + vector3df( 0, 1, 0 );
+        ray.end = ray.start + rotateToDirection( vector3df( 0.f, 0.f, 1000.f ) );
+        vector3df out;
+        boost::optional<Entity*> e =
+                EntityTools::getFirstEntityInRay( mBulletWorld, ray, out );
+
+        if( e )
+        {
+            ( *e )->getRigidBody()->activate();
+            vector3df pos = *( *e )->getPosition();
+            ( *e )->getRigidBody()->applyImpulse( VectorConverter::bt( ray.end ),
+                                                  VectorConverter::bt( out - pos ) );
+        }
     }
 }
 
