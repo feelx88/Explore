@@ -123,8 +123,13 @@ void Entity::internalCreateSceneNode()
     else //File
     {
         std::string fileName = PathTools::getAbsolutePath( mesh, mBasePath );
-        mSceneNode = mSceneManager->addMeshSceneNode(
-                    mSceneManager->getMesh( fileName.c_str() ), 0, id );
+
+        if( type == "Octree" )
+            mSceneNode = mSceneManager->addOctreeSceneNode(
+                        mSceneManager->getMesh( fileName.c_str() ), 0, id );
+        else
+            mSceneNode = mSceneManager->addMeshSceneNode(
+                        mSceneManager->getMesh( fileName.c_str() ), 0, id );
     }
 
     if( mSceneNode )
