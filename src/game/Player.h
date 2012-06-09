@@ -43,6 +43,8 @@ public:
 
 private:
 
+    void addItems();
+    void createGUI();
     void processControls();
     void drawCrosshair();
 
@@ -62,6 +64,7 @@ private:
     irr::video::SColor mCrossColor;
 
     IGUIElementPtr mItemWin;
+    irr::gui::IGUIImage *mItemIcons[10];
 };
 
 #endif // PLAYER_H

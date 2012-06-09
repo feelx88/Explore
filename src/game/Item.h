@@ -38,8 +38,10 @@ public:
 
     virtual void startAction( int actionID );
 
-    virtual IGUIElementPtr getGUIElement() const;
-    virtual ITexturePtr getIcon() const;
+    void setGUIVisible( bool visible );
+
+    IGUIElementPtr getGUIElement() const;
+    ITexturePtr getIcon() const;
 
 protected:
     void create();
@@ -59,6 +61,7 @@ protected:
     ScriptVector mScripts;
 
     ITexturePtr mIcon;
+    IGUIElementPtr mGUI;
 };
 
 #endif // ITEM_H

@@ -27,6 +27,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include "items/SimpleGunItem.h"
+#include "items/SimpleForceGunItem.h"
 
 using namespace irr;
 using namespace core;
@@ -43,7 +44,8 @@ Player::Player( ExplorePtr explore )
 {
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
-                PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ), *mProperties );
+                PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ),
+                *mProperties );
     mEntity.reset( new Entity( mDevice, mBulletWorld, mProperties ) );
     mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f );
@@ -53,31 +55,8 @@ Player::Player( ExplorePtr explore )
     mCrossY = mDevice->getVideoDriver()->getScreenSize().Height / 2;
     mCrossColor = mProperties->get( "Crosshair.Color", SColor( 255, 0, 255, 0 ) );
 
-    mInventory.push_back( ItemPtr( new SimpleGunItem( mExplore, this ) ) );
-
-    mActiveItem = mInventory.empty() ? -1 : 0;
-
-    if( mActiveItem >= 0 )
-    {
-        IGUIElementPtr gui = mInventory.at( mActiveItem )->getGUIElement();
-        if( gui )
-            gui->setVisible( true );
-    }
-
-    IGUIWindow *win = mDevice->getGUIEnvironment()->addWindow( recti( 0, 0, 10 * 32, 32 ) );
-    win->setDrawTitlebar( false );
-    win->getCloseButton()->remove();
-    win->move( vector2di( 10 * 32, 0 ) );
-
-    for( int x = 0; x < mInventory.size(); ++x )
-    {
-        IGUIImage *img = mDevice->getGUIEnvironment()->addImage(
-                    recti( x * 32, 0, ( x + 1 ) * 32, 32 ), win );
-        img->setImage( mInventory.at( x )->getIcon() );
-        img->setUseAlphaChannel( true );
-    }
-
-    mItemWin = win;
+    addItems();
+    createGUI();
 }
 
 Player::~Player()
@@ -110,6 +89,45 @@ vector3df Player::rotateToDirection( vector3df dir ) const
     m.rotateVect( dir );
 
     return dir;
+}
+
+void Player::addItems()
+{
+    mInventory.push_back( ItemPtr( new SimpleGunItem( mExplore, this ) ) );
+    mInventory.push_back( ItemPtr( new SimpleForceGunItem( mExplore, this ) ) );
+
+    mActiveItem = mInventory.empty() ? -1 : 0;
+
+    if( mActiveItem >= 0 )
+    {
+        IGUIElementPtr gui = mInventory.at( mActiveItem )->getGUIElement();
+        if( gui )
+            gui->setVisible( true );
+    }
+}
+
+void Player::createGUI()
+{
+    IGUIWindow *win = mDevice->getGUIEnvironment()->addWindow( recti( 0, 0, 10 * 32, 32 ) );
+    win->setDrawTitlebar( false );
+    win->getCloseButton()->remove();
+    win->move( vector2di( 10 * 32, 0 ) );
+
+    for( int x = 0; x < mInventory.size(); ++x )
+    {
+        IGUIImage *img = mDevice->getGUIEnvironment()->addImage(
+                    recti( x * 32, 0, ( x + 1 ) * 32, 32 ), win );
+        img->setImage( mInventory.at( x )->getIcon() );
+        img->setUseAlphaChannel( true );
+
+        img->setColor( SColor( 100, 0, 0, 0 ) );
+
+        mItemIcons[x] = img;
+    }
+
+    mItemIcons[mActiveItem]->setColor( SColor( 255, 255, 255, 255 ) );
+
+    mItemWin = win;
 }
 
 void Player::processControls()
@@ -155,23 +173,30 @@ void Player::processControls()
             mInventory.at( mActiveItem )->startAction( EIA_FIRST_ACTION );
         if( mEventReceiver->mouseClicked( 1 ) )
             mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
-    }
 
-    if( mEventReceiver->keyClicked( KEY_KEY_Q ) )
-    {
-        line3df ray;
-        ray.start = *( mEntity->getPosition() ) + vector3df( 0, 1, 0 );
-        ray.end = ray.start + rotateToDirection( vector3df( 0.f, 0.f, 1000.f ) );
-        vector3df out;
-        boost::optional<Entity*> e =
-                EntityTools::getFirstEntityInRay( mBulletWorld, ray, out );
-
-        if( e )
+        if( mEventReceiver->keyClicked( KEY_KEY_E ) )
         {
-            ( *e )->getRigidBody()->activate();
-            vector3df pos = *( *e )->getPosition();
-            ( *e )->getRigidBody()->applyImpulse( VectorConverter::bt( ray.end ),
-                                                  VectorConverter::bt( out - pos ) );
+            mInventory.at( mActiveItem )->setGUIVisible( false );
+            mItemIcons[mActiveItem]->setColor( SColor( 100, 0, 0, 0 ) );
+
+            ++mActiveItem;
+            if( mActiveItem >= mInventory.size() )
+                mActiveItem = 0;
+
+            mInventory.at( mActiveItem )->setGUIVisible( true );
+            mItemIcons[mActiveItem]->setColor( SColor( 255, 255, 255, 255 ) );
+        }
+        if( mEventReceiver->keyClicked( KEY_KEY_Q ) )
+        {
+            mInventory.at( mActiveItem )->setGUIVisible( false );
+            mItemIcons[mActiveItem]->setColor( SColor( 100, 0, 0, 0 ) );
+
+            --mActiveItem;
+            if( mActiveItem < 0 )
+                mActiveItem = mInventory.size() - 1;
+
+            mInventory.at( mActiveItem )->setGUIVisible( true );
+            mItemIcons[mActiveItem]->setColor( SColor( 255, 255, 255, 255 ) );
         }
     }
 }

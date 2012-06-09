@@ -28,7 +28,8 @@ Item::Item(ExplorePtr explore, Player *owner, std::string fileName )
       mDevice( explore->getIrrlichtDevice() ),
       mBulletWorld( explore->getBulletWorld() ),
       mLua( explore->getLuaVM() ),
-      mOwner( owner )
+      mOwner( owner ),
+      mGUI( 0 )
 {
     if( fileName.empty() )
         return;
@@ -80,9 +81,17 @@ void Item::startAction( int actionID )
     mScripts.at( actionID )->exec();
 }
 
+void Item::setGUIVisible( bool visible )
+{
+    if( !mGUI )
+        return;
+
+    mGUI->setVisible( visible );
+}
+
 IGUIElementPtr Item::getGUIElement() const
 {
-    return IGUIElementPtr();
+    return mGUI;
 }
 
 ITexturePtr Item::getIcon() const

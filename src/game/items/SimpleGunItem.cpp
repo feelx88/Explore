@@ -66,11 +66,6 @@ void SimpleGunItem::startAction( int actionID )
         reload();
 }
 
-IGUIElementPtr SimpleGunItem::getGUIElement() const
-{
-    return mGUI;
-}
-
 void SimpleGunItem::shoot()
 {
     if( mCurBullet >= 10 )

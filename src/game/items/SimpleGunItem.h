@@ -29,16 +29,12 @@ public:
 
     void startAction( int actionID );
 
-    IGUIElementPtr getGUIElement() const;
-
 private:
     void shoot();
     void reload();
 
     EntityPtr mBullets[10];
     int mCurBullet;
-
-    IGUIElementPtr mGUI;
 };
 
 #endif // SIMPLEGUNITEM_H
