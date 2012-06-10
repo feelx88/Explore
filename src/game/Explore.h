@@ -108,6 +108,8 @@ public:
     BulletWorldPtr getBulletWorld() const;
     LuaStatePtr getLuaVM() const;
 
+    static irr::EKEY_CODE getKeyCode( const std::string &name );
+
 private:
 
     void loadConfig();
@@ -144,6 +146,8 @@ private:
     boost::scoped_ptr<ExploreGame> mGame;
 
     boost::scoped_ptr<BulletIrrlichtDebugDrawer> mBulletDebugDrawer;
+
+    static PropTreePtr sKeyCodes;
 };
 
 #endif // EXPLORE_H

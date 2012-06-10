@@ -29,6 +29,19 @@ class Player
 {
 public:
 
+    enum E_PLAYER_KEY_MAPPINGS
+    {
+        EPKM_FORWARD = 0,
+        EPKM_BACKWARD,
+        EPKM_LEFT,
+        EPKM_RIGHT,
+        EPKM_JUMP,
+        EPKM_MOUSECONTROL,
+        EPKM_NEXTSLOT,
+        EPKM_PREVOISSLOT,
+        EPKM_COUNT
+    };
+
     Player( ExplorePtr explore );
     virtual ~Player();
 
@@ -45,6 +58,7 @@ private:
 
     void addItems();
     void createGUI();
+    void setKeyMappings();
     void processControls();
     void drawCrosshair();
 
@@ -55,6 +69,8 @@ private:
     EventReceiverPtr mEventReceiver;
     BulletWorldPtr mBulletWorld;
     ICameraSceneNodePtr mCamera;
+
+    irr::EKEY_CODE mKeyMapping[EPKM_COUNT];
 
     EntityPtr mEntity;
     ItemVector mInventory;

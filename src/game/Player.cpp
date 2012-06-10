@@ -51,12 +51,9 @@ Player::Player( ExplorePtr explore )
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f );
     mEntity->getRigidBody()->setAngularFactor( btVector3( 0.f, 0.f, 0.f ) );
 
-    mCrossX = mDevice->getVideoDriver()->getScreenSize().Width / 2;
-    mCrossY = mDevice->getVideoDriver()->getScreenSize().Height / 2;
-    mCrossColor = mProperties->get( "Crosshair.Color", SColor( 255, 0, 255, 0 ) );
-
     addItems();
     createGUI();
+    setKeyMappings();
 }
 
 Player::~Player()
@@ -130,6 +127,30 @@ void Player::createGUI()
     mItemIcons[mActiveItem]->setDrawBorder( true );
 
     mItemWin = win;
+
+    mCrossX = mDevice->getVideoDriver()->getScreenSize().Width / 2;
+    mCrossY = mDevice->getVideoDriver()->getScreenSize().Height / 2;
+    mCrossColor = mProperties->get( "Crosshair.Color", SColor( 255, 0, 255, 0 ) );
+}
+
+void Player::setKeyMappings()
+{
+    mKeyMapping[EPKM_FORWARD] = Explore::getKeyCode(
+                mProperties->get( "Controls.Forward", "KEY_KEY_W" ) );
+    mKeyMapping[EPKM_BACKWARD] = Explore::getKeyCode(
+                mProperties->get( "Controls.Backward", "KEY_KEY_S" ) );
+    mKeyMapping[EPKM_LEFT] = Explore::getKeyCode(
+                mProperties->get( "Controls.Left", "KEY_KEY_A" ) );
+    mKeyMapping[EPKM_RIGHT] = Explore::getKeyCode(
+                mProperties->get( "Controls.Right", "KEY_KEY_D" ) );
+    mKeyMapping[EPKM_JUMP] = Explore::getKeyCode(
+                mProperties->get( "Controls.Jump", "KEY_SPACE" ) );
+    mKeyMapping[EPKM_MOUSECONTROL] = Explore::getKeyCode(
+                mProperties->get( "Controls.MouseControl", "KEY_TAB" ) );
+    mKeyMapping[EPKM_NEXTSLOT] = Explore::getKeyCode(
+                mProperties->get( "Controls.NextSlot", "KEY_KEY_E" ) );
+    mKeyMapping[EPKM_PREVOISSLOT] = Explore::getKeyCode(
+                mProperties->get( "Controls.PreviousSlot", "KEY_KEY_Q" ) );
 }
 
 void Player::processControls()
@@ -157,7 +178,7 @@ void Player::processControls()
         if( mEventReceiver->mouseClicked( 1 ) )
             mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
 
-        if( mEventReceiver->keyClicked( KEY_KEY_E ) )
+        if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] ) )
         {
             mInventory.at( mActiveItem )->setGUIVisible( false );
             mItemIcons[mActiveItem]->setDrawBorder( false );
@@ -169,7 +190,7 @@ void Player::processControls()
             mInventory.at( mActiveItem )->setGUIVisible( true );
             mItemIcons[mActiveItem]->setDrawBorder( true );
         }
-        if( mEventReceiver->keyClicked( KEY_KEY_Q ) )
+        if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVOISSLOT] ) )
         {
             mInventory.at( mActiveItem )->setGUIVisible( false );
             mItemIcons[mActiveItem]->setDrawBorder( false );
@@ -199,24 +220,24 @@ void Player::processControls()
 
     vector3df vel( 0.f, 0.f, 0.f );
 
-    if( mEventReceiver->keyPressed( KEY_KEY_W ) )
+    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_FORWARD] ) )
         vel.Z += 10;
-    if( mEventReceiver->keyPressed( KEY_KEY_S ) )
+    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_BACKWARD] ) )
         vel.Z -= 10;
-    if( mEventReceiver->keyPressed( KEY_KEY_A ) )
+    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_LEFT] ) )
         vel.X -= 10;
-    if( mEventReceiver->keyPressed( KEY_KEY_D ) )
+    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_RIGHT] ) )
         vel.X += 10;
 
     vel = rotateToDirection( vel );
     vel.Y = mEntity->getRigidBody()->getLinearVelocity().getY();
 
-    if( mEventReceiver->keyPressed( KEY_SPACE ) && iszero( vel.Y ) )
+    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_JUMP] ) && iszero( vel.Y ) )
         vel.Y = 5.f;
 
     mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
 
-    if( mEventReceiver->keyClicked( KEY_TAB ) )
+    if( mEventReceiver->keyClicked(mKeyMapping[EPKM_MOUSECONTROL] ) )
         mEventReceiver->lockMouse( !mEventReceiver->isMouseLocked() );
 }
 

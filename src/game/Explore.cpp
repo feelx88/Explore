@@ -33,6 +33,8 @@
 using namespace irr;
 using namespace core;
 
+PropTreePtr Explore::sKeyCodes( new boost::property_tree::ptree() );
+
 Explore::Explore()
     : mConfig( new boost::property_tree::ptree ),
       mLogFile( new std::ofstream( "log.txt" ) ),
@@ -100,6 +102,11 @@ LuaStatePtr Explore::getLuaVM() const
     return mLua;
 }
 
+EKEY_CODE Explore::getKeyCode( const std::string &name )
+{
+    return static_cast<EKEY_CODE>( sKeyCodes->get( name, 0 ) );
+}
+
 void Explore::loadConfig()
 {
     try
@@ -134,7 +141,7 @@ void Explore::initIrrlicht()
 {
     SIrrlichtCreationParameters params;
     std::string deviceType =
-            readConfigValue<std::string>( "Engine.deviceType", "Software" );
+            readConfigValue<std::string>( "Engine.deviceType", "OpenGL" );
 
     if( deviceType == "OpenGL" )
         params.DriverType = video::EDT_OPENGL;
@@ -170,6 +177,8 @@ void Explore::initIrrlicht()
                 irr::scene::OBJ_TEXTURE_PATH,
                 PathTools::getAbsolutePath(
                     mConfig->get<std::string>( "Paths.TexturePath", "" ) ).c_str() );
+
+    boost::property_tree::ini_parser::read_ini( "keycodes.ini", *sKeyCodes );
 
     saveConfig();
 }

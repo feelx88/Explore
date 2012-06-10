@@ -12,6 +12,7 @@ add_executable(Explore ${Explore_SRCS})
 #Target for including asset files in qt creator tree
 file( GLOB assets
     ../build/config.ini
+    ../build/keycodes.ini
     ../build/log.txt
     ../build/data/*/*/*
     ../.gitignore
