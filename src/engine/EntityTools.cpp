@@ -19,15 +19,51 @@
 #include "EntityTools.h"
 #include "VectorConverter.h"
 
+using namespace irr;
+using namespace core;
+
+boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr device,
+                                                  const irr::core::line3df &ray )
+{
+    vector3df tmpPoint, tmpNormal;
+    return getFirstEntityInRay( device, ray, tmpPoint, tmpNormal );
+}
+
+boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
+                                                  const irr::core::line3df &ray )
+{
+    vector3df tmpPoint, tmpNormal;
+    return getFirstEntityInRay( world, ray, tmpPoint, tmpNormal );
+}
+
 boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr device,
                                                            const irr::core::line3df &ray,
                                                            irr::core::vector3df &outPoint )
+{
+    vector3df tmpNormal;
+    return getFirstEntityInRay( device, ray, outPoint, tmpNormal );
+}
+
+boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
+                                                           const irr::core::line3df &ray,
+                                                           irr::core::vector3df &outPoint )
+{
+    vector3df tmpNormal;
+    return getFirstEntityInRay( world, ray, outPoint, tmpNormal );
+}
+
+boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr device,
+                                                  const irr::core::line3df &ray,
+                                                  irr::core::vector3df &outPoint,
+                                                  irr::core::vector3df &outNormal )
 {
     ISceneCollisionManagerPtr colMgr = device->getSceneManager()->getSceneCollisionManager();
 
     irr::core::triangle3df outTri;
     ISceneNodePtr node =
             colMgr->getSceneNodeAndCollisionPointFromRay( ray, outPoint, outTri );
+
+    outNormal = outTri.getNormal();
 
     if( node )
         return Entity::getEntity( node );
@@ -36,8 +72,9 @@ boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr dev
 }
 
 boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
-                                                           const irr::core::line3df &ray,
-                                                           irr::core::vector3df &outPoint )
+                                                  const irr::core::line3df &ray,
+                                                  irr::core::vector3df &outPoint,
+                                                  irr::core::vector3df &outNormal )
 {
     btVector3 from( VectorConverter::bt( ray.start ) ),
             to( VectorConverter::bt( ray.end ) );
@@ -45,6 +82,7 @@ boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
     world->rayTest( from, to, callback );
 
     outPoint = VectorConverter::irr( callback.m_hitPointWorld );
+    outNormal = VectorConverter::irr( callback.m_hitNormalWorld );
 
     btRigidBody *body = static_cast<btRigidBody*>( callback.m_collisionObject );
 
@@ -52,4 +90,4 @@ boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
         return Entity::getEntity( body );
     else
         return boost::none;
-    }
+}

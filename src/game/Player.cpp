@@ -245,7 +245,7 @@ void Player::processControls()
 
     mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
 
-    if( mEventReceiver->keyClicked(mKeyMapping[EPKM_MOUSECONTROL] ) )
+    if( mEventReceiver->keyClicked( mKeyMapping[EPKM_MOUSECONTROL] ) )
         mEventReceiver->lockMouse( !mEventReceiver->isMouseLocked() );
 }
 
