@@ -135,22 +135,30 @@ void Player::createGUI()
 
 void Player::setKeyMappings()
 {
-    mKeyMapping[EPKM_FORWARD] = Explore::getKeyCode(
-                mProperties->get( "Controls.Forward", "KEY_KEY_W" ) );
-    mKeyMapping[EPKM_BACKWARD] = Explore::getKeyCode(
-                mProperties->get( "Controls.Backward", "KEY_KEY_S" ) );
-    mKeyMapping[EPKM_LEFT] = Explore::getKeyCode(
-                mProperties->get( "Controls.Left", "KEY_KEY_A" ) );
-    mKeyMapping[EPKM_RIGHT] = Explore::getKeyCode(
-                mProperties->get( "Controls.Right", "KEY_KEY_D" ) );
-    mKeyMapping[EPKM_JUMP] = Explore::getKeyCode(
-                mProperties->get( "Controls.Jump", "KEY_SPACE" ) );
-    mKeyMapping[EPKM_MOUSECONTROL] = Explore::getKeyCode(
-                mProperties->get( "Controls.MouseControl", "KEY_TAB" ) );
-    mKeyMapping[EPKM_NEXTSLOT] = Explore::getKeyCode(
-                mProperties->get( "Controls.NextSlot", "KEY_KEY_E" ) );
-    mKeyMapping[EPKM_PREVOISSLOT] = Explore::getKeyCode(
-                mProperties->get( "Controls.PreviousSlot", "KEY_KEY_Q" ) );
+    mKeyMapping[EPKM_FORWARD] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.Forward", "KEY_KEY_W" ) );
+    mKeyMapping[EPKM_BACKWARD] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.Backward", "KEY_KEY_S" ) );
+    mKeyMapping[EPKM_LEFT] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.Left", "KEY_KEY_A" ) );
+    mKeyMapping[EPKM_RIGHT] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.Right", "KEY_KEY_D" ) );
+    mKeyMapping[EPKM_JUMP] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.Jump", "KEY_SPACE" ) );
+    mKeyMapping[EPKM_MOUSECONTROL] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.MouseControl", "KEY_TAB" ) );
+    mKeyMapping[EPKM_NEXTSLOT] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.NextSlot", "KEY_KEY_E" ) );
+    mKeyMapping[EPKM_PREVOISSLOT] =
+            Explore::getKeyCode( mExplore->readConfigValue<std::string>(
+                                     "Controls.PreviousSlot", "KEY_KEY_Q" ) );
 }
 
 void Player::processControls()

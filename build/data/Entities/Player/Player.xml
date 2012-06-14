@@ -17,13 +17,3 @@
 <Crosshair>
     <Color>128,0,255,0</Color>
 </Crosshair>
-<Controls>
-    <Forward>KEY_KEY_W</Forward>
-    <Backward>KEY_KEY_S</Backward>
-    <Left>KEY_KEY_A</Left>
-    <Right>KEY_KEY_D</Right>
-    <Jump>KEY_SPACE</Jump>
-    <MouseControl>KEY_TAB</MouseControl>
-    <NextSlot>KEY_KEY_E</NextSlot>
-    <PreviousSlot>KEY_KEY_Q</PreviousSlot>
-</Controls>
