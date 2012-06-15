@@ -90,6 +90,12 @@ E_GAME_STATE ExploreGame::run()
             running = false;
         }
 
+        if( mEventReceiver->keyClicked( KEY_F12 ) )
+        {
+            mExplore->getScriptConsole()->setVisible(
+                        !mExplore->getScriptConsole()->visible() );
+        }
+
         p.update();
 
         //mBulletWorld->debugDrawWorld();

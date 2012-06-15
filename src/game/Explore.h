@@ -25,6 +25,7 @@
 #include <engine/EngineTypedefs.h>
 #include <engine/EventReceiver.h>
 #include <engine/LoggerSingleton.h>
+#include <engine/ScriptConsole.h>
 #include "GameState.h"
 
 class Player;
@@ -107,6 +108,7 @@ public:
     EventReceiverPtr getEventReceiver() const;
     BulletWorldPtr getBulletWorld() const;
     LuaStatePtr getLuaVM() const;
+    ScriptConsolePtr getScriptConsole() const;
 
     static irr::EKEY_CODE getKeyCode( const std::string &name );
 
@@ -118,6 +120,7 @@ private:
     void initIrrlicht();
     void initBullet();
     void initLua();
+    void initScriptConsole();
     void initMenu();
     void initGame();
 
@@ -148,6 +151,8 @@ private:
     boost::scoped_ptr<BulletIrrlichtDebugDrawer> mBulletDebugDrawer;
 
     static PropTreePtr sKeyCodes;
+
+    ScriptConsolePtr mScriptConsole;
 };
 
 #endif // EXPLORE_H

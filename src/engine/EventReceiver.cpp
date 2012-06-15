@@ -18,6 +18,7 @@
 
 #include "EventReceiver.h"
 #include "LoggerSingleton.h"
+#include "LuaTools.h"
 
 using namespace irr;
 
@@ -53,6 +54,11 @@ void EventReceiver::setDevice( IrrlichtDevicePtr device )
     mWinHeight = size.Height;
 }
 
+void EventReceiver::setScriptConsole( ScriptConsolePtr console )
+{
+    mScriptConsole = console;
+}
+
 bool EventReceiver::OnEvent( const SEvent &event )
 {
     if( !mDevice )
@@ -64,13 +70,29 @@ bool EventReceiver::OnEvent( const SEvent &event )
     if( event.EventType == EET_LOG_TEXT_EVENT )
     {
         _LOG( event.LogEvent.Text );
+
+        if( mScriptConsole )
+        {
+            mScriptConsole->mOutputBox->addItem(
+                        irr::core::stringw( event.LogEvent.Text ).c_str() );
+        }
+
         return true;
     }
 
     if( event.EventType == EET_KEY_INPUT_EVENT )
     {
-        mPressed[event.KeyInput.Key] = event.KeyInput.PressedDown;
-        mClicked[event.KeyInput.Key] = !event.KeyInput.PressedDown;
+        if( mScriptConsole &&
+                mDevice->getGUIEnvironment()->getFocus() != mScriptConsole->mInputBox )
+        {
+            mPressed[event.KeyInput.Key] = event.KeyInput.PressedDown;
+            mClicked[event.KeyInput.Key] = !event.KeyInput.PressedDown;
+        }
+        else if( mScriptConsole )
+        {
+            if( event.KeyInput.Key == KEY_RETURN && !event.KeyInput.PressedDown )
+                sendScriptConsoleCommand();
+        }
     }
 
     if( event.EventType == EET_MOUSE_INPUT_EVENT )
@@ -110,6 +132,16 @@ bool EventReceiver::OnEvent( const SEvent &event )
         }
 
         mMouseWheelY = event.MouseInput.Wheel;
+    }
+
+    if( event.EventType == EET_GUI_EVENT )
+    {
+        if( event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
+        {
+            if( mScriptConsole &&
+                    event.GUIEvent.Caller == mScriptConsole->mSendButton )
+                sendScriptConsoleCommand();
+        }
     }
 
     return false;
@@ -197,4 +229,13 @@ int EventReceiver::mouseWheelY()
 {
     return mMouseWheelY;
     mMouseWheelY = 0;
+}
+
+void EventReceiver::sendScriptConsoleCommand()
+{
+    std::string script(
+                irr::core::stringc( mScriptConsole->mInputBox->getText() ).c_str() );
+    LuaTools::execString( mScriptConsole->mLuaState, script );
+    mScriptConsole->mOutputBox->addItem( mScriptConsole->mInputBox->getText() );
+    mScriptConsole->mInputBox->setText( L"" );
 }

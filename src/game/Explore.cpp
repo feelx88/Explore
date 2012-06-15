@@ -48,12 +48,14 @@ Explore::Explore()
     initIrrlicht();
     initBullet();
     initLua();
+    initScriptConsole();
     initMenu();
     initGame();
 }
 
 Explore::~Explore()
 {
+    saveConfig();
 }
 
 int Explore::run()
@@ -100,6 +102,11 @@ BulletWorldPtr Explore::getBulletWorld() const
 LuaStatePtr Explore::getLuaVM() const
 {
     return mLua;
+}
+
+ScriptConsolePtr Explore::getScriptConsole() const
+{
+    return mScriptConsole;
 }
 
 EKEY_CODE Explore::getKeyCode( const std::string &name )
@@ -213,6 +220,13 @@ void Explore::initBullet()
 void Explore::initLua()
 {
     mLua = LuaTools::createLuaVM();
+}
+
+void Explore::initScriptConsole()
+{
+    mScriptConsole.reset( new ScriptConsole( mDevice, mLua, mConfig ) );
+    mEventReceiver->setScriptConsole( mScriptConsole );
+    mScriptConsole->setVisible( false );
 }
 
 void Explore::initMenu()

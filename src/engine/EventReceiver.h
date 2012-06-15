@@ -20,6 +20,7 @@
 #define EVENTRECEIVER_H
 
 #include "EngineTypedefs.h"
+#include "ScriptConsole.h"
 
 class EventReceiver : public irr::IEventReceiver
 {
@@ -27,6 +28,7 @@ public:
     EventReceiver();
 
     void setDevice( IrrlichtDevicePtr device );
+    void setScriptConsole( ScriptConsolePtr console );
 
     bool OnEvent( const irr::SEvent &event );
 
@@ -47,7 +49,10 @@ public:
     int mouseWheelY();
 
 private:
+    void sendScriptConsoleCommand();
+
     IrrlichtDevicePtr mDevice;
+    ScriptConsolePtr mScriptConsole;
 
     bool mPressed[irr::KEY_KEY_CODES_COUNT];
     bool mClicked[irr::KEY_KEY_CODES_COUNT];

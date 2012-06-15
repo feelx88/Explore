@@ -51,6 +51,10 @@ typedef irr::gui::IGUIEnvironment* IGUIEnvironmentPtr;
 typedef irr::scene::ISceneCollisionManager* ISceneCollisionManagerPtr;
 
 typedef irr::gui::IGUIElement* IGUIElementPtr;
+typedef irr::gui::IGUIWindow* IGUIWindowPtr;
+typedef irr::gui::IGUIButton* IGUIButtonPtr;
+typedef irr::gui::IGUIEditBox* IGUIEditBoxPtr;
+typedef irr::gui::IGUIListBox* IGUIListBoxPtr;
 typedef irr::scene::ISceneNode* ISceneNodePtr;
 typedef irr::scene::ICameraSceneNode* ICameraSceneNodePtr;
 typedef boost::shared_ptr<irr::scene::ISceneNodeAnimator> ISceneNodeAnimatorPtr;
