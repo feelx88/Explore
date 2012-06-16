@@ -88,6 +88,22 @@ vector3df Player::rotateToDirection( vector3df dir ) const
     return dir;
 }
 
+void Player::switchItem( int index )
+{
+    mInventory.at( mActiveItem )->setGUIVisible( false );
+    mItemIcons[mActiveItem]->setDrawBorder( false );
+
+    mActiveItem = index;
+
+    if( mActiveItem >= mInventory.size() )
+        mActiveItem = 0;
+    if( mActiveItem < 0 )
+        mActiveItem = mInventory.size() - 1;
+
+    mInventory.at( mActiveItem )->setGUIVisible( true );
+    mItemIcons[mActiveItem]->setDrawBorder( true );
+}
+
 void Player::addItems()
 {
     mInventory.push_back( ItemPtr( new SimpleGunItem( mExplore, this ) ) );
@@ -187,43 +203,15 @@ void Player::processControls()
             mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
 
         if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] ) )
-        {
-            mInventory.at( mActiveItem )->setGUIVisible( false );
-            mItemIcons[mActiveItem]->setDrawBorder( false );
-
-            ++mActiveItem;
-            if( mActiveItem >= mInventory.size() )
-                mActiveItem = 0;
-
-            mInventory.at( mActiveItem )->setGUIVisible( true );
-            mItemIcons[mActiveItem]->setDrawBorder( true );
-        }
+            switchItem( mActiveItem + 1 );
         if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVOISSLOT] ) )
-        {
-            mInventory.at( mActiveItem )->setGUIVisible( false );
-            mItemIcons[mActiveItem]->setDrawBorder( false );
-
-            --mActiveItem;
-            if( mActiveItem < 0 )
-                mActiveItem = mInventory.size() - 1;
-
-            mInventory.at( mActiveItem )->setGUIVisible( true );
-            mItemIcons[mActiveItem]->setDrawBorder( true );
-        }
+            switchItem( mActiveItem - 1 );
     }
 
     for( int x = 0; x < mNumItems; ++x )
     {
         if( mItemIcons[x]->isPressed() )
-        {
-            mInventory.at( mActiveItem )->setGUIVisible( false );
-            mItemIcons[mActiveItem]->setDrawBorder( false );
-
-            mActiveItem = x;
-
-            mInventory.at( mActiveItem )->setGUIVisible( true );
-            mItemIcons[mActiveItem]->setDrawBorder( true );
-        }
+            switchItem( x );
     }
 
     vector3df vel( 0.f, 0.f, 0.f );

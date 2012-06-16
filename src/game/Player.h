@@ -54,6 +54,8 @@ public:
     irr::core::vector3df rotateToDirection(
             irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
 
+    void switchItem( int direction );
+
 private:
 
     void addItems();
