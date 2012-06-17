@@ -63,13 +63,18 @@ void SimpleForceGunItem::shoot( bool forward )
         scene::IParticleSystemSceneNode *node = mDevice->getSceneManager()->addParticleSystemSceneNode(
                     false, 0, -1, out );
 
-        video::SColor red( 255, 255, 0, 0 );
-
-        node->setEmitter( node->createPointEmitter( normal *= 0.01f, 10, 20, red, red, 100, 500, 45 ) );
+        node->setEmitter( node->createPointEmitter( normal *= 0.01f, 10, 20,
+                                                    video::SColor(), video::SColor(),
+                                                    100, 500, 45 ) );
         node->addAffector( node->createGravityAffector() );
+        node->addAffector( node->createFadeOutParticleAffector( video::SColor( 0, 255, 0, 0 ), 100 ) );
         node->setMaterialFlag( video::EMF_LIGHTING, false );
         node->addAnimator( mDevice->getSceneManager()->createDeleteAnimator( 500 ) );
-        node->setParticleSize( dimension2df( 0.1, 0.1 ) );
+
+        node->getEmitter()->setMinStartSize( dimension2df( 0.1f, 0.1f ) );
+        node->getEmitter()->setMaxStartSize( dimension2df( 0.2f, 0.2f ) );
+        node->getEmitter()->setMinStartColor( video::SColor( 255, 255, 0, 0 ) );
+        node->getEmitter()->setMaxStartColor( video::SColor( 100, 100, 0, 0 ) );
 
         ( *e )->getRigidBody()->activate();
         vector3df pos = *( *e )->getPosition();
