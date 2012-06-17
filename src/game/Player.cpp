@@ -109,8 +109,8 @@ void Player::switchItem( int index )
 
 void Player::addItems()
 {
-    mInventory.push_back( ItemPtr( ItemFactory::create( mExplore, this, "SimpleGun" ) ) );
-    mInventory.push_back( ItemPtr( ItemFactory::create( mExplore, this, "SimpleForceGun" ) ) );
+    mInventory.push_back( ItemPtr( ItemFactory::create( mExplore, this, "SimpleGun.item" ) ) );
+    mInventory.push_back( ItemPtr( ItemFactory::create( mExplore, this, "SimpleForceGun.item" ) ) );
 
     mNumItems = mInventory.size();
     mActiveItem = mInventory.empty() ? -1 : 0;

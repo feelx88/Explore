@@ -111,6 +111,11 @@ ScriptConsolePtr Explore::getScriptConsole() const
     return mScriptConsole;
 }
 
+const StringVector &Explore::getAvailableItems() const
+{
+    return mAvailableItems;
+}
+
 EKEY_CODE Explore::getKeyCode( const std::string &name )
 {
     return static_cast<EKEY_CODE>( sKeyCodes->get( name, 0 ) );
@@ -238,5 +243,19 @@ void Explore::initMenu()
 
 void Explore::initGame()
 {
+    boost::filesystem3::directory_iterator items(
+                readConfigValue<std::string>( "Paths.ItemPath", "data/Items" ) ),
+            end;
+
+    for( ; items != end; ++items )
+    {
+        boost::filesystem3::path p( items->path() );
+        if( p.filename().extension() == ".item" )
+        {
+            mAvailableItems.push_back( p.filename().string() );
+            _LOG( "Item found", p.filename().string() );
+        }
+    }
+
     mGame.reset( new ExploreGame( this ) );
 }

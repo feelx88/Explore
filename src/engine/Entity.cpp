@@ -60,8 +60,6 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
             PathTools::getAbsoluteFileNameFromFolder( propFileName, "xml" );
     mBasePath = PathTools::getBasePathFromFile( fileName );
 
-    _LOG( "Entity base path", mBasePath );
-
     boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
 
     if( !nodeName.empty() )

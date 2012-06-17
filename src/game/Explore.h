@@ -112,6 +112,8 @@ public:
     LuaStatePtr getLuaVM() const;
     ScriptConsolePtr getScriptConsole() const;
 
+    const StringVector &getAvailableItems() const;
+
     static irr::EKEY_CODE getKeyCode( const std::string &name );
 
 private:
@@ -155,6 +157,8 @@ private:
     static PropTreePtr sKeyCodes;
 
     ScriptConsolePtr mScriptConsole;
+
+    StringVector mAvailableItems;
 };
 
 #endif // EXPLORE_H
