@@ -231,13 +231,17 @@ void Player::processControls()
     vel = rotateToDirection( vel );
     vel.Y = mEntity->getRigidBody()->getLinearVelocity().getY();
 
-    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_JUMP] ) && iszero( vel.Y ) )
-        vel.Y = 5.f;
-
-    mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
-
     if( mEventReceiver->keyClicked( mKeyMapping[EPKM_MOUSECONTROL] ) )
         mEventReceiver->lockMouse( !mEventReceiver->isMouseLocked() );
+
+    vector3df pos( *mEntity->getPosition() );
+
+    line3df rayDown( pos, pos - vector3df( 0.f, 1.2f, 0.f ) );
+    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_JUMP] ) &&
+            EntityTools::getFirstEntityInRay( mBulletWorld, rayDown ) )
+        vel.Y = 6.f;
+
+    mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
 }
 
 void Player::drawCrosshair()
