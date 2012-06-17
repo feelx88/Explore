@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify
@@ -26,6 +28,7 @@
 #include <engine/VectorConverter.h>
 #include <boost/property_tree/xml_parser.hpp>
 
+#include "ItemFactory.h"
 #include "items/SimpleGunItem.h"
 #include "items/SimpleForceGunItem.h"
 
@@ -106,8 +109,8 @@ void Player::switchItem( int index )
 
 void Player::addItems()
 {
-    mInventory.push_back( ItemPtr( new SimpleGunItem( mExplore, this ) ) );
-    mInventory.push_back( ItemPtr( new SimpleForceGunItem( mExplore, this ) ) );
+    mInventory.push_back( ItemPtr( ItemFactory::create( mExplore, this, "SimpleGun" ) ) );
+    mInventory.push_back( ItemPtr( ItemFactory::create( mExplore, this, "SimpleForceGun" ) ) );
 
     mNumItems = mInventory.size();
     mActiveItem = mInventory.empty() ? -1 : 0;

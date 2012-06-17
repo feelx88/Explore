@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify
@@ -24,7 +26,8 @@
 class SimpleGunItem : public Item
 {
 public:
-    SimpleGunItem( ExplorePtr explore, PlayerPtr owner );
+    SimpleGunItem(ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+                  const std::string &basePath );
     ~SimpleGunItem();
 
     void startAction( int actionID );
@@ -35,6 +38,8 @@ private:
 
     EntityPtr mBullets[10];
     int mCurBullet;
+
+    static int sRegisterDummy;
 };
 
 #endif // SIMPLEGUNITEM_H

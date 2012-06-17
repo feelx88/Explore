@@ -1,4 +1,5 @@
 <Item>
+    <Class>SimpleForceGun</Class>
     <Icon>icon.png</Icon>
     <RayDistance>100</RayDistance>
     <ForceMultiplicator>1</ForceMultiplicator>

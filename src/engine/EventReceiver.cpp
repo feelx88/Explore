@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify

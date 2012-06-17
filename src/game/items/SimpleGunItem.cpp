@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify
@@ -18,6 +20,7 @@
 
 #include "SimpleGunItem.h"
 #include "../Player.h"
+#include "../ItemFactory.h"
 #include <engine/PathTools.h>
 #include <engine/VectorConverter.h>
 #include <boost/property_tree/xml_parser.hpp>
@@ -26,20 +29,20 @@ using namespace irr;
 using namespace core;
 using namespace gui;
 
-SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner )
-    : Item( explore, owner, "" ),
+int SimpleGunItem::sRegisterDummy( ItemFactory::registerItem<SimpleGunItem>( "SimpleGun" ) );
+
+SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner,
+                              PropTreePtr properties, const std::string &basePath )
+    : Item( explore, owner, properties, basePath ),
       mCurBullet( 0 )
 {
-    std::string fileName = PathTools::getAbsoluteFileNameFromFolder( "SimpleGun", "xml" );
-    mBasePath = PathTools::getBasePathFromFile( fileName );
-
-    mProperties.reset( new boost::property_tree::ptree() );
-    boost::property_tree::xml_parser::read_xml(
-                fileName, *mProperties );
+    //TODO:Load gun values from property tree
+    std::string fileName =
+            PathTools::getAbsolutePath( mProperties->get<std::string>( "Item.EntityFile" ), mBasePath );
 
     for( int x = 0; x < 10; ++x )
     {
-        mBullets[x].reset( new Entity( mDevice, mBulletWorld, fileName, "Bullet" ) );
+        mBullets[x].reset( new Entity( mDevice, mBulletWorld, fileName ) );
     }
 
     dimension2du winSize =

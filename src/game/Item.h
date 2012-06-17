@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify
@@ -28,7 +30,8 @@ typedef std::vector<LuaScriptPtr> ScriptVector;
 class Item
 {
 public:
-    Item( ExplorePtr explore, PlayerPtr owner, std::string fileName );
+    Item( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+          const std::string &basePath );
 
     virtual ~Item();
 
@@ -62,6 +65,8 @@ protected:
 
     ITexturePtr mIcon;
     IGUIElementPtr mGUI;
+
+    static int sRegisterDummy;
 };
 
 #endif // ITEM_H

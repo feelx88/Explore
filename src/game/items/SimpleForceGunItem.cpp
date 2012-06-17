@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify
@@ -18,6 +20,7 @@
 
 #include "SimpleForceGunItem.h"
 #include "../Player.h"
+#include "../ItemFactory.h"
 #include <engine/EntityTools.h>
 #include <engine/PathTools.h>
 #include <engine/VectorConverter.h>
@@ -26,16 +29,12 @@
 using namespace irr;
 using namespace core;
 
-SimpleForceGunItem::SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner )
-    : Item( explore, owner, "" )
+int SimpleForceGunItem::sRegisterDummy( ItemFactory::registerItem<SimpleForceGunItem>( "SimpleForceGun" ) );
+
+SimpleForceGunItem::SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner,
+                                        PropTreePtr properties, const std::string &basePath )
+    : Item( explore, owner, properties, basePath )
 {
-    std::string fileName =
-            PathTools::getAbsoluteFileNameFromFolder( "SimpleForceGun", "xml" );
-    mBasePath = PathTools::getBasePathFromFile( fileName );
-
-    mProperties.reset( new boost::property_tree::ptree );
-    boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
-
     mRayDistance = mProperties->get( "Item.RayDistance", 10.f );
     mForceMultiplicator = mProperties->get( "Item.ForceMultiplicator", 100.f );
 

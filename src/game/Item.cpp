@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify
@@ -17,31 +19,27 @@
 
 
 #include "Item.h"
+#include "ItemFactory.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 using namespace irr;
 using namespace core;
 
-Item::Item(ExplorePtr explore, Player *owner, std::string fileName )
+int Item::sRegisterDummy( ItemFactory::registerItem<Item>( "Item" ) );
+
+Item::Item( ExplorePtr explore, Player *owner, PropTreePtr properties,
+            const std::string &basePath )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
       mBulletWorld( explore->getBulletWorld() ),
       mLua( explore->getLuaVM() ),
+      mProperties( properties ),
+      mBasePath( basePath ),
       mOwner( owner ),
       mGUI( 0 )
 {
-    if( fileName.empty() )
-        return;
-
-    fileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
-
-    mProperties.reset( new boost::property_tree::ptree() );
-    boost::property_tree::xml_parser::read_xml( fileName, *mProperties );
-
-    mBasePath = PathTools::getBasePathFromFile( fileName );
-
-    create();
+    //create();
     loadIcon();
 }
 

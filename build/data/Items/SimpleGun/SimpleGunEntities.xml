@@ -1,0 +1,22 @@
+<Entity Name="Bullet">
+    <Node>
+        <Mesh Type="Primitive">Sphere</Mesh>
+        <Scale>0.2,0.2,0.2</Scale>
+        <Material>
+            <Color>100,255,0,0</Color>
+        </Material>
+        <Textures>
+            <Texture>defaultIcon.png</Texture>
+        </Textures>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Sphere</Type>
+                <Size>1</Size>
+            </Child>
+        </Shape>
+        <Mass>1</Mass>
+        <Position>0,-1000,0</Position>>
+    </Body>
+</Entity>

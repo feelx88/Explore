@@ -1,4 +1,6 @@
 /*
+    Copyright 2012 Felix Müller.
+
     This file is part of Explore.
 
     Explore is free software: you can redistribute it and/or modify
@@ -24,7 +26,8 @@
 class SimpleForceGunItem : public Item
 {
 public:
-    SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner );
+    SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+                        const std::string &basePath );
 
     void startAction( int actionID );
 
@@ -33,6 +36,8 @@ private:
 
     float mRayDistance;
     float mForceMultiplicator;
+
+    static int sRegisterDummy;
 };
 
 #endif // SIMPLEFORCEGUNITEM_H
