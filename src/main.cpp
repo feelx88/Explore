@@ -20,10 +20,12 @@
 
 #include "game/Explore.h"
 
-int main( int, char** )
+int main( int argc, char** argv )
 {
     Explore game;
-    game.setGameState( EGS_GAME );
+
+    if( argc > 1 && std::string( argv[1] ) == "-game"  )
+        game.setGameState( EGS_GAME );
     return game.run();
 }
 
