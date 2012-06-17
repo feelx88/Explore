@@ -41,6 +41,8 @@ NodeEntityMap Entity::sNodeEntityMap;
 Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
                 const PropTreePtr &properties, std::string basePath )
     : mProperties( properties ),
+      mSceneNode( 0 ),
+      mChildNode( 0 ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
       mBulletWorld( world )
@@ -100,7 +102,11 @@ void Entity::internalCreateSceneNode()
     std::string mesh = mProperties->get( "Entity.Node.Mesh", std::string() );
 
     if( mesh.empty() )
+    {
+        mSceneNode = 0;
+        mChildNode = 0;
         return;
+    }
 
     int id = mProperties->get( "Entity.ID", -1 );
 

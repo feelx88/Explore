@@ -54,12 +54,23 @@ void SimpleForceGunItem::shoot( bool forward )
     line3df ray;
     ray.start = *( mOwner->getEntity()->getPosition() ) + vector3df( 0.f, 1.f, 0.f );
     ray.end = ray.start + mOwner->rotateToDirection( vector3df( 0.f, 0.f, mRayDistance ) );
-    vector3df out;
+    vector3df out, normal;
     boost::optional<Entity*> e =
-            EntityTools::getFirstEntityInRay( mBulletWorld, ray, out );
+            EntityTools::getFirstEntityInRay( mBulletWorld, ray, out, normal );
 
     if( e )
     {
+        scene::IParticleSystemSceneNode *node = mDevice->getSceneManager()->addParticleSystemSceneNode(
+                    false, 0, -1, out );
+
+        video::SColor red( 255, 255, 0, 0 );
+
+        node->setEmitter( node->createPointEmitter( normal *= 0.01f, 10, 20, red, red, 100, 500, 45 ) );
+        node->addAffector( node->createGravityAffector() );
+        node->setMaterialFlag( video::EMF_LIGHTING, false );
+        node->addAnimator( mDevice->getSceneManager()->createDeleteAnimator( 500 ) );
+        node->setParticleSize( dimension2df( 0.1, 0.1 ) );
+
         ( *e )->getRigidBody()->activate();
         vector3df pos = *( *e )->getPosition();
         ray.start = ( ray.end - pos ) * mForceMultiplicator;
