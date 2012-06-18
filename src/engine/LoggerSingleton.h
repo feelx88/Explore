@@ -68,7 +68,7 @@ protected:
     virtual void message( const std::string &message );
     virtual void newLine();
 
-    static LoggerSingleton sLogger;
+    static LoggerSingleton *sLogger;
     StreamList mStreams;
     ScriptConsolePtr mScriptConsole;
 };

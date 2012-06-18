@@ -23,7 +23,7 @@
 #include <ctime>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-LoggerSingleton LoggerSingleton::sLogger;
+LoggerSingleton *LoggerSingleton::sLogger = 0;
 
 void LoggerSingleton::log( const std::string &str )
 {
@@ -68,7 +68,10 @@ void LoggerSingleton::newLine()
 
 LoggerSingleton &LoggerSingleton::instance()
 {
-    return LoggerSingleton::sLogger;
+    if( !sLogger )
+        sLogger = new LoggerSingleton();
+
+    return *sLogger;
 }
 
 void LoggerSingleton::addStream( std::ostream &stream )
