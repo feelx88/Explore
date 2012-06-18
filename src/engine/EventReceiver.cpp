@@ -59,6 +59,8 @@ void EventReceiver::setDevice( IrrlichtDevicePtr device )
 void EventReceiver::setScriptConsole( ScriptConsolePtr console )
 {
     mScriptConsole = console;
+
+    LoggerSingleton::instance().setScriptConsole( console );
 }
 
 bool EventReceiver::OnEvent( const SEvent &event )
@@ -72,13 +74,6 @@ bool EventReceiver::OnEvent( const SEvent &event )
     if( event.EventType == EET_LOG_TEXT_EVENT )
     {
         _LOG( event.LogEvent.Text );
-
-        if( mScriptConsole )
-        {
-            mScriptConsole->mOutputBox->addItem(
-                        irr::core::stringw( event.LogEvent.Text ).c_str() );
-        }
-
         return true;
     }
 
@@ -240,4 +235,6 @@ void EventReceiver::sendScriptConsoleCommand()
     LuaTools::execString( mScriptConsole->mLuaState, script );
     mScriptConsole->mOutputBox->addItem( mScriptConsole->mInputBox->getText() );
     mScriptConsole->mInputBox->setText( L"" );
+    mScriptConsole->mOutputBox->setSelected(
+                mScriptConsole->mOutputBox->getItemCount() - 1 );
 }

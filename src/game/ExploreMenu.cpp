@@ -83,9 +83,17 @@ E_GAME_STATE ExploreMenu::run()
             running = false;
         }
 
+        if( mExplore->getEventReceiver()->keyClicked( KEY_F12 ) )
+            mExplore->getScriptConsole()->setVisible(
+                        !mExplore->getScriptConsole()->visible() );
+
         mVideoDriver->endScene();
     }
 
-    mGUI->clear();
+    buttonNewGame->remove();
+    buttonLoadGame->remove();
+    buttonOptions->remove();
+    buttonQuit->remove();
+
     return state;
 }

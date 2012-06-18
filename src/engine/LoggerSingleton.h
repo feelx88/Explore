@@ -25,6 +25,8 @@
 #include <list>
 #include <boost/lexical_cast.hpp>
 
+#include "ScriptConsole.h"
+
 #define _LOG LoggerSingleton::instance().log
 
 class LoggerSingleton
@@ -41,10 +43,22 @@ public:
     void log( const std::string &str, const T& param )
     {
         logPrefix();
-        message( str + ": " );
-        message( boost::lexical_cast<std::string>( param ) );
+
+        std::string msg = str + ": ";
+
+        msg += boost::lexical_cast<std::string>( param );
+        message( msg );
         newLine();
+
+        if( mScriptConsole )
+        {
+            irr::gui::IGUIListBox *output = mScriptConsole->mOutputBox;
+            output->addItem( irr::core::stringw( msg.c_str() ).c_str() );
+            output->setSelected( output->getItemCount() - 1 );
+        }
     }
+
+    void setScriptConsole( ScriptConsolePtr console );
 
 protected:
     typedef std::list<std::ostream*> StreamList;
@@ -56,6 +70,7 @@ protected:
 
     static LoggerSingleton sLogger;
     StreamList mStreams;
+    ScriptConsolePtr mScriptConsole;
 };
 
 #endif // LOGGERSINGLETON_H

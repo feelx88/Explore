@@ -29,6 +29,7 @@ class ScriptConsole
 {
 public:
     friend class EventReceiver;
+    friend class LoggerSingleton;
 
     ScriptConsole( IrrlichtDevicePtr device, LuaStatePtr luaState,
                    PropTreePtr properties );
@@ -50,8 +51,6 @@ private:
     IGUIEditBoxPtr mInputBox;
     IGUIListBoxPtr mOutputBox;
     IGUIButtonPtr mSendButton;
-
-    std::ostringstream mLogStream;
 };
 
 #endif // SCRIPTCONSOLE_H

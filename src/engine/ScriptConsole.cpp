@@ -60,8 +60,6 @@ ScriptConsole::ScriptConsole(IrrlichtDevicePtr device, LuaStatePtr luaState,
     size.LowerRightCorner.X = windowSize.LowerRightCorner.X - 10;
 
     mSendButton = mGUI->addButton( size, mMainWindow, -1, L"Send" );
-
-    LoggerSingleton::instance().addStream( mLogStream );
 }
 
 ScriptConsole::~ScriptConsole()

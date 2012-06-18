@@ -144,6 +144,20 @@ void Explore::loadConfig()
             PathTools::addPath( x->second.data() );
         }
     }
+
+    boost::filesystem3::directory_iterator items(
+                readConfigValue<std::string>( "Paths.ItemPath", "data/Items" ) ),
+            end;
+
+    for( ; items != end; ++items )
+    {
+        boost::filesystem3::path p( items->path() );
+        if( p.filename().extension() == ".item" )
+        {
+            mAvailableItems.push_back( p.filename().string() );
+            _LOG( "Item found", p.filename().string() );
+        }
+    }
 }
 
 void Explore::saveConfig()
@@ -243,19 +257,5 @@ void Explore::initMenu()
 
 void Explore::initGame()
 {
-    boost::filesystem3::directory_iterator items(
-                readConfigValue<std::string>( "Paths.ItemPath", "data/Items" ) ),
-            end;
-
-    for( ; items != end; ++items )
-    {
-        boost::filesystem3::path p( items->path() );
-        if( p.filename().extension() == ".item" )
-        {
-            mAvailableItems.push_back( p.filename().string() );
-            _LOG( "Item found", p.filename().string() );
-        }
-    }
-
     mGame.reset( new ExploreGame( this ) );
 }

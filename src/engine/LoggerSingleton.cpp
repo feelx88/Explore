@@ -25,11 +25,18 @@
 
 LoggerSingleton LoggerSingleton::sLogger;
 
-void LoggerSingleton::log(const std::string &str )
+void LoggerSingleton::log( const std::string &str )
 {
     logPrefix();
     message( str );
     newLine();
+
+    if( mScriptConsole )
+    {
+        irr::gui::IGUIListBox *output = mScriptConsole->mOutputBox;
+        output->addItem( irr::core::stringw( str.c_str() ).c_str() );
+        output->setSelected( output->getItemCount() - 1 );
+    }
 }
 
 LoggerSingleton::LoggerSingleton()
@@ -69,9 +76,16 @@ void LoggerSingleton::addStream( std::ostream &stream )
     mStreams.push_back( &stream );
 }
 
+void LoggerSingleton::setScriptConsole( ScriptConsolePtr console )
+{
+    mScriptConsole = console;
+}
+
 void LoggerSingleton::logPrefix()
 {
     boost::posix_time::time_duration t = boost::posix_time::seconds(
                 (int)time( 0 ) % ( 3600 * 24 ) );
     message( boost::posix_time::to_simple_string( t ) + " >> " );
 }
+
+
