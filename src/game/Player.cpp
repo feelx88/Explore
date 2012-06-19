@@ -43,7 +43,8 @@ Player::Player( ExplorePtr explore )
       mDevice( explore->getIrrlichtDevice() ),
       mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
-      mActiveItem( -1 )
+      mActiveItem( -1 ),
+      mJumped( false )
 {
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
@@ -237,9 +238,21 @@ void Player::processControls()
     vector3df pos( *mEntity->getPosition() );
 
     line3df rayDown( pos, pos - vector3df( 0.f, 1.2f, 0.f ) );
-    if( mEventReceiver->keyPressed( mKeyMapping[EPKM_JUMP] ) &&
-            EntityTools::getFirstEntityInRay( mBulletWorld, rayDown ) )
-        vel.Y = 6.f;
+    if( EntityTools::getFirstEntityInRay( mBulletWorld, rayDown ) )
+    {
+        if( mEventReceiver->keyPressed( mKeyMapping[EPKM_JUMP] ) )
+        {
+            vel.Y = 6.f;
+            mJumped = true;
+        }
+        else
+            mJumped = false;
+    }
+    else
+    {
+        if( !mJumped && vel.Y > 0.f )
+            vel.Y = 0.f;
+    }
 
     mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
 }

@@ -12,6 +12,7 @@
             </Child>
         </Shape>
         <Mass>100</Mass>
+        <Friction>0</Friction>
     </Body>
 </Entity>
 <Crosshair>

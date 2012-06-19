@@ -85,6 +85,8 @@ private:
 
     IGUIElementPtr mItemWin;
     irr::gui::IGUIButton *mItemIcons[10];
+
+    bool mJumped;
 };
 
 #endif // PLAYER_H
