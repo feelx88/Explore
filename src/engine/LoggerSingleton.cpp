@@ -23,7 +23,7 @@
 #include <ctime>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-LoggerSingleton *LoggerSingleton::sLogger = 0;
+LoggerSingleton *LoggerSingleton::sLogger = LoggerSingleton::sLogger;
 
 void LoggerSingleton::log( const std::string &str )
 {
