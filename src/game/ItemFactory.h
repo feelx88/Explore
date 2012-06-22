@@ -31,13 +31,25 @@ typedef boost::shared_ptr<ItemCreatorMap> ItemCreatorMapPtr;
 
 struct ItemCreatorBase
 {
+    ItemCreatorBase( bool isSpawnable )
+        :mIsSpawnable( isSpawnable )
+    {
+    }
+
     virtual Item *create( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
                           const std::string &basePath ) = 0;
+
+    bool mIsSpawnable;
 };
 
 template <typename T>
 struct ItemCreator : public ItemCreatorBase
 {
+    ItemCreator( bool isSpawnable )
+        : ItemCreatorBase( isSpawnable )
+    {
+    }
+
     Item *create( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
                   const std::string &basePath )
     {
@@ -50,14 +62,15 @@ class ItemFactory
 public:
 
     static Item *create( ExplorePtr explore, PlayerPtr owner, std::string fileName );
+    static bool isSpawnable( std::string className );
 
     template <typename T>
-    static int registerItem( std::string name )
+    static int registerItem( std::string name, bool isSpawnable = false )
     {
         if( !sCreators )
             sCreators.reset( new ItemCreatorMap() );
 
-        sCreators->insert( std::make_pair( name, new ItemCreator<T>() ) );
+        sCreators->insert( std::make_pair( name, new ItemCreator<T>( isSpawnable ) ) );
 
         return 0;
     }
