@@ -36,8 +36,14 @@ private:
     void shoot();
     void reload();
 
-    EntityPtr mBullets[10];
+    int mBulletCount;
+
+    std::vector<EntityPtr> mBullets;
     int mCurBullet;
+
+    float mAcceleration;
+
+    irr::core::stringw mFullLabel;
 
     static int sRegisterDummy;
 };

@@ -40,15 +40,21 @@ SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner,
     std::string fileName =
             PathTools::getAbsolutePath( mProperties->get<std::string>( "Item.EntityFile" ), mBasePath );
 
-    for( int x = 0; x < 10; ++x )
+    mBulletCount = mProperties->get( "Item.BulletCount", 10 );
+    mAcceleration = mProperties->get( "Item.Acceleration", 50.f );
+
+    stringw label;
+
+    for( int x = 0; x < mBulletCount; ++x )
     {
-        mBullets[x].reset( new Entity( mDevice, mBulletWorld, fileName ) );
+        mBullets.push_back( EntityPtr( new Entity( mDevice, mBulletWorld, fileName ) ) );
+        mFullLabel += L"|";
     }
 
     dimension2du winSize =
-            mDevice->getGUIEnvironment()->getSkin()->getFont()->getDimension( L"||||||||||" );
+            mDevice->getGUIEnvironment()->getSkin()->getFont()->getDimension( mFullLabel.c_str() );
 
-    mGUI = mDevice->getGUIEnvironment()->addStaticText( L"||||||||||",
+    mGUI = mDevice->getGUIEnvironment()->addStaticText( mFullLabel.c_str(),
                                                         recti( 0, 0, winSize.Width, winSize.Height ),
                                                         false, false, 0, -1, true );
     mGUI->setVisible( false );
@@ -71,22 +77,23 @@ void SimpleGunItem::startAction( int actionID )
 
 void SimpleGunItem::shoot()
 {
-    if( mCurBullet >= 10 )
+    if( mCurBullet >= mBulletCount )
         return;
 
     EntityPtr e = mOwner->getEntity();
 
     vector3df target = mOwner->rotateToDirection();
 
-    float accel = 50.f;
-
-    mBullets[mCurBullet]->setPosition( e->getSceneNode()->getAbsolutePosition() + target );
-    mBullets[mCurBullet]->getRigidBody()->setLinearVelocity( btVector3( 0, 0, 0 ) );
-    mBullets[mCurBullet]->getRigidBody()->applyCentralImpulse( VectorConverter::bt( target * accel ) );
+    mBullets.at( mCurBullet )->setPosition(
+                e->getSceneNode()->getAbsolutePosition() + target );
+    mBullets.at( mCurBullet )->getRigidBody()->setLinearVelocity(
+                btVector3( 0, 0, 0 ) );
+    mBullets.at( mCurBullet )->getRigidBody()->applyCentralImpulse(
+                VectorConverter::bt( target * mAcceleration ) );
     ++mCurBullet;
 
     stringw ammo;
-    for( int x = 0; x < 10 - mCurBullet; ++x )
+    for( int x = 0; x < mBulletCount - mCurBullet; ++x )
         ammo += L"|";
 
     mGUI->setText( ammo.c_str() );
@@ -95,10 +102,10 @@ void SimpleGunItem::shoot()
 void SimpleGunItem::reload()
 {
     mCurBullet = 0;
-    mGUI->setText( L"||||||||||" );
+    mGUI->setText( mFullLabel.c_str() );
 
-    for( int x = 0; x < 10; ++x )
+    for( int x = 0; x < mBulletCount; ++x )
     {
-        mBullets[x]->setPosition( vector3df( 0.f, -10000.f, 0.f ) );
+        mBullets.at( x )->setPosition( vector3df( 0.f, -10000.f, 0.f ) );
     }
 }

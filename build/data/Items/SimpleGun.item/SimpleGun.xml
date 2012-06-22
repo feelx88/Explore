@@ -2,4 +2,6 @@
     <Class>SimpleGun</Class>
     <Icon>icon.png</Icon>
     <EntityFile>SimpleGunEntities.xml</EntityFile>
+    <BulletCount>20</BulletCount>
+    <Acceleration>100</Acceleration>
 </Item>
