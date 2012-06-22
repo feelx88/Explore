@@ -55,13 +55,9 @@ public:
     static int registerItem( std::string name )
     {
         if( !sCreators )
-        {
-            _LOG( "Initializing static creator map." );
             sCreators.reset( new ItemCreatorMap() );
-        }
 
         sCreators->insert( std::make_pair( name, new ItemCreator<T>() ) );
-        _LOG( "Item class registered", name );
 
         return 0;
     }
