@@ -43,8 +43,8 @@ ExploreGame::ExploreGame( ExplorePtr explore )
       mDevice( explore->getIrrlichtDevice() ),
       mVideoDriver( mDevice->getVideoDriver() ),
       mSceneManager( mDevice->getSceneManager() ),
-      mEventReceiver( explore->getEventReceiver() ),
       mGUI( mDevice->getGUIEnvironment() ),
+      mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
       mLua( explore->getLuaVM() )
 {

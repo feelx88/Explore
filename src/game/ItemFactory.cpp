@@ -43,14 +43,3 @@ Item *ItemFactory::create( ExplorePtr explore, PlayerPtr owner, std::string file
         return 0;
     }
 }
-
-bool ItemFactory::isSpawnable(std::string className)
-{
-    ItemCreatorMap::iterator x = sCreators->find( className );
-
-    if( x != sCreators->end() )
-        return x->second->mIsSpawnable;
-    else
-        return false;
-
-}
