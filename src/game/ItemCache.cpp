@@ -18,23 +18,42 @@
 */
 
 #include "ItemCache.h"
+#include <engine/LoggerSingleton.h>
+#include <engine/PathTools.h>
+#include <boost/property_tree/xml_parser.hpp>
 
-ItemCache *ItemCache::sInstance( ItemCache::sInstance );
+ItemCachePtr ItemCache::sInstance;
 
-ItemCache *ItemCache::instance()
+ItemCachePtr ItemCache::instance()
 {
     if( !sInstance )
-        sInstance = new ItemCache();
+        sInstance.reset( new ItemCache() );
 
     return sInstance;
 }
 
 void ItemCache::addItem( std::string name )
 {
+    _LOG( "Adding Item to cache", name );
+
+    PropTreePtr props( new boost::property_tree::ptree() );
+    boost::property_tree::xml_parser::read_xml(
+                PathTools::getAbsoluteFileNameFromFolder( name, "xml" ), *props );
+
+    mItems.insert( std::make_pair( name, props ) );
 }
 
-PropTreePtr ItemCache::getItemProps( std::string name ) const
+boost::optional<PropTreePtr> ItemCache::getItemProps( std::string name ) const
 {
+    PropMap::const_iterator x = mItems.find( name );
+
+    if( x == mItems.end() )
+    {
+        _LOG( "Item not registered", name );
+        return boost::none;
+    }
+    else
+        return x->second;
 }
 
 ItemCache::ItemCache()

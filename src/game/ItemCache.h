@@ -21,21 +21,26 @@
 #define ITEMCACHE_H
 
 #include <engine/EngineTypedefs.h>
+#include <boost/unordered_map.hpp>
+
+class ItemCache;
+typedef boost::shared_ptr<ItemCache> ItemCachePtr;
+typedef boost::unordered::unordered_map<std::string, PropTreePtr> PropMap;
 
 class ItemCache
 {
 public:
-    static ItemCache *instance();
+    static ItemCachePtr instance();
 
     void addItem( std::string name );
-    PropTreePtr getItemProps( std::string name ) const;
+    boost::optional<PropTreePtr> getItemProps( std::string name ) const;
 
 private:
     ItemCache();
 
-    ItemCache *sInstance;
+    PropMap mItems;
 
-    std::vector<PropTreePtr> mItems;
+    static ItemCachePtr sInstance;
 };
 
 #endif // ITEMCACHE_H

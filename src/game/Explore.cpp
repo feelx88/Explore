@@ -32,6 +32,8 @@
 #include "ExploreMenu.h"
 #include "ExploreGame.h"
 
+#include "ItemCache.h"
+
 using namespace irr;
 using namespace core;
 
@@ -258,4 +260,12 @@ void Explore::initMenu()
 void Explore::initGame()
 {
     mGame.reset( new ExploreGame( this ) );
+
+    ItemCachePtr cache = ItemCache::instance();
+
+    for( StringVector::iterator x = mAvailableItems.begin();
+         x != mAvailableItems.end(); ++x )
+    {
+        cache->addItem( *x );
+    }
 }
