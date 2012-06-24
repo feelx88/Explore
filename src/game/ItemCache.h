@@ -32,8 +32,8 @@ class ItemCache
 public:
     static ItemCachePtr instance();
 
-    void addItem( std::string name );
-    boost::optional<PropTreePtr> getItemProps( std::string name ) const;
+    void addItem( const std::string &name );
+    boost::optional<PropTreePtr> getItemProps( const std::string &name ) const;
 
 private:
     ItemCache();
