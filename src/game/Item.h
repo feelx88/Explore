@@ -36,7 +36,7 @@ public:
     virtual ~Item();
 
     PropTreePtr getProperties() const;
-    EntityPtr getEntity() const;
+    EntityContainerPtr getEntities() const;
     PlayerPtr getOwner() const;
 
     virtual void startAction( int actionID );

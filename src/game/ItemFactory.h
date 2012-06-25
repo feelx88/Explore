@@ -58,6 +58,8 @@ class ItemFactory
 public:
 
     static Item *create( ExplorePtr explore, PlayerPtr owner, std::string fileName );
+    static Item *create( ExplorePtr explore, PlayerPtr owner, PropTreePtr props,
+                         std::string basePath );
 
     template <typename T>
     static int registerItem( std::string name )

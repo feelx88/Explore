@@ -43,6 +43,12 @@ void ItemCache::addItem( const std::string &name )
     mItems.insert( std::make_pair( name, props ) );
 }
 
+void ItemCache::addItem( const std::string &name , PropTreePtr properties )
+{
+    _LOG( "Adding Item to cache", name );
+    mItems.insert( std::make_pair( name, properties ) );
+}
+
 boost::optional<PropTreePtr> ItemCache::getItemProps( const std::string &name ) const
 {
     PropMap::const_iterator x = mItems.find( name );
@@ -57,6 +63,11 @@ boost::optional<PropTreePtr> ItemCache::getItemProps( const std::string &name ) 
         _LOG( "Loading Item from cache", name );
         return x->second;
     }
+}
+
+const PropMap &ItemCache::getAllItemProps() const
+{
+    return mItems;
 }
 
 ItemCache::ItemCache()

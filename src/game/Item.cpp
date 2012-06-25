@@ -34,17 +34,34 @@ Item::Item( ExplorePtr explore, Player *owner, PropTreePtr properties,
       mDevice( explore->getIrrlichtDevice() ),
       mBulletWorld( explore->getBulletWorld() ),
       mLua( explore->getLuaVM() ),
-      mProperties( properties ),
+      mProperties( PropTreePtr( new boost::property_tree::ptree( *properties ) ) ),
       mBasePath( basePath ),
       mOwner( owner ),
       mGUI( 0 )
 {
-    //create();
     loadIcon();
+
+    if( mProperties->get( "Item.AutoAddEntities", false ) )
+        create();
 }
 
 Item::~Item()
 {
+}
+
+PropTreePtr Item::getProperties() const
+{
+    return mProperties;
+}
+
+EntityContainerPtr Item::getEntities() const
+{
+    return mEntities;
+}
+
+PlayerPtr Item::getOwner() const
+{
+    return mOwner;
 }
 
 void Item::create()

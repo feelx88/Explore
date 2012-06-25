@@ -19,6 +19,11 @@
 
 #include "SimpleSpawnerItem.h"
 #include "../ItemFactory.h"
+#include "../ItemCache.h"
+#include "../Player.h"
+
+using namespace irr;
+using namespace core;
 
 int SimpleSpawnerItem::sRegisterDummy =
         ItemFactory::registerItem<SimpleSpawnerItem>( "SimpleSpawner" );
@@ -26,11 +31,52 @@ int SimpleSpawnerItem::sRegisterDummy =
 SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, PlayerPtr owner,
                                       PropTreePtr properties,
                                       const std::string &basePath )
-    : Item( explore, owner, properties, basePath )
+    : Item( explore, owner, properties, basePath ),
+      mCurItem( 0 )
 {
+    boost::property_tree::ptree spawnables = mProperties->get_child( "Item.CanSpawn" );
+
+    for( boost::property_tree::ptree::iterator x = spawnables.begin();
+         x != spawnables.end(); ++x )
+    {
+        if( x->first == "InternalItem" )
+        {
+            std::string name = x->second.data();
+
+            for( boost::property_tree::ptree::iterator y = mProperties->begin();
+                 y != mProperties->end(); ++y )
+            {
+                if( y->first == "InternalItem" && y->second.get( "<xmlattr>.Name", "" ) == name )
+                {
+                    mSpawnableItems.push_back( name );
+                    ItemCache::instance()->addItem(
+                                name,
+                                PropTreePtr( new boost::property_tree::ptree( y->second ) ) );
+                    _LOG( "Internal item added", name );
+                }
+            }
+        }
+    }
+
 
 }
 
 void SimpleSpawnerItem::startAction( int actionID )
 {
+    PropTreePtr props( new boost::property_tree::ptree(
+            **ItemCache::instance()->getItemProps( mSpawnableItems.at( mCurItem ) ) ) );
+
+    if( actionID == 1 )
+        props->put( "Entity.Body.Mass", 0.f );
+
+    ItemPtr item( ItemFactory::create(
+                mExplore, mOwner,
+                props, "" ) );
+
+    vector3df dropPoint( 0.f, 0.f, 2.f );
+    dropPoint = mOwner->rotateToDirection( dropPoint );
+    dropPoint += *mOwner->getEntity()->getPosition();
+
+    item->getEntities()->getEntity( 0 )->setPosition( dropPoint );
+    mSpawnedItems.push_back( item );
 }

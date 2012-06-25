@@ -33,6 +33,10 @@ public:
 private:
     std::vector<std::string> mSpawnableItems;
 
+    std::vector<ItemPtr> mSpawnedItems;
+
+    int mCurItem;
+
     static int sRegisterDummy;
 };
 

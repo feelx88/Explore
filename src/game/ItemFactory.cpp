@@ -53,3 +53,19 @@ Item *ItemFactory::create( ExplorePtr explore, PlayerPtr owner, std::string file
         return 0;
     }
 }
+
+Item *ItemFactory::create( ExplorePtr explore, PlayerPtr owner, PropTreePtr props,
+                           std::string basePath )
+{
+    std::string className = props->get( "Item.Class", "Item" );
+
+    ItemCreatorMap::iterator x = sCreators->find( className );
+
+    if( x != sCreators->end() )
+        return x->second->create( explore, owner, props, basePath );
+    else
+    {
+        _LOG( "Item class not found", className );
+        return 0;
+    }
+}
