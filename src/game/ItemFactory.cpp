@@ -18,6 +18,7 @@
 */
 
 #include "ItemFactory.h"
+#include "ItemCache.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -25,11 +26,20 @@ ItemCreatorMapPtr ItemFactory::sCreators( ItemFactory::sCreators );
 
 Item *ItemFactory::create( ExplorePtr explore, PlayerPtr owner, std::string fileName )
 {
+    boost::optional<PropTreePtr> cachedProps = ItemCache::instance()->getItemProps( fileName );
+
     fileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
     std::string basePath = PathTools::getBasePathFromFile( fileName );
 
-    PropTreePtr properties( new boost::property_tree::ptree() );
-    boost::property_tree::xml_parser::read_xml( fileName, *properties );
+    PropTreePtr properties;
+
+    if( !cachedProps )
+    {
+        properties.reset( new boost::property_tree::ptree() );
+        boost::property_tree::xml_parser::read_xml( fileName, *properties );
+    }
+    else
+        properties.reset( new boost::property_tree::ptree( **cachedProps ) );
 
     std::string className = properties->get( "Item.Class", "Item" );
 

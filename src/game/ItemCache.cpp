@@ -53,7 +53,10 @@ boost::optional<PropTreePtr> ItemCache::getItemProps( const std::string &name ) 
         return boost::none;
     }
     else
+    {
+        _LOG( "Loading Item from cache", name );
         return x->second;
+    }
 }
 
 ItemCache::ItemCache()
