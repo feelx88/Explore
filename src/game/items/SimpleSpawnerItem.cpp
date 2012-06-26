@@ -63,10 +63,21 @@ SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, PlayerPtr owner,
 
 void SimpleSpawnerItem::startAction( int actionID )
 {
+    if( actionID == EIA_FIRST_ACTION )
+        spawn( false );
+    else if( actionID == EIA_SECOND_ACTION )
+        spawn( true );
+    else if( actionID == EIA_UPDATE_ACTION )
+        update();
+
+}
+
+void SimpleSpawnerItem::spawn( bool zeroMass )
+{
     PropTreePtr props = *ItemCache::instance()->getItemPropsCopy(
                 mSpawnableItems.at( mCurItem ) );
 
-    if( actionID == 1 )
+    if( zeroMass )
         props->put( "Entity.Body.Mass", 0.f );
 
     ItemPtr item( ItemFactory::create(
@@ -79,4 +90,8 @@ void SimpleSpawnerItem::startAction( int actionID )
 
     item->getEntities()->getEntity( 0 )->setPosition( dropPoint );
     mSpawnedItems.push_back( item );
+}
+
+void SimpleSpawnerItem::update()
+{
 }

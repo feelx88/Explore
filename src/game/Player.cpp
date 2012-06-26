@@ -82,6 +82,9 @@ void Player::update()
 {
     processControls();
     drawCrosshair();
+
+    for( size_t x = 0; x < mInventory.size(); ++x )
+        mInventory.at( x )->startAction( EIA_UPDATE_ACTION );
 }
 
 vector3df Player::rotateToDirection( vector3df dir ) const

@@ -31,6 +31,9 @@ public:
     void startAction( int actionID );
 
 private:
+    void spawn( bool zeroMass );
+    void update();
+
     std::vector<std::string> mSpawnableItems;
 
     std::vector<ItemPtr> mSpawnedItems;

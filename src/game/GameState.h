@@ -34,7 +34,8 @@ enum E_ITEM_ACTION
 {
     EIA_FIRST_ACTION = 0,
     EIA_SECOND_ACTION,
-    EIA_USE_ACTION
+    EIA_USE_ACTION,
+    EIA_UPDATE_ACTION
 };
 
 class Explore;

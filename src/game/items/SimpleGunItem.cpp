@@ -69,9 +69,9 @@ SimpleGunItem::~SimpleGunItem()
 
 void SimpleGunItem::startAction( int actionID )
 {
-    if( actionID == 0 )
+    if( actionID == EIA_FIRST_ACTION )
         shoot();
-    else if( actionID == 1 )
+    else if( actionID == EIA_SECOND_ACTION )
         reload();
 }
 
