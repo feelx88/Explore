@@ -10,6 +10,7 @@
     <Item>
         <Class>Item</Class>
         <AutoAddEntities>true</AutoAddEntities>
+        <HalfExtents>0.75,0.75,0.75</HalfExtents>
     </Item>
     <Entity Name="Crate" ID="0">
         <Node>

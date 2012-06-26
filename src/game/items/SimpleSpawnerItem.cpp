@@ -21,9 +21,12 @@
 #include "../ItemFactory.h"
 #include "../ItemCache.h"
 #include "../Player.h"
+#include <engine/EntityTools.h>
+#include <engine/IrrlichtTools.h>
 
 using namespace irr;
 using namespace core;
+using namespace video;
 
 int SimpleSpawnerItem::sRegisterDummy =
         ItemFactory::registerItem<SimpleSpawnerItem>( "SimpleSpawner" );
@@ -49,9 +52,11 @@ SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, PlayerPtr owner,
                 if( y->first == "InternalItem" && y->second.get( "<xmlattr>.Name", "" ) == name )
                 {
                     mSpawnableItems.push_back( name );
-                    ItemCache::instance()->addItem(
-                                name,
-                                PropTreePtr( new boost::property_tree::ptree( y->second ) ) );
+
+                    PropTreePtr props( new boost::property_tree::ptree( y->second ) );
+
+                    ItemCache::instance()->addItem( name, props );
+                    mItemHalfExtents.push_back( calculateHalfExtentsFromItem( props ) );
                     _LOG( "Internal item added", name );
                 }
             }
@@ -74,6 +79,9 @@ void SimpleSpawnerItem::startAction( int actionID )
 
 void SimpleSpawnerItem::spawn( bool zeroMass )
 {
+    if( !mValidSpawnPoint )
+        return;
+
     PropTreePtr props = *ItemCache::instance()->getItemPropsCopy(
                 mSpawnableItems.at( mCurItem ) );
 
@@ -84,14 +92,46 @@ void SimpleSpawnerItem::spawn( bool zeroMass )
                 mExplore, mOwner,
                 props, "" ) );
 
-    vector3df dropPoint( 0.f, 0.f, 2.f );
-    dropPoint = mOwner->rotateToDirection( dropPoint );
-    dropPoint += *mOwner->getEntity()->getPosition();
-
-    item->getEntities()->getEntity( 0 )->setPosition( dropPoint );
+    item->getEntities()->getEntity( 0 )->setPosition( mSpawnPoint );
     mSpawnedItems.push_back( item );
 }
 
 void SimpleSpawnerItem::update()
 {
+    IVideoDriverPtr driver = mDevice->getVideoDriver();
+
+    vector3df hitPoint, normal, start, end;
+    start = mOwner->getEntity()->getSceneNode()->getAbsolutePosition();
+    end = mOwner->rotateToDirection( vector3df( 0.f, 0.f, 5.f ) ) + start;
+
+    boost::optional<Entity*> e =
+            EntityTools::getFirstEntityInRay( mExplore->getBulletWorld(),
+                                              line3df( start, end ),
+                                              hitPoint, normal );
+
+    vector3df halfExtents = mItemHalfExtents.at( mCurItem );
+
+    if( e )
+    {
+        normal = normal * halfExtents;
+        aabbox3df box( hitPoint - halfExtents + normal,
+                       hitPoint + halfExtents + normal );
+
+        mSpawnPoint = box.getCenter();
+
+        driver->setTransform( ETS_WORLD, IdentityMatrix );
+        driver->setMaterial( driver->getMaterial2D() );
+        driver->draw3DBox( box, SColor( 255, 0, 255, 0 ) );
+        mValidSpawnPoint = true;
+    }
+    else
+        mValidSpawnPoint = false;
+
+
+}
+
+vector3df SimpleSpawnerItem::calculateHalfExtentsFromItem(PropTreePtr props)
+{
+    //TODO: calculation
+    return props->get( "Item.HalfExtents", vector3df() );
 }

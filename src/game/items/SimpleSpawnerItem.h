@@ -33,12 +33,16 @@ public:
 private:
     void spawn( bool zeroMass );
     void update();
+    irr::core::vector3df calculateHalfExtentsFromItem( PropTreePtr props );
 
     std::vector<std::string> mSpawnableItems;
+    std::vector<irr::core::vector3df> mItemHalfExtents;
 
     std::vector<ItemPtr> mSpawnedItems;
 
     int mCurItem;
+    irr::core::vector3df mSpawnPoint;
+    bool mValidSpawnPoint;
 
     static int sRegisterDummy;
 };
