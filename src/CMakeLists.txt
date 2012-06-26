@@ -16,6 +16,7 @@ file( GLOB assets
     ../build/log.txt
     ../build/data/*/*/*
     ../.gitignore
+    ../README
 )
 
 add_custom_target( Assets SOURCES ${assets} )
