@@ -65,6 +65,16 @@ boost::optional<PropTreePtr> ItemCache::getItemProps( const std::string &name ) 
     }
 }
 
+boost::optional<PropTreePtr> ItemCache::getItemPropsCopy( const std::string &name )
+{
+    boost::optional<PropTreePtr> props = getItemProps( name );
+
+    if( props )
+        return PropTreePtr( new boost::property_tree::ptree( **props ) );
+    else
+        return boost::none;
+}
+
 const PropMap &ItemCache::getAllItemProps() const
 {
     return mItems;

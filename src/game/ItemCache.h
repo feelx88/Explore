@@ -35,6 +35,7 @@ public:
     void addItem( const std::string &name );
     void addItem( const std::string &name, PropTreePtr properties );
     boost::optional<PropTreePtr> getItemProps( const std::string &name ) const;
+    boost::optional<PropTreePtr> getItemPropsCopy( const std::string &name );
 
     const PropMap &getAllItemProps() const;
 

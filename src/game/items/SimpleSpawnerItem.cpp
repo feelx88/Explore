@@ -63,8 +63,8 @@ SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, PlayerPtr owner,
 
 void SimpleSpawnerItem::startAction( int actionID )
 {
-    PropTreePtr props( new boost::property_tree::ptree(
-            **ItemCache::instance()->getItemProps( mSpawnableItems.at( mCurItem ) ) ) );
+    PropTreePtr props = *ItemCache::instance()->getItemPropsCopy(
+                mSpawnableItems.at( mCurItem ) );
 
     if( actionID == 1 )
         props->put( "Entity.Body.Mass", 0.f );
