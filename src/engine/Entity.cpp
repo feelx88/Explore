@@ -249,6 +249,19 @@ void Entity::internalCreateCollisionShape()
             float radius = mProperties->get( "Entity.Body.Shape.Child.Size", 0.f );
             mCollisionShape.reset( new btSphereShape( radius / 2.f ) );
         }
+        else if( childType == "Cylinder" )
+        {
+            btVector3 extents = VectorConverter::bt(
+                        mProperties->get( "Entity.Body.Shape.Child.Size", vector3df() ) );
+            std::string direction = mProperties->get( "Entity.Body.Shape.Child.Direction", "Y" );
+
+            if( direction == "X" )
+                mCollisionShape.reset( new btCylinderShapeX( extents / 2.f ) );
+            else if( direction == "Z" )
+                mCollisionShape.reset( new btCylinderShapeZ( extents / 2.f ) );
+            else
+                mCollisionShape.reset( new btCylinderShape( extents / 2.f ) );
+        }
     }
     else if( type == "Compound" )
     {

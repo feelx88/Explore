@@ -7,8 +7,8 @@
     <Body>
         <Shape Type="Primitive">
             <Child>
-                <Type>Sphere</Type>
-                <Size>2</Size>
+                <Type>Cylinder</Type>
+                <Size>1,2,1</Size>
             </Child>
         </Shape>
         <Mass>100</Mass>
