@@ -8,7 +8,7 @@
         <Shape Type="Primitive">
             <Child>
                 <Type>Cylinder</Type>
-                <Size>1,2,1</Size>
+                <Size>2,2,2</Size>
             </Child>
         </Shape>
         <Mass>100</Mass>

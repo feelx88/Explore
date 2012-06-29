@@ -37,8 +37,6 @@ SimpleForceGunItem::SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner,
 {
     mRayDistance = mProperties->get( "Item.RayDistance", 10.f );
     mForceMultiplicator = mProperties->get( "Item.ForceMultiplicator", 100.f );
-
-    loadIcon();
 }
 
 void SimpleForceGunItem::startAction( int actionID )

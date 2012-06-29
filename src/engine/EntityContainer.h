@@ -45,6 +45,8 @@ public:
     EntityPtr getEntity( const int &id ) const;
     EntityPtr getEntity( const std::string &name ) const;
 
+    const EntityMap &getEntities() const;
+
     PropTreePtr getProperties() const;
 private:
     void create();

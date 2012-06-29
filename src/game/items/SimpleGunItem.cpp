@@ -43,11 +43,11 @@ SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner,
     mBulletCount = mProperties->get( "Item.BulletCount", 10 );
     mAcceleration = mProperties->get( "Item.Acceleration", 50.f );
 
-    stringw label;
-
     for( int x = 0; x < mBulletCount; ++x )
     {
-        mBullets.push_back( EntityPtr( new Entity( mDevice, mBulletWorld, fileName ) ) );
+        EntityPtr bullet( new Entity( mDevice, mBulletWorld, fileName ) );
+        mBullets.push_back( bullet );
+        mEntities->addEntity( bullet, x + 10, "" );
         mFullLabel += L"|";
     }
 
@@ -59,7 +59,7 @@ SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner,
                                                         false, false, 0, -1, true );
     mGUI->setVisible( false );
 
-    loadIcon();
+    registerEntities();
 }
 
 SimpleGunItem::~SimpleGunItem()

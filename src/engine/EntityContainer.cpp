@@ -67,6 +67,11 @@ EntityPtr EntityContainer::getEntity( const std::string &name ) const
     return mEntities.at( mIDs.at( name ) );
 }
 
+const EntityMap &EntityContainer::getEntities() const
+{
+    return mEntities;
+}
+
 PropTreePtr EntityContainer::getProperties() const
 {
     return mProperties;

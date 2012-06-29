@@ -26,6 +26,7 @@
 #include "Explore.h"
 
 typedef std::vector<LuaScriptPtr> ScriptVector;
+typedef boost::unordered::unordered_map<Entity*,Item*> EntityItemMap;
 
 class Item
 {
@@ -48,6 +49,7 @@ public:
 
 protected:
     void create();
+    void registerEntities();
     void loadIcon();
 
     ExplorePtr mExplore;
@@ -65,6 +67,9 @@ protected:
 
     ITexturePtr mIcon;
     IGUIElementPtr mGUI;
+
+private:
+    static EntityItemMap sEntityItemMap;
 
     static int sRegisterDummy;
 };

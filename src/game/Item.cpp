@@ -26,6 +26,7 @@
 using namespace irr;
 using namespace core;
 
+EntityItemMap Item::sEntityItemMap;
 int Item::sRegisterDummy( ItemFactory::registerItem<Item>( "Item" ) );
 
 Item::Item( ExplorePtr explore, Player *owner, PropTreePtr properties,
@@ -41,12 +42,22 @@ Item::Item( ExplorePtr explore, Player *owner, PropTreePtr properties,
 {
     loadIcon();
 
+    mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties ) );
+
     if( mProperties->get( "Item.AutoAddEntities", false ) )
         create();
 }
 
 Item::~Item()
 {
+    if( mEntities )
+    {
+        for( EntityMap::const_iterator x = mEntities->getEntities().begin();
+             x != mEntities->getEntities().end(); ++x )
+        {
+            sEntityItemMap.insert( std::make_pair( x->second.get(), this ) );
+        }
+    }
 }
 
 PropTreePtr Item::getProperties() const
@@ -66,8 +77,6 @@ PlayerPtr Item::getOwner() const
 
 void Item::create()
 {
-    mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties ) );
-
     for( boost::property_tree::ptree::iterator x = mProperties->begin();
          x != mProperties->end(); ++x )
     {
@@ -78,6 +87,17 @@ void Item::create()
                                      x->second.get( "<xmlattr>.File", false ) ) );
             mScripts.push_back( script );
         }
+    }
+
+    registerEntities();
+}
+
+void Item::registerEntities()
+{
+    for( EntityMap::const_iterator x = mEntities->getEntities().begin();
+         x != mEntities->getEntities().end(); ++x )
+    {
+        sEntityItemMap.insert( std::make_pair( x->second.get(), this ) );
     }
 }
 
