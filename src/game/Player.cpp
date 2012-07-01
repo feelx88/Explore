@@ -128,7 +128,7 @@ void Player::addItems()
 {
     mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleForceGun.item" ) );
     mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleBlockSpawner.item" ) );
-    //mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleGun.item" ) );
+    mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleGun.item" ) );
 
     mNumItems = mInventory.size();
     mActiveItem = mInventory.empty() ? -1 : 0;
