@@ -40,7 +40,7 @@ public:
         EPKM_JUMP,
         EPKM_MOUSECONTROL,
         EPKM_NEXTSLOT,
-        EPKM_PREVOISSLOT,
+        EPKM_PREVIOUSSLOT,
         EPKM_COUNT
     };
 
@@ -49,14 +49,16 @@ public:
 
     EntityPtr getEntity() const;
 
-    ItemPtr getActiveItem() const;
+    Item *getActiveItem() const;
 
     void update();
 
     irr::core::vector3df rotateToDirection(
             irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
 
-    void switchItem( int direction );
+    void addOwnedItem( Item* item );
+
+    void switchItem( int index );
 
 private:
 
@@ -77,7 +79,8 @@ private:
     irr::EKEY_CODE mKeyMapping[EPKM_COUNT];
 
     EntityPtr mEntity;
-    ItemVector mInventory;
+    std::vector<Item*> mInventory;
+    ItemVector mOwnedItems;
     int mActiveItem, mNumItems;
 
     int mCrossX, mCrossY;

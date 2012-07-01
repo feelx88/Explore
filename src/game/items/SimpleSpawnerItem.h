@@ -38,7 +38,7 @@ private:
     std::vector<std::string> mSpawnableItems;
     std::vector<irr::core::vector3df> mItemHalfExtents;
 
-    std::vector<ItemPtr> mSpawnedItems;
+    std::vector<Item*> mSpawnedItems;
 
     int mCurItem;
     irr::core::vector3df mSpawnPoint;

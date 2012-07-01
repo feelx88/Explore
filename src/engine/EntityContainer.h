@@ -40,7 +40,9 @@ public:
     EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
                     PropTreePtr properties, const std::string &basePath = "" );
 
-    void addEntity( EntityPtr entity, const int &id, const std::string &name = "" );
+    virtual ~EntityContainer();
+
+    void addEntity(EntityPtr entity, int id, const std::string &name = "" );
 
     EntityPtr getEntity( const int &id ) const;
     EntityPtr getEntity( const std::string &name ) const;

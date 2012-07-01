@@ -38,7 +38,7 @@ private:
 
     int mBulletCount;
 
-    std::vector<EntityPtr> mBullets;
+    std::vector<Entity*> mBullets;
     int mCurBullet;
 
     float mAcceleration;

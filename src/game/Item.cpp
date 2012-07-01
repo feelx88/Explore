@@ -20,6 +20,7 @@
 
 #include "Item.h"
 #include "ItemFactory.h"
+#include "Player.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -42,10 +43,17 @@ Item::Item( ExplorePtr explore, Player *owner, PropTreePtr properties,
 {
     loadIcon();
 
+    mOwner->addOwnedItem( this );
+
     mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties ) );
 
     if( mProperties->get( "Item.AutoAddEntities", false ) )
         create();
+
+    if( mProperties->get( "Item.AutoActivation", false ) )
+        setActivationState( true );
+
+    mHitPoints = mProperties->get( "Item.HitPoints", 1.f );
 }
 
 Item::~Item()
@@ -55,9 +63,12 @@ Item::~Item()
         for( EntityMap::const_iterator x = mEntities->getEntities().begin();
              x != mEntities->getEntities().end(); ++x )
         {
-            sEntityItemMap.insert( std::make_pair( x->second.get(), this ) );
+            sEntityItemMap.erase( x->second.get() );
         }
     }
+
+    if( mGUI )
+        mGUI->remove();
 }
 
 PropTreePtr Item::getProperties() const
@@ -110,10 +121,10 @@ void Item::loadIcon()
     mIcon = mDevice->getVideoDriver()->getTexture( iconFileName.c_str() );
 }
 
-
 void Item::startAction( int actionID )
 {
-    mScripts.at( actionID )->exec();
+    if( mScripts.size() >= actionID )
+        mScripts.at( actionID )->exec();
 }
 
 void Item::setGUIVisible( bool visible )
@@ -132,4 +143,39 @@ IGUIElementPtr Item::getGUIElement() const
 ITexturePtr Item::getIcon() const
 {
     return mIcon;
+}
+
+float Item::getHitPoints() const
+{
+    return mHitPoints;
+}
+
+void Item::setHitPoints( float hitPoints )
+{
+    mHitPoints = hitPoints;
+}
+
+void Item::modifyHitPoints( float difference )
+{
+    mHitPoints += difference;
+}
+
+void Item::setActivationState( bool state )
+{
+    mActivated = state;
+}
+
+bool Item::getActivationState() const
+{
+    return mActivated;
+}
+
+Item *Item::getItemFromEntity( Entity *entity )
+{
+    EntityItemMap::iterator x = sEntityItemMap.find( entity );
+
+    if( x != sEntityItemMap.end() )
+        return x->second;
+    else
+        return 0;
 }

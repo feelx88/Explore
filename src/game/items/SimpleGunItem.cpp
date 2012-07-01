@@ -46,7 +46,7 @@ SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner,
     for( int x = 0; x < mBulletCount; ++x )
     {
         EntityPtr bullet( new Entity( mDevice, mBulletWorld, fileName ) );
-        mBullets.push_back( bullet );
+        mBullets.push_back( bullet.get() );
         mEntities->addEntity( bullet, x + 10, "" );
         mFullLabel += L"|";
     }
@@ -64,7 +64,6 @@ SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner,
 
 SimpleGunItem::~SimpleGunItem()
 {
-    mGUI->remove();
 }
 
 void SimpleGunItem::startAction( int actionID )

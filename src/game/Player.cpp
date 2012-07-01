@@ -52,7 +52,7 @@ Player::Player( ExplorePtr explore )
                 *mProperties );
     mEntity.reset( new Entity( mDevice, mBulletWorld, mProperties ) );
     mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
-    mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f );
+    mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f ); //TODO:add to entity
     mEntity->getRigidBody()->setAngularFactor( btVector3( 0.f, 0.f, 0.f ) );
 
     addItems();
@@ -70,10 +70,10 @@ EntityPtr Player::getEntity() const
     return mEntity;
 }
 
-ItemPtr Player::getActiveItem() const
+Item *Player::getActiveItem() const
 {
     if( mActiveItem < 0 )
-        return ItemPtr();
+        return 0;
 
     return mInventory.at( mActiveItem );
 }
@@ -83,8 +83,14 @@ void Player::update()
     processControls();
     drawCrosshair();
 
-    if( mActiveItem != -1 )
-        mInventory.at( mActiveItem )->startAction( EIA_UPDATE_ACTION );
+    for( size_t x = 0; x < mOwnedItems.size(); ++x )
+    {
+        ItemPtr item = mOwnedItems.at( x );
+        item->startAction( EIA_UPDATE_ACTION );
+
+        if( item->getHitPoints() <= 0.f )
+            mOwnedItems.erase( mOwnedItems.begin() + x );
+    }
 }
 
 vector3df Player::rotateToDirection( vector3df dir ) const
@@ -95,9 +101,15 @@ vector3df Player::rotateToDirection( vector3df dir ) const
     return dir;
 }
 
+void Player::addOwnedItem( Item *item )
+{
+    mOwnedItems.push_back( ItemPtr( item ) );
+}
+
 void Player::switchItem( int index )
 {
     mInventory.at( mActiveItem )->setGUIVisible( false );
+    mInventory.at( mActiveItem )->setActivationState( false );
     mItemIcons[mActiveItem]->setDrawBorder( false );
 
     mActiveItem = index;
@@ -108,17 +120,15 @@ void Player::switchItem( int index )
         mActiveItem = mInventory.size() - 1;
 
     mInventory.at( mActiveItem )->setGUIVisible( true );
+    mInventory.at( mActiveItem )->setActivationState( true );
     mItemIcons[mActiveItem]->setDrawBorder( true );
 }
 
 void Player::addItems()
 {
-    mInventory.push_back( ItemPtr( ItemFactory::create(
-                                       mExplore, this, "SimpleGun.item" ) ) );
-    mInventory.push_back( ItemPtr( ItemFactory::create(
-                                       mExplore, this, "SimpleForceGun.item" ) ) );
-    mInventory.push_back( ItemPtr( ItemFactory::create(
-                                       mExplore, this, "SimpleBlockSpawner.item" ) ) );
+    mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleForceGun.item" ) );
+    mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleBlockSpawner.item" ) );
+    //mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleGun.item" ) );
 
     mNumItems = mInventory.size();
     mActiveItem = mInventory.empty() ? -1 : 0;
@@ -183,7 +193,7 @@ void Player::setKeyMappings()
     mKeyMapping[EPKM_NEXTSLOT] =
             Explore::getKeyCode( mExplore->readConfigValue<std::string>(
                                      "Controls.NextSlot", "KEY_KEY_E" ) );
-    mKeyMapping[EPKM_PREVOISSLOT] =
+    mKeyMapping[EPKM_PREVIOUSSLOT] =
             Explore::getKeyCode( mExplore->readConfigValue<std::string>(
                                      "Controls.PreviousSlot", "KEY_KEY_Q" ) );
 }
@@ -215,7 +225,7 @@ void Player::processControls()
 
         if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] ) )
             switchItem( mActiveItem + 1 );
-        if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVOISSLOT] ) )
+        if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVIOUSSLOT] ) )
             switchItem( mActiveItem - 1 );
     }
 

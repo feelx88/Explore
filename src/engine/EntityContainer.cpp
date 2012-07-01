@@ -51,8 +51,14 @@ EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world
     create();
 }
 
-void EntityContainer::addEntity( EntityPtr entity, const int &id, const std::string &name )
+EntityContainer::~EntityContainer()
 {
+}
+
+void EntityContainer::addEntity( EntityPtr entity, int id, const std::string &name )
+{
+    if( id == -1 )
+        id = mEntities.size();
     mEntities.insert( std::make_pair( id, entity ) );
     mIDs.insert( std::make_pair( name, id ) );
 }

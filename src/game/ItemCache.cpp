@@ -46,7 +46,9 @@ void ItemCache::addItem( const std::string &name )
 void ItemCache::addItem( const std::string &name , PropTreePtr properties )
 {
     _LOG( "Adding Item to cache", name );
-    mItems.insert( std::make_pair( name, properties ) );
+
+    PropTreePtr props( new boost::property_tree::ptree( *properties ) );
+    mItems.insert( std::make_pair( name, props ) );
 }
 
 boost::optional<PropTreePtr> ItemCache::getItemProps( const std::string &name ) const

@@ -36,6 +36,7 @@ private:
 
     float mRayDistance;
     float mForceMultiplicator;
+    float mDamage;
 
     static int sRegisterDummy;
 };

@@ -88,7 +88,7 @@ void SimpleSpawnerItem::spawn( bool zeroMass )
     if( zeroMass )
         props->put( "Entity.Body.Mass", 0.f );
 
-    ItemPtr item( ItemFactory::create(
+    Item *item( ItemFactory::create(
                 mExplore, mOwner,
                 props, "" ) );
 
@@ -98,6 +98,9 @@ void SimpleSpawnerItem::spawn( bool zeroMass )
 
 void SimpleSpawnerItem::update()
 {
+    if( !mActivated )
+        return;
+
     IVideoDriverPtr driver = mDevice->getVideoDriver();
 
     vector3df hitPoint, normal, start, end;

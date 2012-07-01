@@ -47,6 +47,15 @@ public:
     IGUIElementPtr getGUIElement() const;
     ITexturePtr getIcon() const;
 
+    float getHitPoints() const;
+    void setHitPoints( float hitPoints );
+    void modifyHitPoints( float difference );
+
+    void setActivationState( bool state );
+    bool getActivationState() const;
+
+    static Item* getItemFromEntity( Entity *entity );
+
 protected:
     void create();
     void registerEntities();
@@ -67,6 +76,9 @@ protected:
 
     ITexturePtr mIcon;
     IGUIElementPtr mGUI;
+
+    float mHitPoints;
+    bool mActivated;
 
 private:
     static EntityItemMap sEntityItemMap;

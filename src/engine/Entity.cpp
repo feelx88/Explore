@@ -41,11 +41,11 @@ NodeEntityMap Entity::sNodeEntityMap;
 Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
                 const PropTreePtr &properties, std::string basePath )
     : mProperties( properties ),
-      mSceneNode( 0 ),
-      mChildNode( 0 ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
-      mBulletWorld( world )
+      mBulletWorld( world ),
+      mSceneNode( 0 ),
+      mChildNode( 0 )
 {
     mBasePath = PathTools::getAbsolutePath( basePath );
     create();
@@ -56,7 +56,9 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
     : mProperties( new boost::property_tree::ptree() ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
-      mBulletWorld( world )
+      mBulletWorld( world ),
+      mSceneNode( 0 ),
+      mChildNode( 0 )
 {
     std::string fileName =
             PathTools::getAbsoluteFileNameFromFolder( propFileName, "xml" );
@@ -102,11 +104,7 @@ void Entity::internalCreateSceneNode()
     std::string mesh = mProperties->get( "Entity.Node.Mesh", std::string() );
 
     if( mesh.empty() )
-    {
-        mSceneNode = 0;
-        mChildNode = 0;
         return;
-    }
 
     int id = mProperties->get( "Entity.ID", -1 );
 
@@ -268,9 +266,9 @@ void Entity::internalCreateCollisionShape()
         //Compound
         //TODO:Compound shape
     }
-    else if( type=="Mesh" )
+    else if( type =="Mesh" )
     {
-        btTriangleMesh *collisionMesh = new btTriangleMesh();
+        btTriangleMesh *collisionMesh = new btTriangleMesh(); //TODO:save & delete
 
         IMesh *mesh = static_cast<IMeshSceneNode*>( mSceneNode )->getMesh();
 
@@ -318,6 +316,15 @@ void Entity::globalRemoveEntity( Entity *entity )
 
 Entity::~Entity()
 {
+    globalRemoveEntity( this );
+
+    if( mSceneNode )
+    {
+        if( mAnimator )
+            mSceneNode->removeAnimator( mAnimator.get() );
+        mSceneNode->removeAll();
+        mSceneNode->remove();
+    }
 }
 
 ISceneNodePtr Entity::getSceneNode() const
