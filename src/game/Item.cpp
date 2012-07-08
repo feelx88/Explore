@@ -106,9 +106,12 @@ void Item::loadIcon()
     mIcon = mDevice->getVideoDriver()->getTexture( iconFileName.c_str() );
 }
 
-void Item::startAction( int actionID )
+void Item::startAction( E_ITEM_ACTION actionID )
 {
-    if( mScripts.size() >= actionID )
+    ScriptMap::iterator x = mScripts.find( actionID );
+    if( x == mScripts.end() )
+        return;
+    else
         mScripts.at( actionID )->exec();
 }
 
@@ -167,15 +170,23 @@ Item *Item::getItemFromEntity( Entity *entity )
 
 void Item::registerScripts()
 {
-    for( boost::property_tree::ptree::iterator x = mProperties->begin();
-         x != mProperties->end(); ++x )
+    boost::optional<boost::property_tree::ptree&> itemTree =
+        mProperties->get_child_optional( "Item" );
+
+    if( !itemTree )
+        return;
+
+    for( boost::property_tree::ptree::iterator x = ( *itemTree ).begin();
+         x != ( *itemTree ).end(); ++x )
     {
         if( x->first == "Script" )
         {
+            E_ITEM_ACTION actionID =
+                    x->second.get( "<xmlattr>.Action", EIA_FIRST_ACTION );
             LuaScriptPtr script( new LuaScript(
                                      mLua, x->second.data(),
                                      x->second.get( "<xmlattr>.File", false ) ) );
-            mScripts.push_back( script );
+            mScripts.insert( std::make_pair( actionID, script ) );
         }
     }
 }

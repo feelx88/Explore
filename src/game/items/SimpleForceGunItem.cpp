@@ -40,8 +40,9 @@ SimpleForceGunItem::SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner,
     mDamage = mProperties->get( "Item.Damage", 1.f );
 }
 
-void SimpleForceGunItem::startAction( int actionID )
+void SimpleForceGunItem::startAction( E_ITEM_ACTION actionID )
 {
+    Item::startAction( actionID );
     if( actionID == EIA_FIRST_ACTION )
         shoot( true );
     else if( actionID == EIA_SECOND_ACTION )

@@ -66,8 +66,9 @@ SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, PlayerPtr owner,
 
 }
 
-void SimpleSpawnerItem::startAction( int actionID )
+void SimpleSpawnerItem::startAction( E_ITEM_ACTION actionID )
 {
+    Item::startAction( actionID );
     if( actionID == EIA_FIRST_ACTION )
         spawn( false );
     else if( actionID == EIA_SECOND_ACTION )

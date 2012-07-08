@@ -30,7 +30,7 @@ public:
                   const std::string &basePath );
     ~SimpleGunItem();
 
-    void startAction( int actionID );
+    void startAction( E_ITEM_ACTION actionID );
 
 private:
     void shoot();

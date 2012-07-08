@@ -25,8 +25,8 @@
 #include <engine/LuaScript.h>
 #include "Explore.h"
 
-typedef std::vector<LuaScriptPtr> ScriptVector;
-typedef boost::unordered::unordered_map<Entity*,Item*> EntityItemMap;
+typedef boost::unordered::unordered_map<E_ITEM_ACTION, LuaScriptPtr> ScriptMap;
+typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
 
 class Item
 {
@@ -40,7 +40,7 @@ public:
     EntityContainerPtr getEntities() const;
     PlayerPtr getOwner() const;
 
-    virtual void startAction( int actionID );
+    virtual void startAction( E_ITEM_ACTION actionID );
 
     void setGUIVisible( bool visible );
 
@@ -72,7 +72,7 @@ protected:
 
     PlayerPtr mOwner;
 
-    ScriptVector mScripts;
+    ScriptMap mScripts;
 
     ITexturePtr mIcon;
     IGUIElementPtr mGUI;
@@ -85,5 +85,37 @@ private:
 
     static int sRegisterDummy;
 };
+
+static std::ostream &operator<<( std::ostream &stream,
+                          const E_ITEM_ACTION &in )
+{
+    if( in == EIA_FIRST_ACTION )
+        stream << "FIRST";
+    else if( in == EIA_SECOND_ACTION )
+        stream << "SECOND";
+    else if( in == EIA_UPDATE_ACTION )
+        stream << "UPDATE";
+    else
+        stream << "USE";
+
+    return stream;
+}
+
+static std::istream &operator>>( std::istream &stream,
+                          E_ITEM_ACTION &out )
+{
+    std::string action;
+
+    if( action == "FIRST" )
+        out = EIA_FIRST_ACTION;
+    else if( action == "SECOND" )
+        out = EIA_SECOND_ACTION;
+    else if( action == "UPDATE" )
+        out = EIA_UPDATE_ACTION;
+    else
+        out = EIA_USE_ACTION;
+
+    return stream;
+}
 
 #endif // ITEM_H
