@@ -57,7 +57,7 @@ public:
     static Item* getItemFromEntity( Entity *entity );
 
 protected:
-    void create();
+    void registerScripts();
     void registerEntities();
     void loadIcon();
 

@@ -47,8 +47,10 @@ Item::Item( ExplorePtr explore, Player *owner, PropTreePtr properties,
 
     mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties ) );
 
+    registerScripts();
+
     if( mProperties->get( "Item.AutoAddEntities", false ) )
-        create();
+        registerEntities();
 
     if( mProperties->get( "Item.AutoActivation", false ) )
         setActivationState( true );
@@ -84,23 +86,6 @@ EntityContainerPtr Item::getEntities() const
 PlayerPtr Item::getOwner() const
 {
     return mOwner;
-}
-
-void Item::create()
-{
-    for( boost::property_tree::ptree::iterator x = mProperties->begin();
-         x != mProperties->end(); ++x )
-    {
-        if( x->first == "Script" )
-        {
-            LuaScriptPtr script( new LuaScript(
-                                     mLua, x->second.data(),
-                                     x->second.get( "<xmlattr>.File", false ) ) );
-            mScripts.push_back( script );
-        }
-    }
-
-    registerEntities();
 }
 
 void Item::registerEntities()
@@ -178,4 +163,19 @@ Item *Item::getItemFromEntity( Entity *entity )
         return x->second;
     else
         return 0;
+}
+
+void Item::registerScripts()
+{
+    for( boost::property_tree::ptree::iterator x = mProperties->begin();
+         x != mProperties->end(); ++x )
+    {
+        if( x->first == "Script" )
+        {
+            LuaScriptPtr script( new LuaScript(
+                                     mLua, x->second.data(),
+                                     x->second.get( "<xmlattr>.File", false ) ) );
+            mScripts.push_back( script );
+        }
+    }
 }
