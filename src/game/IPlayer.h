@@ -27,69 +27,33 @@
 
 typedef std::vector<ItemPtr> ItemVector;
 
-class Player
+class IPlayer
 {
 public:
+    IPlayer( ExplorePtr explore );
+    virtual ~IPlayer();
 
-    enum E_PLAYER_KEY_MAPPINGS
-    {
-        EPKM_FORWARD = 0,
-        EPKM_BACKWARD,
-        EPKM_LEFT,
-        EPKM_RIGHT,
-        EPKM_JUMP,
-        EPKM_MOUSECONTROL,
-        EPKM_NEXTSLOT,
-        EPKM_PREVIOUSSLOT,
-        EPKM_COUNT
-    };
-
-    Player( ExplorePtr explore );
-    virtual ~Player();
-
-    EntityPtr getEntity() const;
-
-    Item *getActiveItem() const;
-
-    void update();
+    virtual void update() = 0;
 
     irr::core::vector3df rotateToDirection(
             irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
 
     void addOwnedItem( Item* item );
 
-    void switchItem( int index );
+    EntityPtr getEntity() const;
 
-private:
-
-    void addItems();
-    void createGUI();
-    void setKeyMappings();
-    void processControls();
-    void drawCrosshair();
-
+protected:
     PropTreePtr mProperties;
 
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     EventReceiverPtr mEventReceiver;
     BulletWorldPtr mBulletWorld;
-    ICameraSceneNodePtr mCamera;
-
-    irr::EKEY_CODE mKeyMapping[EPKM_COUNT];
 
     EntityPtr mEntity;
+
     std::vector<Item*> mInventory;
     ItemVector mOwnedItems;
-    int mActiveItem, mNumItems;
-
-    int mCrossX, mCrossY;
-    irr::video::SColor mCrossColor;
-
-    IGUIElementPtr mItemWin;
-    irr::gui::IGUIButton *mItemIcons[10];
-
-    bool mJumped;
 };
 
 #endif // PLAYER_H

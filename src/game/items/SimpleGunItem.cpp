@@ -19,7 +19,7 @@
 
 
 #include "SimpleGunItem.h"
-#include "../Player.h"
+#include "../IPlayer.h"
 #include "../ItemFactory.h"
 #include <engine/PathTools.h>
 #include <engine/VectorConverter.h>
