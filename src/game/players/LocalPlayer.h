@@ -38,7 +38,7 @@ public:
         EPKM_COUNT
     };
 
-    LocalPlayer( ExplorePtr explore );
+    LocalPlayer( ExplorePtr explore, IPlayer *parent );
 
     ~LocalPlayer();
 

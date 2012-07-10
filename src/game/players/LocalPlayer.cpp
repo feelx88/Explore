@@ -36,8 +36,8 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-LocalPlayer::LocalPlayer( ExplorePtr explore )
-    : IPlayer( explore ),
+LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayer *parent )
+    : IPlayer( explore, parent ),
       mActiveItem( -1 ),
       mJumped( false )
 {

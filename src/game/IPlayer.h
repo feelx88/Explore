@@ -30,7 +30,7 @@ typedef std::vector<ItemPtr> ItemVector;
 class IPlayer
 {
 public:
-    IPlayer( ExplorePtr explore );
+    IPlayer( ExplorePtr explore, IPlayer *parent );
     virtual ~IPlayer();
 
     virtual void update() = 0;
@@ -41,6 +41,8 @@ public:
     void addOwnedItem( Item* item );
 
     EntityPtr getEntity() const;
+    IPlayer *getParent() const;
+    void setParent( IPlayer *parent );
 
 protected:
     PropTreePtr mProperties;
@@ -54,6 +56,8 @@ protected:
 
     std::vector<Item*> mInventory;
     ItemVector mOwnedItems;
+
+    IPlayer *mParent;
 };
 
 #endif // PLAYER_H

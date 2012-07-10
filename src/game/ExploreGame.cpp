@@ -20,6 +20,7 @@
 
 #include "ExploreGame.h"
 #include "Explore.h"
+#include "players/WorldPlayer.h"
 #include "players/LocalPlayer.h"
 #include <engine/IrrlichtTools.h>
 #include <engine/PathTools.h>
@@ -68,7 +69,9 @@ E_GAME_STATE ExploreGame::run()
     vector3df spawnPos =
             level->getProperties()->get( "Spawn.Position", vector3df() );
 
-    LocalPlayer p( mExplore );
+    WorldPlayer world( mExplore );
+
+    LocalPlayer p( mExplore, &world );
     p.getEntity()->setPosition( spawnPos );
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );

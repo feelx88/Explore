@@ -31,11 +31,12 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-IPlayer::IPlayer( ExplorePtr explore )
+IPlayer::IPlayer( ExplorePtr explore, IPlayer *parent )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
       mEventReceiver( explore->getEventReceiver() ),
-      mBulletWorld( explore->getBulletWorld() )
+      mBulletWorld( explore->getBulletWorld() ),
+      mParent( parent )
 {
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
@@ -56,6 +57,16 @@ void IPlayer::addOwnedItem( Item *item )
 EntityPtr IPlayer::getEntity() const
 {
     return mEntity;
+}
+
+IPlayer *IPlayer::getParent() const
+{
+    return mParent;
+}
+
+void IPlayer::setParent(IPlayer *parent)
+{
+    mParent = parent;
 }
 
 vector3df IPlayer::rotateToDirection( vector3df dir ) const
