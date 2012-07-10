@@ -172,6 +172,9 @@ void Entity::internalCreateSceneNode()
             mSceneNode->getMaterial( 0 ).SpecularColor = *color;
         }
 
+        bool visible = mProperties->get( "Entity.Node.Material.Visible", true );
+        mSceneNode->setVisible( visible );
+
         if( mProperties->get( "Entity.Node.OffsetTransform", false ) )
         {
             mChildNode = mSceneNode;

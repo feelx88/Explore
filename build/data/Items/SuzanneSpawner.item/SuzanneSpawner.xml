@@ -4,13 +4,16 @@
         <InternalItem>SuzanneItem</InternalItem>
     </CanSpawn>
     <Icon>icon.png</Icon>
+
+    <PlacingMarkerUseAlpha>true</PlacingMarkerUseAlpha>
+    <PlacingMarkerColor>128,255,0,0</PlacingMarkerColor>
+    <PlacingMarkerWireframe>false</PlacingMarkerWireframe>
 </Item>
 
 <InternalItem Name="SuzanneItem">
     <Item>
         <Class>Item</Class>
         <AutoAddEntities>true</AutoAddEntities>
-        <HalfExtents>1,1,1</HalfExtents>
         <HitPoints>10</HitPoints>
         <Script Action="DESTROY">print( "AYYYYYEEE!" ); io.flush()</Script>
     </Item>

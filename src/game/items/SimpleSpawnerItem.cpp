@@ -27,6 +27,7 @@
 using namespace irr;
 using namespace core;
 using namespace video;
+using namespace scene;
 
 int SimpleSpawnerItem::sRegisterDummy =
         ItemFactory::registerItem<SimpleSpawnerItem>( "SimpleSpawner" );
@@ -37,33 +38,8 @@ SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, IPlayerPtr owner,
     : Item( explore, owner, properties, basePath ),
       mCurItem( 0 )
 {
-    boost::property_tree::ptree spawnables = mProperties->get_child( "Item.CanSpawn" );
-
-    for( boost::property_tree::ptree::iterator x = spawnables.begin();
-         x != spawnables.end(); ++x )
-    {
-        if( x->first == "InternalItem" )
-        {
-            std::string name = x->second.data();
-
-            for( boost::property_tree::ptree::iterator y = mProperties->begin();
-                 y != mProperties->end(); ++y )
-            {
-                if( y->first == "InternalItem" && y->second.get( "<xmlattr>.Name", "" ) == name )
-                {
-                    mSpawnableItems.push_back( name );
-
-                    PropTreePtr props( new boost::property_tree::ptree( y->second ) );
-
-                    ItemCache::instance()->addItem( name, props );
-                    mItemHalfExtents.push_back( calculateHalfExtentsFromItem( props ) );
-                    _LOG( "Internal item added", name );
-                }
-            }
-        }
-    }
-
-
+    loadSpawnableList();
+    createPlacingMarkers();
 }
 
 void SimpleSpawnerItem::startAction( E_ITEM_ACTION actionID )
@@ -113,19 +89,25 @@ void SimpleSpawnerItem::update()
                                               line3df( start, end ),
                                               hitPoint, normal );
 
-    vector3df halfExtents = mItemHalfExtents.at( mCurItem );
-
     if( e )
     {
-        normal = normal * halfExtents;
-        aabbox3df box( hitPoint - halfExtents + normal,
-                       hitPoint + halfExtents + normal );
+        IMeshSceneNode *node = static_cast<IMeshSceneNode*>(
+                    mPlacingMarkers.at( 0 )->getSceneNode() );
 
-        mSpawnPoint = box.getCenter();
+        hitPoint += normal *
+                ( node->getBoundingBox().getExtent() * node->getScale() ) / 2.f;
 
-        driver->setTransform( ETS_WORLD, IdentityMatrix );
-        driver->setMaterial( driver->getMaterial2D() );
-        driver->draw3DBox( box, SColor( 255, 0, 255, 0 ) );
+        matrix4 mat = IdentityMatrix;
+        mat.setTranslation( hitPoint );
+        mat.setScale( node->getScale() );
+
+        driver->setTransform( ETS_WORLD, mat );
+        driver->setMaterial( mMarkerMaterial );
+
+        driver->drawMeshBuffer( node->getMesh()->getMeshBuffer( 0 ) );
+
+        mSpawnPoint = hitPoint;
+
         mValidSpawnPoint = true;
     }
     else
@@ -134,8 +116,64 @@ void SimpleSpawnerItem::update()
 
 }
 
-vector3df SimpleSpawnerItem::calculateHalfExtentsFromItem(PropTreePtr props)
+void SimpleSpawnerItem::loadSpawnableList()
 {
-    //TODO: calculation
-    return props->get( "Item.HalfExtents", vector3df() );
+    boost::property_tree::ptree spawnables = mProperties->get_child( "Item.CanSpawn" );
+
+    for( boost::property_tree::ptree::iterator x = spawnables.begin();
+         x != spawnables.end(); ++x )
+    {
+        if( x->first == "InternalItem" )
+        {
+            std::string name = x->second.data();
+
+            for( boost::property_tree::ptree::iterator y = mProperties->begin();
+                 y != mProperties->end(); ++y )
+            {
+                if( y->first == "InternalItem" && y->second.get( "<xmlattr>.Name", "" ) == name )
+                {
+                    mSpawnableItems.push_back( name );
+
+                    PropTreePtr props( new boost::property_tree::ptree( y->second ) );
+
+                    ItemCache::instance()->addItem( name, props );
+                    _LOG( "Internal item added", name );
+                }
+            }
+        }
+    }
+}
+
+void SimpleSpawnerItem::createPlacingMarkers()
+{
+    for( std::vector<std::string>::iterator x = mSpawnableItems.begin();
+         x != mSpawnableItems.end(); ++x )
+    {
+        PropTreePtr props = *ItemCache::instance()->getItemPropsCopy( *x );
+        props->get_child( "Entity" ).erase( "Body" );
+        props->put<bool>( "Entity.Node.Material.Visible", false );
+        mPlacingMarkers.push_back( EntityPtr( new Entity(
+                                                  mExplore->getIrrlichtDevice(),
+                                                  mExplore->getBulletWorld(),
+                                                  props, mBasePath ) ) );
+    }
+
+    SColor color = mProperties->get( "Item.PlacingMarkerColor", SColor( 255, 0, 255, 0 ) );
+    bool zBuffer = mProperties->get( "Item.PlacingMarkerZBuffer", true );
+    bool wire = mProperties->get( "Item.PlacingMarkerWireframe", true );
+    bool useAlpha = mProperties->get( "Item.PlacingMarkerUseAlpha", false );
+
+    if( useAlpha )
+        mMarkerMaterial.MaterialType = EMT_TRANSPARENT_ALPHA_CHANNEL;
+    else
+        mMarkerMaterial.MaterialType = EMT_SOLID;
+
+    mMarkerMaterial.DiffuseColor = color;
+    mMarkerMaterial.SpecularColor = color;
+    mMarkerMaterial.AmbientColor = color;
+    mMarkerMaterial.EmissiveColor = color;
+    mMarkerMaterial.ColorMask = ECP_ALL;
+    mMarkerMaterial.ColorMaterial = ECM_NONE;
+    mMarkerMaterial.ZBuffer = zBuffer;
+    mMarkerMaterial.Wireframe = wire;
 }

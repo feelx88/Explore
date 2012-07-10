@@ -33,10 +33,12 @@ public:
 private:
     void spawn( bool zeroMass );
     void update();
-    irr::core::vector3df calculateHalfExtentsFromItem( PropTreePtr props );
+    void loadSpawnableList();
+    void createPlacingMarkers();
 
     std::vector<std::string> mSpawnableItems;
-    std::vector<irr::core::vector3df> mItemHalfExtents;
+    std::vector<EntityPtr> mPlacingMarkers;
+    irr::video::SMaterial mMarkerMaterial;
 
     std::vector<Item*> mSpawnedItems;
 
