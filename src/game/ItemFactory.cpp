@@ -24,7 +24,7 @@
 
 ItemCreatorMapPtr ItemFactory::sCreators( ItemFactory::sCreators );
 
-Item *ItemFactory::create( ExplorePtr explore, PlayerPtr owner, std::string fileName )
+Item *ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string fileName )
 {
     boost::optional<PropTreePtr> cachedProps = ItemCache::instance()->getItemProps( fileName );
 
@@ -54,7 +54,7 @@ Item *ItemFactory::create( ExplorePtr explore, PlayerPtr owner, std::string file
     }
 }
 
-Item *ItemFactory::create( ExplorePtr explore, PlayerPtr owner, PropTreePtr props,
+Item *ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
                            std::string basePath )
 {
     std::string className = props->get( "Item.Class", "Item" );

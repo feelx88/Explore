@@ -31,7 +31,7 @@ using namespace gui;
 
 int SimpleGunItem::sRegisterDummy( ItemFactory::registerItem<SimpleGunItem>( "SimpleGun" ) );
 
-SimpleGunItem::SimpleGunItem( ExplorePtr explore, PlayerPtr owner,
+SimpleGunItem::SimpleGunItem( ExplorePtr explore, IPlayerPtr owner,
                               PropTreePtr properties, const std::string &basePath )
     : Item( explore, owner, properties, basePath ),
       mCurBullet( 0 )

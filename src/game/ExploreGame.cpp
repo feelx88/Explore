@@ -101,6 +101,7 @@ E_GAME_STATE ExploreGame::run()
                         !mExplore->getScriptConsole()->visible() );
         }
 
+        world.update();
         p.update();
 
         //mBulletWorld->debugDrawWorld();

@@ -83,7 +83,7 @@ EntityContainerPtr Item::getEntities() const
     return mEntities;
 }
 
-PlayerPtr Item::getOwner() const
+IPlayerPtr Item::getOwner() const
 {
     return mOwner;
 }
@@ -187,6 +187,8 @@ void Item::registerScripts()
                                      mLua, x->second.data(),
                                      x->second.get( "<xmlattr>.File", false ) ) );
             mScripts.insert( std::make_pair( actionID, script ) );
+
+            _LOG( "Added script for action", actionID );
         }
     }
 }

@@ -31,7 +31,7 @@ using namespace video;
 int SimpleSpawnerItem::sRegisterDummy =
         ItemFactory::registerItem<SimpleSpawnerItem>( "SimpleSpawner" );
 
-SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, PlayerPtr owner,
+SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, IPlayerPtr owner,
                                       PropTreePtr properties,
                                       const std::string &basePath )
     : Item( explore, owner, properties, basePath ),

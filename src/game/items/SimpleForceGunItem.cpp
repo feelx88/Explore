@@ -31,7 +31,7 @@ using namespace core;
 
 int SimpleForceGunItem::sRegisterDummy( ItemFactory::registerItem<SimpleForceGunItem>( "SimpleForceGun" ) );
 
-SimpleForceGunItem::SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner,
+SimpleForceGunItem::SimpleForceGunItem( ExplorePtr explore, IPlayerPtr owner,
                                         PropTreePtr properties, const std::string &basePath )
     : Item( explore, owner, properties, basePath )
 {

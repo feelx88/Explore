@@ -35,7 +35,7 @@ struct ItemCreatorBase
     {
     }
 
-    virtual Item *create( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+    virtual Item *create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
                           const std::string &basePath ) = 0;
 };
 
@@ -46,7 +46,7 @@ struct ItemCreator : public ItemCreatorBase
     {
     }
 
-    Item *create( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+    Item *create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
                   const std::string &basePath )
     {
         return new T( explore, owner, properties, basePath );
@@ -57,8 +57,8 @@ class ItemFactory
 {
 public:
 
-    static Item *create( ExplorePtr explore, PlayerPtr owner, std::string fileName );
-    static Item *create( ExplorePtr explore, PlayerPtr owner, PropTreePtr props,
+    static Item *create( ExplorePtr explore, IPlayerPtr owner, std::string fileName );
+    static Item *create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
                          std::string basePath );
 
     template <typename T>

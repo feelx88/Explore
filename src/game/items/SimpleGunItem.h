@@ -26,7 +26,7 @@
 class SimpleGunItem : public Item
 {
 public:
-    SimpleGunItem(ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+    SimpleGunItem(ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
                   const std::string &basePath );
     ~SimpleGunItem();
 

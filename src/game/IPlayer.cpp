@@ -31,7 +31,7 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-IPlayer::IPlayer( ExplorePtr explore, IPlayer *parent )
+IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
       mEventReceiver( explore->getEventReceiver() ),
@@ -64,7 +64,7 @@ IPlayer *IPlayer::getParent() const
     return mParent;
 }
 
-void IPlayer::setParent(IPlayer *parent)
+void IPlayer::setParent( IPlayerPtr parent )
 {
     mParent = parent;
 }

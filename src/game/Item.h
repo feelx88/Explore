@@ -31,14 +31,14 @@ typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
 class Item
 {
 public:
-    Item( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+    Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
           const std::string &basePath );
 
     virtual ~Item();
 
     PropTreePtr getProperties() const;
     EntityContainerPtr getEntities() const;
-    PlayerPtr getOwner() const;
+    IPlayerPtr getOwner() const;
 
     virtual void startAction( E_ITEM_ACTION actionID );
 
@@ -70,7 +70,7 @@ protected:
     std::string mBasePath;
     EntityContainerPtr mEntities;
 
-    PlayerPtr mOwner;
+    IPlayerPtr mOwner;
 
     ScriptMap mScripts;
 
@@ -93,10 +93,14 @@ static std::ostream &operator<<( std::ostream &stream,
         stream << "FIRST";
     else if( in == EIA_SECOND_ACTION )
         stream << "SECOND";
+    else if( in == EIA_USE_ACTION )
+        stream << "USE";
     else if( in == EIA_UPDATE_ACTION )
         stream << "UPDATE";
+    else if( in == EIA_DESTROY_ACTION )
+        stream << "DESTROY";
     else
-        stream << "USE";
+        stream << "UNDEFINED";
 
     return stream;
 }
@@ -105,15 +109,20 @@ static std::istream &operator>>( std::istream &stream,
                           E_ITEM_ACTION &out )
 {
     std::string action;
+    stream >> action;
 
     if( action == "FIRST" )
         out = EIA_FIRST_ACTION;
     else if( action == "SECOND" )
         out = EIA_SECOND_ACTION;
+    else if( action == "USE" )
+        out = EIA_USE_ACTION;
     else if( action == "UPDATE" )
         out = EIA_UPDATE_ACTION;
+    else if( action == "DESTROY" )
+        out = EIA_DESTROY_ACTION;
     else
-        out = EIA_USE_ACTION;
+        out = EIA_COUNT;
 
     return stream;
 }

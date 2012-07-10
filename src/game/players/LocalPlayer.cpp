@@ -67,7 +67,10 @@ void LocalPlayer::update()
         item->startAction( EIA_UPDATE_ACTION );
 
         if( item->getHitPoints() <= 0.f )
+        {
+            item->startAction( EIA_DESTROY_ACTION );
             mOwnedItems.erase( mOwnedItems.begin() + x );
+        }
     }
 }
 

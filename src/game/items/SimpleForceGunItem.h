@@ -26,7 +26,7 @@
 class SimpleForceGunItem : public Item
 {
 public:
-    SimpleForceGunItem( ExplorePtr explore, PlayerPtr owner, PropTreePtr properties,
+    SimpleForceGunItem( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
                         const std::string &basePath );
 
     void startAction( E_ITEM_ACTION actionID );

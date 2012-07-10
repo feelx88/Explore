@@ -33,7 +33,7 @@
 class IPlayer;
 class Item;
 
-typedef IPlayer* PlayerPtr;
+typedef IPlayer* IPlayerPtr;
 typedef boost::shared_ptr<Item> ItemPtr;
 
 class ExploreMenu;

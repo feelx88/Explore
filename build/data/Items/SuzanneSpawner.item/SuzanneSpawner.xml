@@ -12,6 +12,7 @@
         <AutoAddEntities>true</AutoAddEntities>
         <HalfExtents>1,1,1</HalfExtents>
         <HitPoints>10</HitPoints>
+        <Script Action="DESTROY">print( "AYYYYYEEE!" ); io.flush()</Script>
     </Item>
     <Entity Name="Suzanne" ID="0">
         <Node>

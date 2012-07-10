@@ -25,7 +25,7 @@
 class SimpleSpawnerItem : public Item
 {
 public:
-    SimpleSpawnerItem( ExplorePtr explore, PlayerPtr owner,
+    SimpleSpawnerItem( ExplorePtr explore, IPlayerPtr owner,
                        PropTreePtr properties, const std::string &basePath );
 
     void startAction( E_ITEM_ACTION actionID );
