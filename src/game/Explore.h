@@ -30,10 +30,10 @@
 #include <engine/ScriptConsole.h>
 #include "GameState.h"
 
-class Player;
+class IPlayer;
 class Item;
 
-typedef Player* PlayerPtr;
+typedef IPlayer* PlayerPtr;
 typedef boost::shared_ptr<Item> ItemPtr;
 
 class ExploreMenu;

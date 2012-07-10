@@ -20,7 +20,7 @@
 
 #include "Item.h"
 #include "ItemFactory.h"
-#include "Player.h"
+#include "IPlayer.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -30,7 +30,7 @@ using namespace core;
 EntityItemMap Item::sEntityItemMap;
 int Item::sRegisterDummy( ItemFactory::registerItem<Item>( "Item" ) );
 
-Item::Item( ExplorePtr explore, Player *owner, PropTreePtr properties,
+Item::Item( ExplorePtr explore, IPlayer *owner, PropTreePtr properties,
             const std::string &basePath )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),

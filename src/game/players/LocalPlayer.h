@@ -17,20 +17,14 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef LOCALPLAYER_H
+#define LOCALPLAYER_H
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#include "../IPlayer.h"
 
-#include <engine/Entity.h>
-#include "Explore.h"
-#include <vector>
-
-typedef std::vector<ItemPtr> ItemVector;
-
-class Player
+class LocalPlayer : public IPlayer
 {
 public:
-
     enum E_PLAYER_KEY_MAPPINGS
     {
         EPKM_FORWARD = 0,
@@ -44,43 +38,27 @@ public:
         EPKM_COUNT
     };
 
-    Player( ExplorePtr explore );
-    virtual ~Player();
+    LocalPlayer( ExplorePtr explore );
 
-    EntityPtr getEntity() const;
-
-    Item *getActiveItem() const;
+    ~LocalPlayer();
 
     void update();
 
-    irr::core::vector3df rotateToDirection(
-            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
-
-    void addOwnedItem( Item* item );
-
     void switchItem( int index );
 
-private:
+    Item *getActiveItem() const;
 
+private:
     void addItems();
     void createGUI();
     void setKeyMappings();
     void processControls();
     void drawCrosshair();
 
-    PropTreePtr mProperties;
-
-    ExplorePtr mExplore;
-    IrrlichtDevicePtr mDevice;
-    EventReceiverPtr mEventReceiver;
-    BulletWorldPtr mBulletWorld;
     ICameraSceneNodePtr mCamera;
 
     irr::EKEY_CODE mKeyMapping[EPKM_COUNT];
 
-    EntityPtr mEntity;
-    std::vector<Item*> mInventory;
-    ItemVector mOwnedItems;
     int mActiveItem, mNumItems;
 
     int mCrossX, mCrossY;
@@ -92,4 +70,4 @@ private:
     bool mJumped;
 };
 
-#endif // PLAYER_H
+#endif // LOCALPLAYER_H

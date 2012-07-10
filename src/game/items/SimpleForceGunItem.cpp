@@ -19,7 +19,7 @@
 
 
 #include "SimpleForceGunItem.h"
-#include "../Player.h"
+#include "../IPlayer.h"
 #include "../ItemFactory.h"
 #include <engine/EntityTools.h>
 #include <engine/PathTools.h>

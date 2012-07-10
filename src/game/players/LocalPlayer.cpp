@@ -17,20 +17,18 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "LocalPlayer.h"
 
-#include "Player.h"
 #include <engine/IrrlichtTools.h>
 #include <engine/EntityTools.h>
 #include <engine/EventReceiver.h>
-#include <engine/PathTools.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/VectorConverter.h>
-#include <boost/property_tree/xml_parser.hpp>
 
-#include "ItemFactory.h"
-#include "items/SimpleGunItem.h"
-#include "items/SimpleForceGunItem.h"
+#include "../ItemFactory.h"
+#include "../items/SimpleGunItem.h"
+#include "../items/SimpleForceGunItem.h"
 
 using namespace irr;
 using namespace core;
@@ -38,18 +36,11 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-Player::Player( ExplorePtr explore )
-    : mExplore( explore ),
-      mDevice( explore->getIrrlichtDevice() ),
-      mEventReceiver( explore->getEventReceiver() ),
-      mBulletWorld( explore->getBulletWorld() ),
+LocalPlayer::LocalPlayer( ExplorePtr explore )
+    : IPlayer( explore ),
       mActiveItem( -1 ),
       mJumped( false )
 {
-    mProperties.reset( new boost::property_tree::ptree() );
-    boost::property_tree::xml_parser::read_xml(
-                PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ),
-                *mProperties );
     mEntity.reset( new Entity( mDevice, mBulletWorld, mProperties ) );
     mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f ); //TODO:add to entity
@@ -60,25 +51,12 @@ Player::Player( ExplorePtr explore )
     setKeyMappings();
 }
 
-Player::~Player()
+LocalPlayer::~LocalPlayer()
 {
     mItemWin->remove();
 }
 
-EntityPtr Player::getEntity() const
-{
-    return mEntity;
-}
-
-Item *Player::getActiveItem() const
-{
-    if( mActiveItem < 0 )
-        return 0;
-
-    return mInventory.at( mActiveItem );
-}
-
-void Player::update()
+void LocalPlayer::update()
 {
     processControls();
     drawCrosshair();
@@ -93,20 +71,15 @@ void Player::update()
     }
 }
 
-vector3df Player::rotateToDirection( vector3df dir ) const
+Item *LocalPlayer::getActiveItem() const
 {
-    matrix4 m = mEntity->getSceneNode()->getAbsoluteTransformation();
-    m.rotateVect( dir );
+    if( mActiveItem < 0 )
+        return 0;
 
-    return dir;
+    return mInventory.at( mActiveItem );
 }
 
-void Player::addOwnedItem( Item *item )
-{
-    mOwnedItems.push_back( ItemPtr( item ) );
-}
-
-void Player::switchItem( int index )
+void LocalPlayer::switchItem( int index )
 {
     mInventory.at( mActiveItem )->setGUIVisible( false );
     mInventory.at( mActiveItem )->setActivationState( false );
@@ -124,7 +97,7 @@ void Player::switchItem( int index )
     mItemIcons[mActiveItem]->setDrawBorder( true );
 }
 
-void Player::addItems()
+void LocalPlayer::addItems()
 {
     mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleForceGun.item" ) );
     mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleBlockSpawner.item" ) );
@@ -141,7 +114,7 @@ void Player::addItems()
     }
 }
 
-void Player::createGUI()
+void LocalPlayer::createGUI()
 {
     IGUIWindow *win = mDevice->getGUIEnvironment()->addWindow(
                 recti( 0, 0, 10 * 32 + 2, 32 + 2 ) );
@@ -170,7 +143,7 @@ void Player::createGUI()
     mCrossColor = mProperties->get( "Crosshair.Color", SColor( 255, 0, 255, 0 ) );
 }
 
-void Player::setKeyMappings()
+void LocalPlayer::setKeyMappings()
 {
     mKeyMapping[EPKM_FORWARD] =
             Explore::getKeyCode( mExplore->readConfigValue<std::string>(
@@ -198,7 +171,7 @@ void Player::setKeyMappings()
                                      "Controls.PreviousSlot", "KEY_KEY_Q" ) );
 }
 
-void Player::processControls()
+void LocalPlayer::processControls()
 {
     if( mEventReceiver->isMouseLocked() )
     {
@@ -274,7 +247,7 @@ void Player::processControls()
     mEntity->getRigidBody()->setLinearVelocity( VectorConverter::bt( vel ) );
 }
 
-void Player::drawCrosshair()
+void LocalPlayer::drawCrosshair()
 {
     mDevice->getVideoDriver()->draw2DLine(
                 vector2di( mCrossX - 10, mCrossY ),

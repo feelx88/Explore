@@ -20,7 +20,7 @@
 #include "SimpleSpawnerItem.h"
 #include "../ItemFactory.h"
 #include "../ItemCache.h"
-#include "../Player.h"
+#include "../IPlayer.h"
 #include <engine/EntityTools.h>
 #include <engine/IrrlichtTools.h>
 
