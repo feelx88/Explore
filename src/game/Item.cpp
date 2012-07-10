@@ -45,7 +45,7 @@ Item::Item( ExplorePtr explore, IPlayer *owner, PropTreePtr properties,
 
     mOwner->addOwnedItem( this );
 
-    mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties ) );
+    mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties, mBasePath ) );
 
     registerScripts();
 

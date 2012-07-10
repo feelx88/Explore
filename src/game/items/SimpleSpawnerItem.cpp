@@ -91,7 +91,7 @@ void SimpleSpawnerItem::spawn( bool zeroMass )
 
     Item *item( ItemFactory::create(
                 mExplore, mOwner,
-                props, "" ) );
+                props, mBasePath ) );
 
     item->getEntities()->getEntity( 0 )->setPosition( mSpawnPoint );
     mSpawnedItems.push_back( item );

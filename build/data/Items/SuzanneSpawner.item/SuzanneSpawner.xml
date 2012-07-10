@@ -1,0 +1,30 @@
+<Item>
+    <Class>SimpleSpawner</Class>
+    <CanSpawn>
+        <InternalItem>SuzanneItem</InternalItem>
+    </CanSpawn>
+    <Icon>icon.png</Icon>
+</Item>
+
+<InternalItem Name="SuzanneItem">
+    <Item>
+        <Class>Item</Class>
+        <AutoAddEntities>true</AutoAddEntities>
+        <HalfExtents>1,1,1</HalfExtents>
+        <HitPoints>10</HitPoints>
+    </Item>
+    <Entity Name="Suzanne" ID="0">
+        <Node>
+            <Mesh>suzanne.obj</Mesh>
+        </Node>
+        <Body>
+            <Shape Type="Primitive">
+                <Child>
+                    <Type>Sphere</Type>
+                    <Size>2</Size>
+                </Child>
+            </Shape>
+            <Mass>25</Mass>
+        </Body>
+    </Entity>
+</InternalItem>
