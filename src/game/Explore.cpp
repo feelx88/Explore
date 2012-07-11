@@ -23,10 +23,12 @@
 #include <string>
 #include <boost/property_tree/ini_parser.hpp>
 #include <fstream>
+#include <luabind/luabind.hpp>
 
 #include <engine/IrrlichtTools.h>
 #include <engine/PathTools.h>
 #include <engine/LuaTools.h>
+#include <engine/LuaBinder.h>
 #include <engine/EventReceiver.h>
 
 #include "ExploreMenu.h"
@@ -243,6 +245,8 @@ void Explore::initBullet()
 void Explore::initLua()
 {
     mLua = LuaTools::createLuaVM();
+    luabind::open( mLua.get() );
+    LuaBinder::registerAll( mLua );
 }
 
 void Explore::initScriptConsole()

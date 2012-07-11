@@ -17,7 +17,7 @@ protected:
 
     static int registerBinder( LuaBinder *binder );
 
-    static std::vector<LuaBinderPtr> sBinders;
+    static boost::shared_ptr<std::vector<LuaBinderPtr> > sBinders;
 };
 
 #endif // LUABINDER_H

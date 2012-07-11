@@ -26,6 +26,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "ScriptConsole.h"
+#include "LuaBinder.h"
 
 #define _LOG LoggerSingleton::instance().log
 
@@ -61,6 +62,15 @@ public:
     void setScriptConsole( ScriptConsolePtr console );
 
 protected:
+    class LoggerBinder : public LuaBinder
+    {
+    public:
+        void reg( LuaStatePtr state );
+    private:
+        static void logWrapper( const std::string &str );
+        static int registerDummy;
+    };
+
     typedef std::list<std::ostream*> StreamList;
     LoggerSingleton();
     virtual ~LoggerSingleton();

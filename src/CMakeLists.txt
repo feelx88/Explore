@@ -23,10 +23,12 @@ add_custom_target( Assets SOURCES ${assets} )
 
 #find_package( Irrlicht REQUIRED )
 set( IRRLICHT_LIBRARIES Irrlicht )
-find_package( OpenAL REQUIRED )
+#find_package( OpenAL REQUIRED )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
 find_package( Lua51 REQUIRED )
 find_package( Boost COMPONENTS system filesystem REQUIRED )
+#find_package( luabind REQUIRED )
+set( LUABIND_LIBRARIES luabind )
 
 include_directories( ${BULLET_INCLUDE_DIR} )
 
@@ -35,6 +37,7 @@ target_link_libraries( Explore
                         ${OPENAL_LIBRARIES}
                         ${BULLET_LIBRARIES}
                         ${LUA_LIBRARIES}
-                        ${Boost_LIBRARIES} )
+                        ${Boost_LIBRARIES}
+                        ${LUABIND_LIBRARIES} )
 
 set_target_properties( Explore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../build )

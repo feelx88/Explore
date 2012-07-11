@@ -22,8 +22,11 @@
 #include <iostream>
 #include <ctime>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <luabind/luabind.hpp>
 
 LoggerSingleton *LoggerSingleton::sLogger = LoggerSingleton::sLogger;
+int  LoggerSingleton::LoggerBinder::registerDummy =
+        LuaBinder::registerBinder( new LoggerSingleton::LoggerBinder() );
 
 void LoggerSingleton::log( const std::string &str )
 {
@@ -91,4 +94,16 @@ void LoggerSingleton::logPrefix()
     message( boost::posix_time::to_simple_string( t ) + " >> " );
 }
 
+void LoggerSingleton::LoggerBinder::reg( LuaStatePtr state )
+{
+    using namespace luabind;
+    module( state.get() )
+    [
+        def( "log", &LoggerSingleton::LoggerBinder::logWrapper )
+    ];
+}
 
+void LoggerSingleton::LoggerBinder::logWrapper( const std::string &str )
+{
+    _LOG( str );
+}
