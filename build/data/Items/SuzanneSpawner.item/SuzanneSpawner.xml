@@ -15,7 +15,7 @@
         <Class>Item</Class>
         <AutoAddEntities>true</AutoAddEntities>
         <HitPoints>10</HitPoints>
-        <Script Action="DESTROY">print( "AYYYYYEEE!" ); io.flush()</Script>
+        <Script Action="DESTROY">log( "AYYYYYEEE!" )</Script>
     </Item>
     <Entity Name="Suzanne" ID="0">
         <Node>

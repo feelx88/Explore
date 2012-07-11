@@ -123,6 +123,14 @@ public:
 
 private:
 
+    class ExploreBinder : public LuaBinder
+    {
+    public:
+        void reg( LuaStatePtr state );
+    private:
+        static int regDummy;
+    };
+
     void loadConfig();
     void saveConfig();
 

@@ -40,6 +40,8 @@ using namespace irr;
 using namespace core;
 
 PropTreePtr Explore::sKeyCodes( new boost::property_tree::ptree() );
+int Explore::ExploreBinder::regDummy =
+        LuaBinder::registerBinder( new Explore::ExploreBinder() );
 
 Explore::Explore()
     : mConfig( new boost::property_tree::ptree ),
@@ -272,4 +274,13 @@ void Explore::initGame()
     {
         cache->addItem( *x );
     }
+}
+
+void Explore::ExploreBinder::reg( LuaStatePtr state )
+{
+    using namespace luabind;
+    module( state.get() )
+    [
+            def( "exit", &exit )
+    ];
 }
