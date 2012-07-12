@@ -79,6 +79,7 @@ protected:
 
     float mHitPoints;
     bool mActivated;
+    bool mDestructible;
 
 private:
     static EntityItemMap sEntityItemMap;

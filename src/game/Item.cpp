@@ -56,6 +56,7 @@ Item::Item( ExplorePtr explore, IPlayer *owner, PropTreePtr properties,
         setActivationState( true );
 
     mHitPoints = mProperties->get( "Item.HitPoints", 1.f );
+    mDestructible = mProperties->get( "Item.Destructible", true );
 }
 
 Item::~Item()
@@ -145,7 +146,8 @@ void Item::setHitPoints( float hitPoints )
 
 void Item::modifyHitPoints( float difference )
 {
-    mHitPoints += difference;
+    if( mDestructible )
+        mHitPoints += difference;
 }
 
 void Item::setActivationState( bool state )

@@ -4,5 +4,5 @@
     <EntityFile>SimpleGunEntities.xml</EntityFile>
     <BulletCount>20</BulletCount>
     <Acceleration>100</Acceleration>
-    <HitPoints>9999</HitPoints>
+    <Destructible>false</Destructible>
 </Item>
