@@ -25,7 +25,7 @@
 #include <vector>
 #include <boost/filesystem.hpp>
 
-typedef std::vector<boost::filesystem3::path> PathVector;
+typedef std::vector<boost::filesystem::path> PathVector;
 
 class PathTools
 {

@@ -21,7 +21,7 @@
 #include "PathTools.h"
 
 using namespace boost;
-using namespace filesystem3;
+using namespace filesystem;
 
 PathVector PathTools::sPaths;
 

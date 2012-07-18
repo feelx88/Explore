@@ -29,6 +29,7 @@
 #include <engine/LoggerSingleton.h>
 #include <engine/ScriptConsole.h>
 #include "GameState.h"
+#include "ExploreConnector.h"
 
 class IPlayer;
 class Item;
@@ -116,6 +117,7 @@ public:
     BulletWorldPtr getBulletWorld() const;
     LuaStatePtr getLuaVM() const;
     ScriptConsolePtr getScriptConsole() const;
+    IOServicePtr getIOService() const;
 
     const StringVector &getAvailableItems() const;
 
@@ -172,6 +174,8 @@ private:
     ScriptConsolePtr mScriptConsole;
 
     StringVector mAvailableItems;
+
+    IOServicePtr mIOService;
 };
 
 #endif // EXPLORE_H

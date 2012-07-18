@@ -52,6 +52,8 @@ Explore::Explore()
       mMenu( 0 )
 {
     LoggerSingleton::instance().addStream( *mLogFile );
+    mIOService.reset( new boost::asio::io_service() );
+
     loadConfig();
     initIrrlicht();
     initBullet();
@@ -117,6 +119,11 @@ ScriptConsolePtr Explore::getScriptConsole() const
     return mScriptConsole;
 }
 
+IOServicePtr Explore::getIOService() const
+{
+    return mIOService;
+}
+
 const StringVector &Explore::getAvailableItems() const
 {
     return mAvailableItems;
@@ -151,13 +158,13 @@ void Explore::loadConfig()
         }
     }
 
-    boost::filesystem3::directory_iterator items(
+    boost::filesystem::directory_iterator items(
                 readConfigValue<std::string>( "Paths.ItemPath", "data/Items" ) ),
             end;
 
     for( ; items != end; ++items )
     {
-        boost::filesystem3::path p( items->path() );
+        boost::filesystem::path p( items->path() );
         if( p.filename().extension() == ".item" )
         {
             mAvailableItems.push_back( p.filename().string() );

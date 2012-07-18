@@ -24,6 +24,7 @@
 #include <boost/asio.hpp>
 
 typedef boost::shared_ptr<boost::asio::io_service> IOServicePtr;
+typedef boost::shared_ptr<boost::asio::ip::udp::socket> UDPSocketPtr;
 
 class ExploreConnector
 {
@@ -31,8 +32,25 @@ public:
     ExploreConnector( IOServicePtr ioService, PropTreePtr properties );
 
 private:
+
+    void send();
+    void receive();
+
+    void receiveHandler( const boost::system::error_code &error, size_t transferred );
+    void sendHandler( const boost::system::error_code &error, size_t transferred );
+
     IOServicePtr mIOService;
     PropTreePtr mProperties;
+
+    UDPSocketPtr mSocket;
+
+    bool mIsServer;
+    std::string mServerIP;
+    int mPort;
+
+    std::string mSendBuffer;
+    std::vector<char> mReceiveBuffer;
+    boost::asio::ip::udp::endpoint mRemoteEndpoint;
 };
 
 #endif // EXPLORECONNECTOR_H
