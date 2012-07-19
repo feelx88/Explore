@@ -36,7 +36,8 @@ ExploreConnector::ExploreConnector( IOServicePtr ioService, PropTreePtr properti
     if( mIsServer )
         mSocket->bind( ip::udp::endpoint( ip::udp::v4(), mPort ) );
     else
-        mRemoteEndpoint = ip::udp::endpoint( boost::asio::ip::address::from_string( mServerIP ), mPort );
+        mRemoteEndpoint = ip::udp::endpoint(
+                    boost::asio::ip::address::from_string( mServerIP ), mPort );
 }
 
 void ExploreConnector::send()
@@ -47,8 +48,12 @@ void ExploreConnector::send()
 
 void ExploreConnector::receive()
 {
-    mSocket->async_receive_from( buffer( mReceiveBuffer ), mRemoteEndpoint, boost::bind(
-                                     &ExploreConnector::receiveHandler, this, _1, _2 ) );
+    if( mIsServer )
+        mSocket->async_receive_from( buffer( mReceiveBuffer ), mRemoteEndpoint, boost::bind(
+                                         &ExploreConnector::receiveHandler, this, _1, _2 ) );
+    else
+        mSocket->async_receive( buffer( mReceiveBuffer ), boost::bind(
+                                         &ExploreConnector::receiveHandler, this, _1, _2 ) );
 }
 
 void ExploreConnector::receiveHandler( const boost::system::error_code &error, size_t transferred )
