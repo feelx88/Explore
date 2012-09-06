@@ -37,7 +37,7 @@ ExploreConnector::ExploreConnector( IOServicePtr ioService, PropTreePtr properti
         mSocket->bind( ip::udp::endpoint( ip::udp::v4(), mPort ) );
     else
         mRemoteEndpoint = ip::udp::endpoint(
-                    boost::asio::ip::address::from_string( mServerIP ), mPort );
+                    ip::address::from_string( mServerIP ), mPort );
 }
 
 void ExploreConnector::send()
