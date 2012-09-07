@@ -49,14 +49,16 @@ void ExploreConnector::send()
 void ExploreConnector::receive()
 {
     if( mIsServer )
-        mSocket->async_receive_from( buffer( mReceiveBuffer ), mRemoteEndpoint, boost::bind(
-                                         &ExploreConnector::receiveHandler, this, _1, _2 ) );
+        mSocket->async_receive_from( buffer( mReceiveBuffer ), mRemoteEndpoint,
+                                     boost::bind( &ExploreConnector::receiveHandler,
+                                                  this, _1, _2 ) );
     else
         mSocket->async_receive( buffer( mReceiveBuffer ), boost::bind(
-                                         &ExploreConnector::receiveHandler, this, _1, _2 ) );
+                                    &ExploreConnector::receiveHandler, this, _1, _2 ) );
 }
 
-void ExploreConnector::receiveHandler( const boost::system::error_code &error, size_t transferred )
+void ExploreConnector::receiveHandler( const boost::system::error_code &error,
+                                       size_t transferred )
 {
     if( error )
         return;
@@ -66,7 +68,8 @@ void ExploreConnector::receiveHandler( const boost::system::error_code &error, s
     receive();
 }
 
-void ExploreConnector::sendHandler( const boost::system::error_code &error, size_t transferred )
+void ExploreConnector::sendHandler( const boost::system::error_code &error,
+                                    size_t transferred )
 {
     if( error )
         return;
