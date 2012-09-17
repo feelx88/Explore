@@ -24,13 +24,15 @@
 std::map<uint32_t, NetworkSyncable*> NetworkSyncable::sUIDMap;
 
 NetworkSyncable::NetworkSyncable()
-    : mUID( 0 )
+    : mUID( 0 ),
+      mTypeID( 0 )
 {
     setUID( nextUID() );
 }
 
-NetworkSyncable::NetworkSyncable( uint32_t uid )
-    : mUID( 0 )
+NetworkSyncable::NetworkSyncable( uint32_t uid , uint8_t typeID )
+    : mUID( 0 ),
+      mTypeID( typeID )
 {
     setUID( uid );
 }
@@ -47,7 +49,8 @@ void NetworkSyncable::deserialize( const NetworkSyncablePacket &packet )
 
 NetworkSyncablePacket NetworkSyncable::serialize( uint8_t actionID )
 {
-    return serializeInternal( actionID );
+    NetworkSyncablePacket packet( mUID, mTypeID, actionID, "" );
+    return serializeInternal( packet, actionID );
 }
 
 void NetworkSyncable::setUID( uint32_t uid )

@@ -35,7 +35,7 @@ public:
     };
 
     NetworkSyncable();
-    NetworkSyncable( uint32_t uid );
+    NetworkSyncable( uint32_t uid, uint8_t typeID );
     virtual ~NetworkSyncable();
 
     void deserialize( const NetworkSyncablePacket &packet );
@@ -43,11 +43,13 @@ public:
 
 protected:
     virtual void deserializeInternal( const NetworkSyncablePacket &packet ) = 0;
-    virtual NetworkSyncablePacket serializeInternal( uint8_t actionID ) = 0;
+    virtual NetworkSyncablePacket serializeInternal( NetworkSyncablePacket &packet,
+                                                     uint8_t actionID ) = 0;
 
     void setUID( uint32_t uid );
 
     uint32_t mUID;
+    uint8_t mTypeID;
 
 private:
     static uint32_t nextUID();
