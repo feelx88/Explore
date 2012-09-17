@@ -18,6 +18,7 @@
 */
 
 #include "ExploreConnector.h"
+#include <engine/LoggerSingleton.h>
 
 using namespace boost::asio;
 
@@ -38,43 +39,52 @@ ExploreConnector::ExploreConnector( IOServicePtr ioService, PropTreePtr properti
     else
         mRemoteEndpoint = ip::udp::endpoint(
                     ip::address::from_string( mServerIP ), mPort );
-}
-
-void ExploreConnector::send()
-{
-    mSocket->async_send_to( buffer( mSendBuffer ), mRemoteEndpoint, boost::bind(
-                             &ExploreConnector::sendHandler, this, _1, _2 ) );
-}
-
-void ExploreConnector::receive()
-{
-    if( mIsServer )
-        mSocket->async_receive_from( buffer( mReceiveBuffer ), mRemoteEndpoint,
-                                     boost::bind( &ExploreConnector::receiveHandler,
-                                                  this, _1, _2 ) );
-    else
-        mSocket->async_receive( buffer( mReceiveBuffer ), boost::bind(
-                                    &ExploreConnector::receiveHandler, this, _1, _2 ) );
-}
-
-void ExploreConnector::receiveHandler( const boost::system::error_code &error,
-                                       size_t transferred )
-{
-    if( error )
-        return;
-
-    //TODO:Do something
 
     receive();
 }
 
-void ExploreConnector::sendHandler( const boost::system::error_code &error,
-                                    size_t transferred )
+void ExploreConnector::send( const NetworkSyncablePacket &packet )
+{
+    mSocket->async_send_to( buffer( packet.serialize() ), mRemoteEndpoint, boost::bind(
+                                &ExploreConnector::sendHandler, this, _1, _2 ) );
+}
+
+bool ExploreConnector::hasPacketsInQueue() const
+{
+    return !mPacketQueue.empty();
+}
+
+NetworkSyncablePacket ExploreConnector::nextPacket()
+{
+    NetworkSyncablePacket packet = mPacketQueue.front();
+    mPacketQueue.pop();
+    return packet;
+}
+
+void ExploreConnector::receive()
+{
+    mSocket->async_receive_from( buffer( mReceiveBuffer ), mRemoteEndpoint,
+                                     boost::bind( &ExploreConnector::receiveHandler,
+                                                  this, _1, _2 ) );
+}
+
+void ExploreConnector::receiveHandler( const boost::system::error_code &error,
+                                       size_t )
 {
     if( error )
         return;
 
-    //TODO:Do something
+    NetworkSyncablePacket packet( std::string( mReceiveBuffer.begin(),
+                                               mReceiveBuffer.end() ) );
+    mPacketQueue.push( packet );
 
-    send();
+    receive();
+}
+
+void ExploreConnector::sendHandler(const boost::system::error_code &error, size_t )
+{
+    if( error )
+        return;
+
+    //TODO:Do somethin
 }

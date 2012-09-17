@@ -85,6 +85,7 @@ int Explore::run()
             mGameState = mGame->run();
             break;
         }
+        mIOService->poll();
     }
     return 0;
 }

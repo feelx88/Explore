@@ -20,29 +20,31 @@
 #ifndef NETWORKSYNCABLE_H
 #define NETWORKSYNCABLE_H
 
+#include "NetworkSyncablePacket.h"
+
 #include <string>
 #include <map>
 #include <stdint.h>
-#include "NetworkSyncableHeader.h"
 
 class NetworkSyncable
 {
 public:
-    struct UIDAlreadyUsedException : public std::exception
+    struct UIDAlreadyUsedException
     {
         UIDAlreadyUsedException( uint32_t uid );
-        const char *what();
-        uint32_t mUID;
     };
 
     NetworkSyncable();
     NetworkSyncable( uint32_t uid );
     virtual ~NetworkSyncable();
 
-    virtual void deserialize( const std::string &data ) = 0;
-    virtual std::string serialize() = 0;
+    void deserialize( const NetworkSyncablePacket &packet );
+    NetworkSyncablePacket serialize( uint8_t actionID );
 
 protected:
+    virtual void deserializeInternal( const NetworkSyncablePacket &packet ) = 0;
+    virtual NetworkSyncablePacket serializeInternal( uint8_t actionID ) = 0;
+
     void setUID( uint32_t uid );
 
     uint32_t mUID;

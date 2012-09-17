@@ -19,6 +19,7 @@
 
 #include "NetworkSyncable.h"
 #include <sstream>
+#include <iostream>
 
 std::map<uint32_t, NetworkSyncable*> NetworkSyncable::sUIDMap;
 
@@ -37,6 +38,16 @@ NetworkSyncable::NetworkSyncable( uint32_t uid )
 NetworkSyncable::~NetworkSyncable()
 {
     sUIDMap.erase( mUID );
+}
+
+void NetworkSyncable::deserialize( const NetworkSyncablePacket &packet )
+{
+    deserializeInternal( packet );
+}
+
+NetworkSyncablePacket NetworkSyncable::serialize( uint8_t actionID )
+{
+    return serializeInternal( actionID );
 }
 
 void NetworkSyncable::setUID( uint32_t uid )
@@ -67,12 +78,5 @@ uint32_t NetworkSyncable::nextUID()
 
 NetworkSyncable::UIDAlreadyUsedException::UIDAlreadyUsedException( uint32_t uid )
 {
-    mUID = uid;
-}
-
-const char *NetworkSyncable::UIDAlreadyUsedException::what()
-{
-    std::stringstream str;
-    str << "UID alredy used: " << mUID;
-    return str.str().c_str();
+    std::cerr << "UID alredy used: " << uid << std::endl;
 }

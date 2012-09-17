@@ -17,25 +17,38 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef NETWORKSYNCABLEHEADER_H
-#define NETWORKSYNCABLEHEADER_H
+#ifndef NETWORKSYNCABLEPACKET_H
+#define NETWORKSYNCABLEPACKET_H
 
 #include <string>
+#include <sstream>
 #include <stdint.h>
 
-class NetworkSyncableHeader
+class NetworkSyncablePacket
 {
 public:
-    NetworkSyncableHeader( const std::string &data );
+    NetworkSyncablePacket( const std::string &data );
+    NetworkSyncablePacket( uint32_t uid, uint8_t typeID, uint8_t actionID,
+                           const std::string &body );
+    NetworkSyncablePacket( const NetworkSyncablePacket &other );
 
     uint32_t getUID() const;
     uint8_t getTypeID() const;
+    uint8_t getActionID() const;
+    uint32_t getBodySize() const;
     std::string getBody() const;
+
+    bool isValid();
+
+    std::string serialize() const;
 
 private:
     uint32_t mUID;
-    uint8_t mTypeID;
-    std::string mBody;
+    uint8_t mTypeID, mActionID;
+    uint32_t mBodySize;
+    std::stringstream mBody;
+
+    bool mValid;
 };
 
-#endif // NETWORKSYNCABLEHEADER_H
+#endif // NETWORKSYNCABLEPACKET_H

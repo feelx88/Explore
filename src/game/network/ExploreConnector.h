@@ -21,7 +21,9 @@
 #define EXPLORECONNECTOR_H
 
 #include <engine/EngineTypedefs.h>
+#include <engine/NetworkSyncablePacket.h>
 #include <boost/asio.hpp>
+#include <queue>
 
 typedef boost::shared_ptr<boost::asio::io_service> IOServicePtr;
 typedef boost::shared_ptr<boost::asio::ip::udp::socket> UDPSocketPtr;
@@ -31,13 +33,16 @@ class ExploreConnector
 public:
     ExploreConnector( IOServicePtr ioService, PropTreePtr properties );
 
-private:
+    void send( const NetworkSyncablePacket &packet );
 
-    void send();
+    bool hasPacketsInQueue() const;
+    NetworkSyncablePacket nextPacket();
+
+private:
     void receive();
 
-    void receiveHandler( const boost::system::error_code &error, size_t transferred );
-    void sendHandler( const boost::system::error_code &error, size_t transferred );
+    void receiveHandler(const boost::system::error_code &error, size_t );
+    void sendHandler( const boost::system::error_code &error, size_t );
 
     IOServicePtr mIOService;
     PropTreePtr mProperties;
@@ -48,8 +53,8 @@ private:
     std::string mServerIP;
     int mPort;
 
-    std::string mSendBuffer;
     std::vector<char> mReceiveBuffer;
+    std::queue<NetworkSyncablePacket> mPacketQueue;
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
 };
 
