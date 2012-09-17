@@ -40,6 +40,28 @@ public:
 
     bool isValid();
 
+    void writeUInt8( const uint8_t &val );
+    void writeUInt16( const uint16_t &val );
+    void writeUInt32( const uint32_t &val );
+    void writeUInt64( const uint64_t &val );
+    void writeInt8( const int8_t &val );
+    void writeInt16( const int16_t &val );
+    void writeInt32( const int32_t &val );
+    void writeInt64( const int64_t &val );
+    void writeFloat( const float &val );
+    void writeString( const std::string &val );
+
+    uint8_t readUInt8();
+    uint16_t readUInt16();
+    uint32_t readUInt32();
+    uint64_t readUInt64();
+    int8_t readInt8();
+    int16_t readInt16();
+    int32_t readInt32();
+    int64_t readInt64();
+    float readFloat();
+    std::string readString();
+
     std::string serialize() const;
 
 private:
