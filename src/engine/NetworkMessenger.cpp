@@ -17,12 +17,12 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ExploreConnector.h"
-#include <engine/LoggerSingleton.h>
+#include "NetworkMessenger.h"
+#include "LoggerSingleton.h"
 
 using namespace boost::asio;
 
-ExploreConnector::ExploreConnector( IOServicePtr ioService, PropTreePtr properties )
+NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properties )
     : mIOService( ioService ),
       mProperties( properties )
 {
@@ -43,32 +43,32 @@ ExploreConnector::ExploreConnector( IOServicePtr ioService, PropTreePtr properti
     receive();
 }
 
-void ExploreConnector::send( const NetworkSyncablePacket &packet )
+void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 {
     mSocket->async_send_to( buffer( packet.serialize() ), mRemoteEndpoint, boost::bind(
-                                &ExploreConnector::sendHandler, this, _1, _2 ) );
+                                &NetworkMessenger::sendHandler, this, _1, _2 ) );
 }
 
-bool ExploreConnector::hasPacketsInQueue() const
+bool NetworkMessenger::hasPacketsInQueue() const
 {
     return !mPacketQueue.empty();
 }
 
-NetworkSyncablePacket ExploreConnector::nextPacket()
+NetworkSyncablePacket NetworkMessenger::nextPacket()
 {
     NetworkSyncablePacket packet = mPacketQueue.front();
     mPacketQueue.pop();
     return packet;
 }
 
-void ExploreConnector::receive()
+void NetworkMessenger::receive()
 {
     mSocket->async_receive_from( buffer( mReceiveBuffer ), mRemoteEndpoint,
-                                     boost::bind( &ExploreConnector::receiveHandler,
+                                     boost::bind( &NetworkMessenger::receiveHandler,
                                                   this, _1, _2 ) );
 }
 
-void ExploreConnector::receiveHandler( const boost::system::error_code &error,
+void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
                                        size_t )
 {
     if( error )
@@ -81,7 +81,7 @@ void ExploreConnector::receiveHandler( const boost::system::error_code &error,
     receive();
 }
 
-void ExploreConnector::sendHandler(const boost::system::error_code &error, size_t )
+void NetworkMessenger::sendHandler(const boost::system::error_code &error, size_t )
 {
     if( error )
         return;

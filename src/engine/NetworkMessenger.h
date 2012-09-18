@@ -17,21 +17,21 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef EXPLORECONNECTOR_H
-#define EXPLORECONNECTOR_H
+#ifndef NETWORKMESSENGER_H
+#define NETWORKMESSENGER_H
 
-#include <engine/EngineTypedefs.h>
-#include <engine/NetworkSyncablePacket.h>
+#include "EngineTypedefs.h"
+#include "NetworkSyncablePacket.h"
 #include <boost/asio.hpp>
 #include <queue>
 
 typedef boost::shared_ptr<boost::asio::io_service> IOServicePtr;
 typedef boost::shared_ptr<boost::asio::ip::udp::socket> UDPSocketPtr;
 
-class ExploreConnector
+class NetworkMessenger
 {
 public:
-    ExploreConnector( IOServicePtr ioService, PropTreePtr properties );
+    NetworkMessenger( IOServicePtr ioService, PropTreePtr properties );
 
     void send( const NetworkSyncablePacket &packet );
 
@@ -41,7 +41,7 @@ public:
 private:
     void receive();
 
-    void receiveHandler(const boost::system::error_code &error, size_t );
+    void receiveHandler( const boost::system::error_code &error, size_t );
     void sendHandler( const boost::system::error_code &error, size_t );
 
     IOServicePtr mIOService;
@@ -58,4 +58,4 @@ private:
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
 };
 
-#endif // EXPLORECONNECTOR_H
+#endif //NETWORKMESSENGER_H
