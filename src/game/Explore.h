@@ -29,7 +29,6 @@
 #include <engine/LoggerSingleton.h>
 #include <engine/ScriptConsole.h>
 #include "GameState.h"
-#include "network/ExploreConnector.h"
 
 class IPlayer;
 class Item;

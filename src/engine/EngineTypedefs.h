@@ -108,6 +108,11 @@ struct luaStateDeleter
 
 typedef boost::shared_ptr<lua_State> LuaStatePtr;
 
+#include <boost/asio.hpp>
+
+typedef boost::shared_ptr<boost::asio::io_service> IOServicePtr;
+typedef boost::shared_ptr<boost::asio::ip::udp::socket> UDPSocketPtr;
+
 class EventReceiver;
 
 typedef boost::shared_ptr<EventReceiver> EventReceiverPtr;

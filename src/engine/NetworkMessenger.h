@@ -22,11 +22,7 @@
 
 #include "EngineTypedefs.h"
 #include "NetworkSyncablePacket.h"
-#include <boost/asio.hpp>
 #include <queue>
-
-typedef boost::shared_ptr<boost::asio::io_service> IOServicePtr;
-typedef boost::shared_ptr<boost::asio::ip::udp::socket> UDPSocketPtr;
 
 class NetworkMessenger
 {
