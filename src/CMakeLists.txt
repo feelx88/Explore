@@ -1,11 +1,19 @@
-file(GLOB Explore_SRCS
-    *.cpp
-    *.h
-    */*.cpp
-    */*.h
-    */*/*.cpp
-    */*/*.h
+file( GLOB Engine_SRCS
+    engine/*.cpp
+    engine/*.h
+    engine/*/*.cpp
+    engine/*/*.h
 )
+
+file( GLOB Explore_SRCS
+    main.cpp
+    game/*.cpp
+    game/*.h
+    game/*/*.cpp
+    game/*/*.h
+)
+
+add_library( Engine SHARED ${Engine_SRCS} )
 
 add_executable(Explore ${Explore_SRCS})
 
@@ -32,12 +40,15 @@ set( LUABIND_LIBRARIES luabind )
 
 include_directories( ${BULLET_INCLUDE_DIR} )
 
-target_link_libraries( Explore
+target_link_libraries( Engine
                         ${IRRLICHT_LIBRARIES}
                         ${OPENAL_LIBRARIES}
                         ${BULLET_LIBRARIES}
                         ${LUA_LIBRARIES}
                         ${Boost_LIBRARIES}
                         ${LUABIND_LIBRARIES} )
+target_link_libraries( Explore Engine )
 
-set_target_properties( Explore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ../build )
+set_target_properties( Engine Explore PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ../build
+    LIBRARY_OUTPUT_DIRECTORY ../build )
