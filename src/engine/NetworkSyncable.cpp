@@ -42,15 +42,26 @@ NetworkSyncable::~NetworkSyncable()
     sUIDMap.erase( mUID );
 }
 
-void NetworkSyncable::deserialize( const NetworkSyncablePacket &packet )
+boost::optional<NetworkSyncablePacket> NetworkSyncable::deserialize( NetworkSyncablePacket &packet )
 {
-    deserializeInternal( packet );
+    return deserializeInternal( packet );
 }
 
 NetworkSyncablePacket NetworkSyncable::serialize( uint8_t actionID )
 {
     NetworkSyncablePacket packet( mUID, mTypeID, actionID, "" );
-    return serializeInternal( packet, actionID );
+    serializeInternal( packet, actionID );
+    return packet;
+}
+
+NetworkSyncable *NetworkSyncable::getObject( uint32_t uid )
+{
+    std::map<uint32_t, NetworkSyncable*>::iterator x = sUIDMap.find( uid );
+
+    if( x != sUIDMap.end() )
+        return x->second;
+    else
+        return 0;
 }
 
 void NetworkSyncable::setUID( uint32_t uid )

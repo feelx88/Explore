@@ -22,6 +22,7 @@
 
 #include "NetworkSyncablePacket.h"
 
+#include <boost/optional.hpp>
 #include <string>
 #include <map>
 #include <stdint.h>
@@ -38,12 +39,14 @@ public:
     NetworkSyncable( uint32_t uid, uint8_t typeID );
     virtual ~NetworkSyncable();
 
-    void deserialize( const NetworkSyncablePacket &packet );
+    boost::optional<NetworkSyncablePacket> deserialize( NetworkSyncablePacket &packet );
     NetworkSyncablePacket serialize( uint8_t actionID );
 
+    static NetworkSyncable *getObject( uint32_t uid );
+
 protected:
-    virtual void deserializeInternal( const NetworkSyncablePacket &packet ) = 0;
-    virtual NetworkSyncablePacket serializeInternal( NetworkSyncablePacket &packet,
+    virtual boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet ) = 0;
+    virtual void serializeInternal( NetworkSyncablePacket &packet,
                                                      uint8_t actionID ) = 0;
 
     void setUID( uint32_t uid );

@@ -19,6 +19,7 @@
 
 #include "NetworkMessenger.h"
 #include "LoggerSingleton.h"
+#include "NetworkSyncable.h"
 
 using namespace boost::asio;
 
@@ -33,6 +34,8 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
 
     mSocket.reset( new ip::udp::socket( *mIOService.get() ) );
     mSocket->open( ip::udp::v4() );
+
+    mSocket->set_option( socket_base::broadcast( true ) );
 
     if( mIsServer )
         mSocket->bind( ip::udp::endpoint( ip::udp::v4(), mPort ) );
@@ -49,6 +52,10 @@ void NetworkMessenger::send( const NetworkSyncablePacket &packet )
                                 &NetworkMessenger::sendHandler, this, _1, _2 ) );
 }
 
+void NetworkMessenger::send( const NetworkSyncable &syncable )
+{
+}
+
 bool NetworkMessenger::hasPacketsInQueue() const
 {
     return !mPacketQueue.empty();
@@ -59,6 +66,15 @@ NetworkSyncablePacket NetworkMessenger::nextPacket()
     NetworkSyncablePacket packet = mPacketQueue.front();
     mPacketQueue.pop();
     return packet;
+}
+
+void NetworkMessenger::setRemoteAddress( const std::string &address, const int &port )
+{
+    mServerIP = address;
+    mPort = port;
+
+    mRemoteEndpoint = ip::udp::endpoint(
+                ip::address::from_string( mServerIP ), mPort );
 }
 
 void NetworkMessenger::receive()
@@ -76,7 +92,19 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
 
     NetworkSyncablePacket packet( std::string( mReceiveBuffer.begin(),
                                                mReceiveBuffer.end() ) );
-    mPacketQueue.push( packet );
+
+    NetworkSyncable *syncable = NetworkSyncable::getObject( packet.getUID() );
+
+    if( syncable )
+    {
+        boost::optional<NetworkSyncablePacket> replyPacket =
+                syncable->deserialize( packet );
+
+        if( !replyPacket )
+            mPacketQueue.push( packet );
+        else
+            send( *replyPacket );
+    }
 
     receive();
 }
@@ -86,5 +114,5 @@ void NetworkMessenger::sendHandler(const boost::system::error_code &error, size_
     if( error )
         return;
 
-    //TODO:Do somethin
+    //TODO:Do something
 }

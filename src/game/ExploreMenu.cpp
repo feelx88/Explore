@@ -42,16 +42,19 @@ E_GAME_STATE ExploreMenu::run()
     int windowHeight = mExplore->readConfigValue<int>( "Engine.windowHeight", 480 );
 
     IGUIButton *buttonNewGame = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"New Game", windowWidth / 2, windowHeight * 1 / 5 );
+                mGUI, L"New Game", windowWidth / 2, windowHeight * 1 / 6 );
 
     IGUIButton *buttonLoadGame = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"Load Game", windowWidth / 2, windowHeight * 2 / 5 );
+                mGUI, L"Load Game", windowWidth / 2, windowHeight * 2 / 6 );
+
+    IGUIButton *buttonConnect = IrrlichtTools::guiCenterFittingButton(
+                mGUI, L"Connect to Server", windowWidth / 2, windowHeight * 3 / 6 );
 
     IGUIButton *buttonOptions = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"Options", windowWidth / 2, windowHeight * 3 / 5 );
+                mGUI, L"Options", windowWidth / 2, windowHeight * 4 / 6 );
 
     IGUIButton *buttonQuit = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"Quit", windowWidth / 2, windowHeight * 4 / 5 );
+                mGUI, L"Quit", windowWidth / 2, windowHeight * 5 / 6 );
 
     E_GAME_STATE state = EGS_MAIN_MENU;
     bool running = true;

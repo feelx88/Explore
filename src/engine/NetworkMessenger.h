@@ -22,6 +22,7 @@
 
 #include "EngineTypedefs.h"
 #include "NetworkSyncablePacket.h"
+#include "NetworkSyncable.h"
 #include <queue>
 
 class NetworkMessenger
@@ -30,9 +31,12 @@ public:
     NetworkMessenger( IOServicePtr ioService, PropTreePtr properties );
 
     void send( const NetworkSyncablePacket &packet );
+    void send( const NetworkSyncable& syncable );
 
     bool hasPacketsInQueue() const;
     NetworkSyncablePacket nextPacket();
+
+    void setRemoteAddress( const std::string &address, const int &port );
 
 private:
     void receive();
