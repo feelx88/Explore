@@ -21,11 +21,35 @@
 #include <iostream>
 
 ExploreServer::ExploreServer()
+    : mServerInfoAvailable( false )
 {
+}
+
+void ExploreServer::requestServerInfo( NetworkMessenger *msg,
+                                       const std::string &ip, const int &port )
+{
+    msg->sendTo( serialize( EAID_REQUEST_SERVERINFO ), ip, port );
+}
+
+bool ExploreServer::hasServerInfo() const
+{
+    return mServerInfoAvailable;
 }
 
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal( NetworkSyncablePacket &packet )
 {
+    switch( packet.getActionID() )
+    {
+    case EAID_REQUEST_SERVERINFO:
+        return serialize( EAID_SEND_SERVERINFO );
+        break;
+    case EAID_SEND_SERVERINFO:
+        mServerInfoAvailable = true;
+        break;
+    default:
+        break;
+    }
+    return boost::none;
 }
 
 void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )

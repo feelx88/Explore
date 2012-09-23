@@ -21,15 +21,31 @@
 #define EXPLORESERVER_H
 
 #include <engine/NetworkSyncable.h>
+#include <engine/NetworkMessenger.h>
 
 class ExploreServer : public NetworkSyncable
 {
 public:
+    enum E_ACTIONID
+    {
+        EAID_ACK = 0,
+        EAID_NAK,
+        EAID_REQUEST_SERVERINFO,
+        EAID_SEND_SERVERINFO,
+        EAID_CONNECT
+    };
+
     ExploreServer();
+
+    void requestServerInfo( NetworkMessenger *msg, const std::string &ip,
+                            const int &port );
+    bool hasServerInfo() const;
 
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
+
+    bool mServerInfoAvailable;
 };
 
 #endif // EXPLORESERVER_H
