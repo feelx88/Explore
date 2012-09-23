@@ -27,6 +27,7 @@ enum E_GAME_STATE
 {
     EGS_QUIT = 0,
     EGS_MAIN_MENU,
+    EGS_CONNECT,
     EGS_GAME
 };
 

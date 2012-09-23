@@ -67,6 +67,8 @@ E_GAME_STATE ExploreMenu::run()
         //Dummy buttons
         if( buttonLoadGame->isPressed() )
             _LOG( "Load Game button pressed" );
+        if( buttonConnect->isPressed() )
+            _LOG( "Connect button pressed" );
         if( buttonOptions->isPressed() )
             _LOG( "Options button pressed" );
 
