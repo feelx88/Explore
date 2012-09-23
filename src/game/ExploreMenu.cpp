@@ -97,6 +97,7 @@ E_GAME_STATE ExploreMenu::run()
 
     buttonNewGame->remove();
     buttonLoadGame->remove();
+    buttonConnect->remove();
     buttonOptions->remove();
     buttonQuit->remove();
 
