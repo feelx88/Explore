@@ -48,12 +48,23 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
 
 void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 {
-    mSocket->async_send_to( buffer( packet.serialize() ), mRemoteEndpoint, boost::bind(
+    sendTo( packet, mRemoteEndpoint );
+}
+
+void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
+                               const ip::udp::endpoint &endpoint )
+{
+    mSocket->async_send_to( buffer( packet.serialize() ), endpoint, boost::bind(
                                 &NetworkMessenger::sendHandler, this, _1, _2 ) );
 }
 
-void NetworkMessenger::send( const NetworkSyncable &syncable )
+void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
+                               const std::string &ip, const int &port )
 {
+    ip::udp::endpoint endpoint =
+            ip::udp::endpoint( ip::address::from_string( ip ), port );
+
+    sendTo( packet, endpoint );
 }
 
 bool NetworkMessenger::hasPacketsInQueue() const

@@ -31,7 +31,10 @@ public:
     NetworkMessenger( IOServicePtr ioService, PropTreePtr properties );
 
     void send( const NetworkSyncablePacket &packet );
-    void send( const NetworkSyncable& syncable );
+    void sendTo( const NetworkSyncablePacket &packet,
+                 const boost::asio::ip::udp::endpoint &endpoint );
+    void sendTo( const NetworkSyncablePacket &packet, const std::string &ip,
+                 const int &port );
 
     bool hasPacketsInQueue() const;
     NetworkSyncablePacket nextPacket();
