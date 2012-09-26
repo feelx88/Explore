@@ -39,12 +39,11 @@ E_GAME_STATE ExploreMenu::run()
 {
     E_GAME_STATE state = EGS_MAIN_MENU;
 
-    mDevice->setWindowCaption( L"Explore - Main Menu" );
     int windowWidth = mExplore->readConfigValue<int>( "Engine.windowWidth", 640 );
     int windowHeight = mExplore->readConfigValue<int>( "Engine.windowHeight", 480 );
 
     //Container window
-    IGUIWindow *main = mGUI->addWindow( recti( 1, 1, windowWidth, windowHeight ) );
+    IGUIWindow *main = mGUI->addWindow( recti( 0, 0, windowWidth, windowHeight ) );
     main->setDrawBackground( false );
     main->setDraggable( false );
     main->setDrawTitlebar( false );
@@ -58,7 +57,7 @@ E_GAME_STATE ExploreMenu::run()
     recti menurect = menuWindow->getAbsoluteClippingRect();
     menuWindow->setRelativePosition(
                 vector2di( windowWidth / 2 - menurect.getWidth() / 2,
-                           windowHeight / 2 -menurect.getHeight() / 2 ) );
+                           windowHeight / 2 - menurect.getHeight() / 2 ) );
 
     //Main button callbacks
     struct : public EventReceiver::GUICallback {
