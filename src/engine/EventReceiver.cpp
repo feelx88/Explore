@@ -133,6 +133,16 @@ bool EventReceiver::OnEvent( const SEvent &event )
 
     if( event.EventType == EET_GUI_EVENT )
     {
+        boost::unordered::unordered_map<std::pair<int, irr::gui::EGUI_EVENT_TYPE>,
+            GUICallback*>::iterator x = mGUICallbacks.find( std::make_pair(
+                                                                event.GUIEvent.Caller->getID(), event.GUIEvent.EventType ) );
+
+        if( x != mGUICallbacks.end() )
+        {
+            if( x->second->call( event.GUIEvent.Caller ) )
+                return true;
+        }
+
         if( event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
         {
             if( mScriptConsole &&
@@ -226,6 +236,22 @@ int EventReceiver::mouseWheelY()
 {
     return mMouseWheelY;
     mMouseWheelY = 0;
+}
+
+void EventReceiver::registerGUICallback( EventReceiver::GUICallback *callback,
+                                         int id, gui::EGUI_EVENT_TYPE evt )
+{
+    removeGUICallback( id, evt );
+    mGUICallbacks.insert( std::make_pair( std::make_pair( id, evt ), callback ) );
+}
+
+void EventReceiver::removeGUICallback( int id, gui::EGUI_EVENT_TYPE evt )
+{
+    boost::unordered::unordered_map<std::pair<int, irr::gui::EGUI_EVENT_TYPE>,
+        GUICallback*>::iterator x = mGUICallbacks.find( std::make_pair( id, evt ) );
+
+    if( x != mGUICallbacks.end() )
+        mGUICallbacks.erase( x );
 }
 
 void EventReceiver::sendScriptConsoleCommand()

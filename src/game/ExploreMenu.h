@@ -33,6 +33,17 @@ public:
     E_GAME_STATE run();
 
 protected:
+    enum E_GUI_IDS
+    {
+        EGID_MAINMENU = 10,
+        EGID_NEW_GAME,
+        EGID_LOAD_GAME,
+        EGID_CONNECT,
+        EGID_OPTIONS,
+        EGID_QUIT,
+        EGID_OPTIONS_WINDOW = 20
+    };
+
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;

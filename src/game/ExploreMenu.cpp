@@ -37,69 +37,124 @@ ExploreMenu::ExploreMenu( ExplorePtr explore )
 
 E_GAME_STATE ExploreMenu::run()
 {
+    E_GAME_STATE state = EGS_MAIN_MENU;
+
     mDevice->setWindowCaption( L"Explore - Main Menu" );
     int windowWidth = mExplore->readConfigValue<int>( "Engine.windowWidth", 640 );
     int windowHeight = mExplore->readConfigValue<int>( "Engine.windowHeight", 480 );
 
-    IGUIButton *buttonNewGame = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"New Game", windowWidth / 2, windowHeight * 1 / 6 );
+    //Container window
+    IGUIWindow *main = mGUI->addWindow( recti( 1, 1, windowWidth, windowHeight ) );
+    main->setDrawBackground( false );
+    main->setDraggable( false );
+    main->setDrawTitlebar( false );
+    main->getCloseButton()->setVisible( false );
 
-    IGUIButton *buttonLoadGame = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"Load Game", windowWidth / 2, windowHeight * 2 / 6 );
+    mGUI->loadGUI( "data/mainUI.xml", main );
 
-    IGUIButton *buttonConnect = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"Connect to Server", windowWidth / 2, windowHeight * 3 / 6 );
+    //Center menu
+    IGUIWindow *menuWindow = static_cast<IGUIWindow*>(
+                main->getElementFromId( 10 ) );
+    recti menurect = menuWindow->getAbsoluteClippingRect();
+    menuWindow->setRelativePosition(
+                vector2di( windowWidth / 2 - menurect.getWidth() / 2,
+                           windowHeight / 2 -menurect.getHeight() / 2 ) );
 
-    IGUIButton *buttonOptions = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"Options", windowWidth / 2, windowHeight * 4 / 6 );
+    //Main button callbacks
+    struct : public EventReceiver::GUICallback {
+        bool call( IGUIElementPtr ) {
+            _LOG( "New Game button pressed" );
+            *state = EGS_GAME;
+            return true;
+        }
+        E_GAME_STATE *state;
+    } newGameClicked;
+    newGameClicked.state = &state;
 
-    IGUIButton *buttonQuit = IrrlichtTools::guiCenterFittingButton(
-                mGUI, L"Quit", windowWidth / 2, windowHeight * 5 / 6 );
+    struct : public EventReceiver::GUICallback {
+        bool call( IGUIElementPtr ) {
+            _LOG( "Load Game button pressed" );
+            return true;
+        }
+    } loadGameClicked;
 
-    E_GAME_STATE state = EGS_MAIN_MENU;
-    bool running = true;
+    struct : public EventReceiver::GUICallback {
+        bool call( IGUIElementPtr ) {
+            _LOG( "Connect button pressed" );
+            return true;
+        }
+    } connectClicked;
 
-    while( running && mDevice->run() )
+    struct : public EventReceiver::GUICallback {
+        bool call( IGUIElementPtr caller ) {
+            _LOG( "Options button pressed" );
+            IGUIElementPtr win = caller->getParent()->getParent()->getElementFromId(
+                        EGID_OPTIONS_WINDOW );
+            win->setVisible( true );
+            win->setRelativePosition( position2di( 0, 0 ) );
+            win->getParent()->bringToFront( win );
+            return true;
+        }
+    } optionsClicked;
+
+    struct : public EventReceiver::GUICallback {
+        bool call( IGUIElementPtr ) {
+            _LOG( "Quit button pressed" );
+            *state = EGS_QUIT;
+            return true;
+        }
+        E_GAME_STATE *state;
+    } quitClicked;
+    quitClicked.state = &state;
+
+    mExplore->getEventReceiver()->registerGUICallback( &newGameClicked,
+                                                       EGID_NEW_GAME,
+                                                       EGET_BUTTON_CLICKED );
+    mExplore->getEventReceiver()->registerGUICallback( &loadGameClicked,
+                                                       EGID_LOAD_GAME,
+                                                       EGET_BUTTON_CLICKED );
+    mExplore->getEventReceiver()->registerGUICallback( &connectClicked,
+                                                       EGID_CONNECT,
+                                                       EGET_BUTTON_CLICKED );
+    mExplore->getEventReceiver()->registerGUICallback( &optionsClicked,
+                                                       EGID_OPTIONS,
+                                                       EGET_BUTTON_CLICKED );
+    mExplore->getEventReceiver()->registerGUICallback( &quitClicked,
+                                                       EGID_QUIT,
+                                                       EGET_BUTTON_CLICKED );
+
+    //Callback to prevent closing of optionsWindow
+    struct : public EventReceiver::GUICallback {
+        bool call( IGUIElementPtr caller ) {
+            _LOG( "Options Window closed" );
+            caller->setVisible( false );
+            return true;
+        }
+    } optionsWindowClose;
+
+    mExplore->getEventReceiver()->registerGUICallback( &optionsWindowClose,
+                                                       EGID_OPTIONS_WINDOW,
+                                                       EGET_ELEMENT_CLOSED );
+
+    while( state == EGS_MAIN_MENU && mDevice->run() )
     {
-        mVideoDriver->beginScene( true, true, irr::video::SColor( 255, 100, 100, 100 ) );
+        mVideoDriver->beginScene( true, true,
+                                  irr::video::SColor( 255, 100, 100, 100 ) );
         mGUI->drawAll();
 
-        //Dummy buttons
-        if( buttonLoadGame->isPressed() )
-            _LOG( "Load Game button pressed" );
-        if( buttonConnect->isPressed() )
-            _LOG( "Connect button pressed" );
-        if( buttonOptions->isPressed() )
-            _LOG( "Options button pressed" );
-
-        //Working buttons
-        if( buttonNewGame->isPressed() )
-        {
-            _LOG( "New Game button pressed" );
-            state = EGS_GAME;
-            running = false;
-        }
-
-        if( buttonQuit->isPressed() ||
-                mExplore->getEventReceiver()->keyClicked( KEY_ESCAPE ) )
-        {
-            _LOG( "Quit button pressed" );
-            state = EGS_QUIT;
-            running = false;
-        }
-
+        //Handle console key
         if( mExplore->getEventReceiver()->keyClicked( KEY_F12 ) )
+        {
             mExplore->getScriptConsole()->setVisible(
                         !mExplore->getScriptConsole()->visible() );
+
+        }
 
         mVideoDriver->endScene();
     }
 
-    buttonNewGame->remove();
-    buttonLoadGame->remove();
-    buttonConnect->remove();
-    buttonOptions->remove();
-    buttonQuit->remove();
+    //Remove container
+    main->remove();
 
     return state;
 }

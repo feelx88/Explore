@@ -69,6 +69,7 @@ ScriptConsole::~ScriptConsole()
 void ScriptConsole::setVisible(bool visible)
 {
     mMainWindow->setVisible( visible );
+    mGUI->getRootGUIElement()->bringToFront( mMainWindow );
 }
 
 bool ScriptConsole::visible() const

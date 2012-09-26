@@ -23,10 +23,16 @@
 
 #include "EngineTypedefs.h"
 #include "ScriptConsole.h"
+#include <boost/unordered_map.hpp>
 
 class EventReceiver : public irr::IEventReceiver
 {
 public:
+    struct GUICallback
+    {
+        virtual bool call( IGUIElementPtr caller ) = 0;
+    };
+
     EventReceiver();
 
     void setDevice( IrrlichtDevicePtr device );
@@ -50,6 +56,10 @@ public:
 
     int mouseWheelY();
 
+    void registerGUICallback( GUICallback *callback, int id,
+                              irr::gui::EGUI_EVENT_TYPE evt );
+    void removeGUICallback( int id, irr::gui::EGUI_EVENT_TYPE evt );
+
 private:
     void sendScriptConsoleCommand();
 
@@ -63,6 +73,10 @@ private:
     bool mMouseLocked;
     int mMouseX, mMouseY, mMouseMoveX, mMouseMoveY, mMouseWheelY;
     int mWinWidth, mWinHeight;
+
+    boost::unordered::unordered_map<std::pair<int, irr::gui::EGUI_EVENT_TYPE>,
+        GUICallback*>
+        mGUICallbacks;
 };
 
 #endif // EVENTRECEIVER_H
