@@ -27,7 +27,6 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
     : mIOService( ioService ),
       mProperties( properties )
 {
-    mIsServer = mProperties->get( "Server.Activated", false );
     mServerIP = mProperties->get( "Server.IP", "127.0.0.1" );
     mPort = mProperties->get( "Server.Port", 6556 );
     mReceiveBuffer.resize( mProperties->get( "Server.BufferSize", 512 ) );
@@ -37,11 +36,10 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
 
     mSocket->set_option( socket_base::broadcast( true ) );
 
-    if( mIsServer )
-        mSocket->bind( ip::udp::endpoint( ip::udp::v4(), mPort ) );
-    else
-        mRemoteEndpoint = ip::udp::endpoint(
-                    ip::address::from_string( mServerIP ), mPort );
+    mSocket->bind( ip::udp::endpoint( ip::udp::v4(), mPort ) );
+
+    mRemoteEndpoint = ip::udp::endpoint(
+                ip::address::from_string( mServerIP ), mPort );
 
     receive();
 }

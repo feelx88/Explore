@@ -52,7 +52,6 @@ private:
 
     UDPSocketPtr mSocket;
 
-    bool mIsServer;
     std::string mServerIP;
     int mPort;
 
