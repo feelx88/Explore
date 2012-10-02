@@ -20,8 +20,28 @@
 #include "ExploreServer.h"
 #include <iostream>
 
-ExploreServer::ExploreServer()
-    : mServerInfoAvailable( false )
+enum E_ACTIONID
+{
+    EAID_ACK = 0,
+    EAID_NAK,
+    EAID_REQUEST_SERVERINFO,
+    EAID_SEND_SERVERINFO,
+    EAID_CONNECT
+};
+
+enum E_STATUS_BITS
+{
+    ESB_RUNNING = 1
+};
+
+struct LoginRequest
+{
+    std::string playerName;
+    std::string passwordHash;
+};
+
+ExploreServer::ExploreServer( const ServerInfo &info )
+    : mSelfInfo( info )
 {
 }
 
@@ -33,7 +53,14 @@ void ExploreServer::requestServerInfo( NetworkMessenger *msg,
 
 bool ExploreServer::hasServerInfo() const
 {
-    return mServerInfoAvailable;
+    return !mServerInfoQueue.empty();
+}
+
+ExploreServer::ServerInfo ExploreServer::nextServerInfo()
+{
+    ServerInfo info = mServerInfoQueue.front();
+    mServerInfoQueue.pop();
+    return info;
 }
 
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal( NetworkSyncablePacket &packet )
@@ -41,17 +68,45 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal( Netwo
     switch( packet.getActionID() )
     {
     case EAID_REQUEST_SERVERINFO:
+    {
         return serialize( EAID_SEND_SERVERINFO );
         break;
+    }
     case EAID_SEND_SERVERINFO:
-        mServerInfoAvailable = true;
+    {
+        ServerInfo info;
+        info.ServerName = packet.readString();
+        info.maxPlayers = packet.readUInt8();
+        info.connectedPlayers = packet.readUInt8();
+        mServerInfoQueue.push( info );
         break;
+    }
     default:
+    {
         break;
+    }
     }
     return boost::none;
 }
 
 void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 {
+    switch( actionID )
+    {
+    case EAID_REQUEST_SERVERINFO:
+    {
+        break;
+    }
+    case EAID_SEND_SERVERINFO:
+    {
+        packet.writeString( mSelfInfo.ServerName );
+        packet.writeUInt8( mSelfInfo.maxPlayers );
+        packet.writeUInt8( mSelfInfo.connectedPlayers );
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
 }

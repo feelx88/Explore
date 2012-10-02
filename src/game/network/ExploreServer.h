@@ -26,26 +26,27 @@
 class ExploreServer : public NetworkSyncable
 {
 public:
-    enum E_ACTIONID
+    struct ServerInfo
     {
-        EAID_ACK = 0,
-        EAID_NAK,
-        EAID_REQUEST_SERVERINFO,
-        EAID_SEND_SERVERINFO,
-        EAID_CONNECT
+        std::string ServerName;
+        uint8_t maxPlayers, connectedPlayers;
     };
 
-    ExploreServer();
+    ExploreServer( const ServerInfo &info );
 
     void requestServerInfo( NetworkMessenger *msg, const std::string &ip,
                             const int &port );
     bool hasServerInfo() const;
+    ServerInfo nextServerInfo();
 
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
 
-    bool mServerInfoAvailable;
+    uint32_t mStatus;
+
+    std::queue<ServerInfo> mServerInfoQueue;
+    ServerInfo mSelfInfo;
 };
 
 #endif // EXPLORESERVER_H

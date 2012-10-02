@@ -39,6 +39,9 @@ typedef boost::shared_ptr<Item> ItemPtr;
 class ExploreMenu;
 class ExploreGame;
 
+#include "network/ExploreServer.h"
+typedef boost::shared_ptr<ExploreServer> ExploreServerPtr;
+
 class EventReceiver;
 
 class BulletIrrlichtDebugDrawer : public btIDebugDraw
@@ -110,6 +113,7 @@ public:
     }
 
     void setGameState( const E_GAME_STATE &state );
+    void setServerInfo( const ExploreServer::ServerInfo &info );
 
     IrrlichtDevicePtr getIrrlichtDevice() const;
     EventReceiverPtr getEventReceiver() const;
@@ -117,6 +121,8 @@ public:
     LuaStatePtr getLuaVM() const;
     ScriptConsolePtr getScriptConsole() const;
     IOServicePtr getIOService() const;
+
+    ExploreServerPtr getExploreServer() const;
 
     const StringVector &getAvailableItems() const;
 
@@ -141,6 +147,7 @@ private:
     void initScriptConsole();
     void initMenu();
     void initGame();
+    void initServer();
 
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;
@@ -165,6 +172,7 @@ private:
 
     boost::scoped_ptr<ExploreMenu> mMenu;
     boost::scoped_ptr<ExploreGame> mGame;
+    ExploreServerPtr mServer;
 
     boost::scoped_ptr<BulletIrrlichtDebugDrawer> mBulletDebugDrawer;
 

@@ -48,8 +48,7 @@ Explore::Explore()
       mLogFile( new std::ofstream( "log.txt" ) ),
       mEventReceiver( new EventReceiver() ),
       mRunning( true ),
-      mGameState( EGS_MAIN_MENU ),
-      mMenu( 0 )
+      mGameState( EGS_MAIN_MENU )
 {
     LoggerSingleton::instance().addStream( *mLogFile );
     mIOService.reset( new boost::asio::io_service() );
@@ -61,6 +60,7 @@ Explore::Explore()
     initScriptConsole();
     initMenu();
     initGame();
+    initServer();
 }
 
 Explore::~Explore()
@@ -95,6 +95,11 @@ void Explore::setGameState( const E_GAME_STATE &state )
     mGameState = state;
 }
 
+void Explore::setServerInfo( const ExploreServer::ServerInfo &info )
+{
+    mServer.reset( new ExploreServer( info ) );
+}
+
 IrrlichtDevicePtr Explore::getIrrlichtDevice() const
 {
     return mDevice;
@@ -123,6 +128,11 @@ ScriptConsolePtr Explore::getScriptConsole() const
 IOServicePtr Explore::getIOService() const
 {
     return mIOService;
+}
+
+ExploreServerPtr Explore::getExploreServer() const
+{
+    return mServer;
 }
 
 const StringVector &Explore::getAvailableItems() const
@@ -282,6 +292,15 @@ void Explore::initGame()
     {
         cache->addItem( *x );
     }
+}
+
+void Explore::initServer()
+{
+    ExploreServer::ServerInfo info;
+    info.ServerName = readConfigValue<std::string>( "Server.Name", "ExploreServer" );
+    info.maxPlayers = readConfigValue<int>( "Server.MaxPlayers", 8 );
+    info.connectedPlayers = 0;
+    mServer.reset( new ExploreServer( info ) );
 }
 
 void Explore::ExploreBinder::reg( LuaStatePtr state )
