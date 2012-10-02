@@ -38,3 +38,12 @@ irr::gui::IGUIButton *IrrlichtTools::guiCenterFittingButton( IGUIEnvironment *en
     position2di pos( x - dim.Width, y - dim.Height );
     return env->addButton( recti( pos, dim * 2 ), 0, -1, labelW );
 }
+
+void IrrlichtTools::guiCenterElement( IGUIElementPtr element, int x, int y )
+{
+    recti pos = element->getAbsolutePosition();
+    element->move( position2di( -( pos.getCenter().X + pos.getWidth() / 2 ),
+                                -( pos.getCenter().Y + pos.getHeight() / 2 ) ) );
+    pos = element->getAbsolutePosition();
+    element->move( position2di( x - pos.getCenter().X, y - pos.getCenter().Y ) );
+}

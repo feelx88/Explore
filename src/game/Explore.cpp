@@ -70,7 +70,7 @@ Explore::~Explore()
 
 int Explore::run()
 {
-    while( mRunning )
+    while( mRunning && mDevice->run() )
     {
         switch( mGameState )
         {
@@ -182,6 +182,12 @@ void Explore::loadConfig()
             _LOG( "Item found", p.filename().string() );
         }
     }
+
+    //Set default Paths
+    readConfigValue<std::string>( "Paths.DataPath", "data" );
+    readConfigValue<std::string>( "Paths.MapPath", "data/Maps" );
+    readConfigValue<std::string>( "Paths.EntityPath", "data/Entities" );
+
 }
 
 void Explore::saveConfig()
@@ -193,7 +199,7 @@ void Explore::initIrrlicht()
 {
     SIrrlichtCreationParameters params;
     std::string deviceType =
-            readConfigValue<std::string>( "Engine.deviceType", "OpenGL" );
+            readConfigValue<std::string>( "Engine.DeviceType", "OpenGL" );
 
     if( deviceType == "OpenGL" )
         params.DriverType = video::EDT_OPENGL;
@@ -201,13 +207,13 @@ void Explore::initIrrlicht()
         params.DriverType = video::EDT_BURNINGSVIDEO;
 
     params.WindowSize = dimension2di(
-                readConfigValue<int>( "Engine.windowWidth", 640 ),
-                readConfigValue<int>( "Engine.windowHeight", 480 ) );
-    params.Bits = readConfigValue<int>( "Engine.colorDepth", 16 );
-    params.Fullscreen = readConfigValue<bool>( "Engine.fullscreen", false );
-    params.Vsync = readConfigValue<bool>( "Engine.verticalSync", false );
-    params.AntiAlias = readConfigValue<int>( "Engine.antiAliasing", 0 );
-    params.Vsync = readConfigValue<bool>( "Engine.verticalSync", false );
+                readConfigValue<int>( "Engine.WindowWidth", 640 ),
+                readConfigValue<int>( "Engine.WindowHeight", 480 ) );
+    params.Bits = readConfigValue<int>( "Engine.ColorDepth", 16 );
+    params.Fullscreen = readConfigValue<bool>( "Engine.Fullscreen", false );
+    params.Vsync = readConfigValue<bool>( "Engine.VerticalSync", false );
+    params.AntiAlias = readConfigValue<int>( "Engine.AntiAliasing", 0 );
+    params.Vsync = readConfigValue<bool>( "Engine.VerticalSync", false );
 
     params.EventReceiver = mEventReceiver.get();
 
@@ -222,13 +228,13 @@ void Explore::initIrrlicht()
     irr::gui::IGUISkin *skin = mGUI->getSkin();
 
     skin->setFont( mGUI->getFont(
-                       readConfigValue<std::string>( "Engine.fontFile", "data/bitstream_vera_sans_12.xml" ).c_str() ) );
+                       readConfigValue<std::string>( "Engine.FontFile", "data/bitstream_vera_sans_12.xml" ).c_str() ) );
     mGUI->setSkin( skin );
 
     mDevice->getSceneManager()->getParameters()->setAttribute(
                 irr::scene::OBJ_TEXTURE_PATH,
                 PathTools::getAbsolutePath(
-                    mConfig->get<std::string>( "Paths.TexturePath", "" ) ).c_str() );
+                    readConfigValue<std::string>( "Paths.TexturePath", "data/Textures" ) ).c_str() );
 
     boost::property_tree::ini_parser::read_ini( "keycodes.ini", *sKeyCodes );
 

@@ -35,7 +35,11 @@ enum E_GUI_IDS
     EGID_CONNECT,
     EGID_OPTIONS,
     EGID_QUIT,
-    EGID_OPTIONS_WINDOW = 20
+    EGID_OPTIONS_WINDOW = 20,
+    EGID_CONNECT_WINDOW = 30,
+    EGID_CONNECT_IP,
+    EGID_CONNECT_PORT,
+    EGID_CONNECT_BUTTON
 };
 
 ExploreMenu::ExploreMenu( ExplorePtr explore )
@@ -50,8 +54,8 @@ E_GAME_STATE ExploreMenu::run()
 {
     E_GAME_STATE state = EGS_MAIN_MENU;
 
-    int windowWidth = mExplore->readConfigValue<int>( "Engine.windowWidth", 640 );
-    int windowHeight = mExplore->readConfigValue<int>( "Engine.windowHeight", 480 );
+    int windowWidth = mExplore->readConfigValue<int>( "Engine.WindowWidth", 640 );
+    int windowHeight = mExplore->readConfigValue<int>( "Engine.WindowHeight", 480 );
 
     //Container window
     IGUIWindow *main = mGUI->addWindow( recti( 0, 0, windowWidth, windowHeight ) );
@@ -62,13 +66,17 @@ E_GAME_STATE ExploreMenu::run()
 
     mGUI->loadGUI( "data/mainUI.xml", main );
 
-    //Center menu
-    IGUIWindow *menuWindow = static_cast<IGUIWindow*>(
-                main->getElementFromId( 10 ) );
-    recti menurect = menuWindow->getAbsoluteClippingRect();
-    menuWindow->setRelativePosition(
-                vector2di( windowWidth / 2 - menurect.getWidth() / 2,
-                           windowHeight / 2 - menurect.getHeight() / 2 ) );
+    //Center menu and windows
+    IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_MAINMENU ),
+                                     windowWidth / 2, windowHeight / 2 );
+    IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_OPTIONS_WINDOW ),
+                                     windowWidth / 2, windowHeight / 2 );
+    IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_CONNECT_WINDOW ),
+                                     windowWidth / 2, windowHeight / 2 );
+
+    //Hide windows
+    main->getElementFromId( EGID_OPTIONS_WINDOW )->setVisible( false );
+    main->getElementFromId( EGID_CONNECT_WINDOW )->setVisible( false );
 
     //Main button callbacks
     struct : public EventReceiver::GUICallback {
@@ -89,8 +97,12 @@ E_GAME_STATE ExploreMenu::run()
     } loadGameClicked;
 
     struct : public EventReceiver::GUICallback {
-        bool call( IGUIElementPtr ) {
+        bool call( IGUIElementPtr caller ) {
             _LOG( "Connect button pressed" );
+            IGUIElementPtr win = caller->getParent()->getParent()->getElementFromId(
+                        EGID_CONNECT_WINDOW );
+            win->setVisible( true );
+            win->getParent()->bringToFront( win );
             return true;
         }
     } connectClicked;
@@ -101,7 +113,6 @@ E_GAME_STATE ExploreMenu::run()
             IGUIElementPtr win = caller->getParent()->getParent()->getElementFromId(
                         EGID_OPTIONS_WINDOW );
             win->setVisible( true );
-            win->setRelativePosition( position2di( 0, 0 ) );
             win->getParent()->bringToFront( win );
             return true;
         }
@@ -133,7 +144,7 @@ E_GAME_STATE ExploreMenu::run()
                                                        EGID_QUIT,
                                                        EGET_BUTTON_CLICKED );
 
-    //Callback to prevent closing of optionsWindow
+    //Callbacks used to prevent closing of windows
     struct : public EventReceiver::GUICallback {
         bool call( IGUIElementPtr caller ) {
             _LOG( "Options Window closed" );
@@ -142,10 +153,23 @@ E_GAME_STATE ExploreMenu::run()
         }
     } optionsWindowClose;
 
+    struct : public EventReceiver::GUICallback {
+        bool call( IGUIElementPtr caller ) {
+            _LOG( "Connect Window closed" );
+            caller->setVisible( false );
+            return true;
+        }
+    } connectWindowClose;
+
+    mExplore->getEventReceiver()->registerGUICallback( &connectWindowClose,
+                                                       EGID_CONNECT_WINDOW,
+                                                       EGET_ELEMENT_CLOSED );
+
     mExplore->getEventReceiver()->registerGUICallback( &optionsWindowClose,
                                                        EGID_OPTIONS_WINDOW,
                                                        EGET_ELEMENT_CLOSED );
 
+    //Main loop
     while( state == EGS_MAIN_MENU && mDevice->run() )
     {
         mVideoDriver->beginScene( true, true,

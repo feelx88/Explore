@@ -32,6 +32,8 @@ public:
 
     static irr::gui::IGUIButton *guiCenterFittingButton(
             irr::gui::IGUIEnvironment *env, const std::wstring &label, int x, int y );
+
+    static void guiCenterElement( IGUIElementPtr element , int x, int y );
 };
 
 namespace irr
