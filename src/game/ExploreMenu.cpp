@@ -27,7 +27,7 @@ using namespace irr;
 using namespace core;
 using namespace gui;
 
-enum E_GUI_IDS
+enum E_GUI_ID
 {
     EGID_MAINMENU = 10,
     EGID_NEW_GAME,
@@ -40,6 +40,40 @@ enum E_GUI_IDS
     EGID_CONNECT_IP,
     EGID_CONNECT_PORT,
     EGID_CONNECT_BUTTON
+};
+
+struct WindowOpenCallback : EventReceiver::GUICallback
+{
+    WindowOpenCallback( IGUIEnvironmentPtr env, E_GUI_ID id )
+        : mGUI( env ),
+          mWindowID( id )
+    {}
+
+    bool call( IGUIElementPtr caller )
+    {
+        IGUIElementPtr win = caller->getParent()->getParent()->getElementFromId(
+                    mWindowID );
+
+        if( !win )
+            return false;
+
+        win->setVisible( true );
+        win->getParent()->bringToFront( win );
+        mGUI->setFocus( win );
+        return true;
+    }
+
+    IGUIEnvironmentPtr mGUI;
+    E_GUI_ID mWindowID;
+};
+
+struct WindowCloseCallback : public EventReceiver::GUICallback
+{
+    bool call( IGUIElementPtr caller )
+    {
+        caller->setVisible( false );
+        return true;
+    }
 };
 
 ExploreMenu::ExploreMenu( ExplorePtr explore )
@@ -64,7 +98,11 @@ E_GAME_STATE ExploreMenu::run()
     main->setDrawTitlebar( false );
     main->getCloseButton()->setVisible( false );
 
+    //Load gui and make windows opaque
     mGUI->loadGUI( "data/mainUI.xml", main );
+    video::SColor bgColor = mGUI->getSkin()->getColor( EGDC_3D_FACE );
+    bgColor.setAlpha( 255 );
+    mGUI->getSkin()->setColor( EGDC_3D_FACE, bgColor );
 
     //Center menu and windows
     IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_MAINMENU ),
@@ -96,27 +134,9 @@ E_GAME_STATE ExploreMenu::run()
         }
     } loadGameClicked;
 
-    struct : public EventReceiver::GUICallback {
-        bool call( IGUIElementPtr caller ) {
-            _LOG( "Connect button pressed" );
-            IGUIElementPtr win = caller->getParent()->getParent()->getElementFromId(
-                        EGID_CONNECT_WINDOW );
-            win->setVisible( true );
-            win->getParent()->bringToFront( win );
-            return true;
-        }
-    } connectClicked;
+    WindowOpenCallback connectClicked( mGUI, EGID_CONNECT_WINDOW );
 
-    struct : public EventReceiver::GUICallback {
-        bool call( IGUIElementPtr caller ) {
-            _LOG( "Options button pressed" );
-            IGUIElementPtr win = caller->getParent()->getParent()->getElementFromId(
-                        EGID_OPTIONS_WINDOW );
-            win->setVisible( true );
-            win->getParent()->bringToFront( win );
-            return true;
-        }
-    } optionsClicked;
+    WindowOpenCallback optionsClicked( mGUI, EGID_OPTIONS_WINDOW );
 
     struct : public EventReceiver::GUICallback {
         bool call( IGUIElementPtr ) {
@@ -145,21 +165,9 @@ E_GAME_STATE ExploreMenu::run()
                                                        EGET_BUTTON_CLICKED );
 
     //Callbacks used to prevent closing of windows
-    struct : public EventReceiver::GUICallback {
-        bool call( IGUIElementPtr caller ) {
-            _LOG( "Options Window closed" );
-            caller->setVisible( false );
-            return true;
-        }
-    } optionsWindowClose;
+    WindowCloseCallback optionsWindowClose;
 
-    struct : public EventReceiver::GUICallback {
-        bool call( IGUIElementPtr caller ) {
-            _LOG( "Connect Window closed" );
-            caller->setVisible( false );
-            return true;
-        }
-    } connectWindowClose;
+    WindowCloseCallback connectWindowClose;
 
     mExplore->getEventReceiver()->registerGUICallback( &connectWindowClose,
                                                        EGID_CONNECT_WINDOW,
