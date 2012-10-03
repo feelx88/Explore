@@ -100,9 +100,10 @@ E_GAME_STATE ExploreMenu::run()
 
     //Load gui and make windows opaque
     mGUI->loadGUI( "data/mainUI.xml", main );
-    video::SColor bgColor = mGUI->getSkin()->getColor( EGDC_3D_FACE );
-    bgColor.setAlpha( 255 );
-    mGUI->getSkin()->setColor( EGDC_3D_FACE, bgColor );
+    video::SColor oldBGColor = mGUI->getSkin()->getColor( EGDC_3D_FACE );
+    video::SColor newBGColor = oldBGColor;
+    newBGColor.setAlpha( 255 );
+    mGUI->getSkin()->setColor( EGDC_3D_FACE, newBGColor );
 
     //Center menu and windows
     IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_MAINMENU ),
@@ -197,6 +198,9 @@ E_GAME_STATE ExploreMenu::run()
 
     //Remove container
     main->remove();
+
+    //Reset window background
+    mGUI->getSkin()->setColor( EGDC_3D_FACE, oldBGColor );
 
     return state;
 }
