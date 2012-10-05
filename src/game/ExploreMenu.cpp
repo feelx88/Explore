@@ -185,14 +185,6 @@ E_GAME_STATE ExploreMenu::run()
                                   irr::video::SColor( 255, 100, 100, 100 ) );
         mGUI->drawAll();
 
-        //Handle console key
-        if( mExplore->getEventReceiver()->keyClicked( KEY_F12 ) )
-        {
-            mExplore->getScriptConsole()->setVisible(
-                        !mExplore->getScriptConsole()->visible() );
-
-        }
-
         mVideoDriver->endScene();
     }
 

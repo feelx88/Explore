@@ -95,12 +95,6 @@ E_GAME_STATE ExploreGame::run()
             running = false;
         }
 
-        if( mEventReceiver->keyClicked( KEY_F12 ) )
-        {
-            mExplore->getScriptConsole()->setVisible(
-                        !mExplore->getScriptConsole()->visible() );
-        }
-
         world.update();
         p.update();
 

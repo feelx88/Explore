@@ -79,6 +79,15 @@ bool EventReceiver::OnEvent( const SEvent &event )
 
     if( event.EventType == EET_KEY_INPUT_EVENT )
     {
+        boost::unordered::unordered_map<EKEY_CODE, KeyCallback*>::iterator x =
+                mKeyCallbacks.find( event.KeyInput.Key );
+
+        if( x != mKeyCallbacks.end() )
+        {
+            if( x->second->call( event.KeyInput ) )
+                return true;
+        }
+
         if( mScriptConsole &&
                 mDevice->getGUIEnvironment()->getFocus() != mScriptConsole->mInputBox )
         {
@@ -252,6 +261,16 @@ void EventReceiver::removeGUICallback( int id, gui::EGUI_EVENT_TYPE evt )
 
     if( x != mGUICallbacks.end() )
         mGUICallbacks.erase( x );
+}
+
+void EventReceiver::registerKeyCallback(EventReceiver::KeyCallback *callback, EKEY_CODE evt)
+{
+    mKeyCallbacks.insert( std::make_pair( evt, callback ) );
+}
+
+void EventReceiver::removeKeyCallback(EKEY_CODE evt)
+{
+    mKeyCallbacks.erase( evt );
 }
 
 void EventReceiver::sendScriptConsoleCommand()

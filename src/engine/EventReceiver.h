@@ -33,6 +33,11 @@ public:
         virtual bool call( IGUIElementPtr caller ) = 0;
     };
 
+    struct KeyCallback
+    {
+        virtual bool call( irr::SEvent::SKeyInput evt ) = 0;
+    };
+
     EventReceiver();
 
     void setDevice( IrrlichtDevicePtr device );
@@ -60,6 +65,9 @@ public:
                               irr::gui::EGUI_EVENT_TYPE evt );
     void removeGUICallback( int id, irr::gui::EGUI_EVENT_TYPE evt );
 
+    void registerKeyCallback( KeyCallback *callback, irr::EKEY_CODE evt );
+    void removeKeyCallback( irr::EKEY_CODE evt );
+
 private:
     void sendScriptConsoleCommand();
 
@@ -77,6 +85,8 @@ private:
     boost::unordered::unordered_map<std::pair<int, irr::gui::EGUI_EVENT_TYPE>,
         GUICallback*>
         mGUICallbacks;
+
+    boost::unordered::unordered_map<irr::EKEY_CODE, KeyCallback*> mKeyCallbacks;
 };
 
 #endif // EVENTRECEIVER_H

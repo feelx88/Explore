@@ -43,6 +43,27 @@ PropTreePtr Explore::sKeyCodes( new boost::property_tree::ptree() );
 int Explore::ExploreBinder::regDummy =
         LuaBinder::registerBinder( new Explore::ExploreBinder() );
 
+struct ScriptConsoleKeyCallback : public EventReceiver::KeyCallback
+{
+    ScriptConsoleKeyCallback()
+        : pressed( false )
+    {}
+
+    bool call( SEvent::SKeyInput evt )
+    {
+        if( evt.PressedDown && !pressed )
+        {
+            console->setVisible( !console->visible() );
+            pressed = true;
+        }
+        else if( !evt.PressedDown && pressed )
+            pressed = false;
+        return true;
+    }
+    bool pressed;
+    ScriptConsolePtr console;
+};
+
 Explore::Explore()
     : mConfig( new boost::property_tree::ptree ),
       mLogFile( new std::ofstream( "log.txt" ) ),
@@ -280,6 +301,11 @@ void Explore::initScriptConsole()
     mScriptConsole.reset( new ScriptConsole( mDevice, mLua, mConfig ) );
     mEventReceiver->setScriptConsole( mScriptConsole );
     mScriptConsole->setVisible( false );
+
+    //Register callback
+    ScriptConsoleKeyCallback *callback = new ScriptConsoleKeyCallback;
+    callback->console = mScriptConsole;
+    mEventReceiver->registerKeyCallback( callback, KEY_F12 );
 }
 
 void Explore::initMenu()
