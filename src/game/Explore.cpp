@@ -45,23 +45,24 @@ int Explore::ExploreBinder::regDummy =
 
 struct ScriptConsoleKeyCallback : public EventReceiver::KeyCallback
 {
-    ScriptConsoleKeyCallback()
-        : pressed( false )
+    ScriptConsoleKeyCallback( ScriptConsolePtr console )
+        : mPressed( false ),
+          mConsole( console )
     {}
 
     bool call( SEvent::SKeyInput evt )
     {
-        if( evt.PressedDown && !pressed )
+        if( evt.PressedDown && !mPressed )
         {
-            console->setVisible( !console->visible() );
-            pressed = true;
+            mConsole->setVisible( !mConsole->visible() );
+            mPressed = true;
         }
-        else if( !evt.PressedDown && pressed )
-            pressed = false;
+        else if( !evt.PressedDown && mPressed )
+            mPressed = false;
         return true;
     }
-    bool pressed;
-    ScriptConsolePtr console;
+    bool mPressed;
+    ScriptConsolePtr mConsole;
 };
 
 Explore::Explore()
@@ -303,8 +304,8 @@ void Explore::initScriptConsole()
     mScriptConsole->setVisible( false );
 
     //Register callback
-    ScriptConsoleKeyCallback *callback = new ScriptConsoleKeyCallback;
-    callback->console = mScriptConsole;
+    ScriptConsoleKeyCallback *callback =
+            new ScriptConsoleKeyCallback( mScriptConsole );
     mEventReceiver->registerKeyCallback( callback, KEY_F12 );
 }
 
