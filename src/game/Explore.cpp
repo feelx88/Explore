@@ -23,7 +23,6 @@
 #include <string>
 #include <boost/property_tree/ini_parser.hpp>
 #include <fstream>
-#include <luabind/luabind.hpp>
 
 #include <engine/IrrlichtTools.h>
 #include <engine/PathTools.h>
@@ -295,6 +294,8 @@ void Explore::initLua()
     mLua = LuaTools::createLuaVM();
     luabind::open( mLua.get() );
     LuaBinder::registerAll( mLua );
+
+    luabind::globals( mLua.get() )["Explore"]["Instance"] = this;
 }
 
 void Explore::initScriptConsole()
@@ -333,7 +334,7 @@ void Explore::initServer()
     info.ServerName = readConfigValue<std::string>( "Server.Name", "ExploreServer" );
     info.maxPlayers = readConfigValue<int>( "Server.MaxPlayers", 8 );
     info.connectedPlayers = 0;
-    mServer.reset( new ExploreServer( info ) );
+    setServerInfo( info );
 }
 
 void Explore::ExploreBinder::reg( LuaStatePtr state )
@@ -341,6 +342,13 @@ void Explore::ExploreBinder::reg( LuaStatePtr state )
     using namespace luabind;
     module( state.get() )
     [
-            def( "exit", &exit )
+            def( "exit", &exit ),
+            class_<Explore>( "Explore" )
+                .def( "readConfigValue", &Explore::readConfigValue<std::string> )
+                .def( "getExploreServer", &Explore::getExploreServer )
+                .scope
+                [
+                    def( "getKeyCode", &Explore::getKeyCode )
+                ]
     ];
 }

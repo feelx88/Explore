@@ -30,6 +30,23 @@ using namespace core;
 EntityItemMap Item::sEntityItemMap;
 int Item::sRegisterDummy( ItemFactory::registerItem<Item>( "Item" ) );
 
+class ItemBinder : public LuaBinder
+{
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+        module( state.get() )
+        [
+                class_<Item>( "Item" )
+        ];
+    }
+
+private:
+    static int regDummy;
+};
+int ItemBinder::regDummy = LuaBinder::registerBinder( new ItemBinder );
+
 Item::Item( ExplorePtr explore, IPlayer *owner, PropTreePtr properties,
             const std::string &basePath )
     : mExplore( explore ),

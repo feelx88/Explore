@@ -3,6 +3,7 @@
 
 #include "EngineTypedefs.h"
 #include "LuaTools.h"
+#include <luabind/luabind.hpp>
 
 class LuaBinder;
 typedef boost::shared_ptr<LuaBinder> LuaBinderPtr;

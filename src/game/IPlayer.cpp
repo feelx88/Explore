@@ -31,6 +31,22 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
+class IPlayerBinder : public LuaBinder
+{
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+        module( state.get() )
+        [
+            class_<IPlayer>( "IPlayer" )
+        ];
+    }
+private:
+    static int regDummy;
+};
+int IPlayerBinder::regDummy = LuaBinder::registerBinder( new IPlayerBinder );
+
 IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),

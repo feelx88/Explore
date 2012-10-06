@@ -22,6 +22,7 @@
 
 #include <engine/NetworkSyncable.h>
 #include <engine/NetworkMessenger.h>
+#include <boost/dynamic_bitset.hpp>
 
 class ExploreServer : public NetworkSyncable
 {
@@ -34,6 +35,9 @@ public:
 
     ExploreServer( const ServerInfo &info );
 
+    void setServerMode( bool server );
+    bool serverMode() const;
+
     void requestServerInfo( NetworkMessenger *msg, const std::string &ip,
                             const int &port );
     bool hasServerInfo() const;
@@ -43,7 +47,7 @@ protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
 
-    uint32_t mStatus;
+    boost::dynamic_bitset<> mStatusBits;
 
     std::queue<ServerInfo> mServerInfoQueue;
     ServerInfo mSelfInfo;

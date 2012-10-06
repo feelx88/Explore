@@ -19,10 +19,31 @@
 
 #include "ItemFactory.h"
 #include "ItemCache.h"
+#include "IPlayer.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 ItemCreatorMapPtr ItemFactory::sCreators( ItemFactory::sCreators );
+
+class ItemFactoryBinder : public LuaBinder
+{
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+        module( state.get() )
+        [
+                class_<ItemFactory>( "ItemFactory" )
+                    .scope
+                    [
+                        def( "create", (Item*(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
+                    ]
+        ];
+    }
+private:
+    static int regDummy;
+};
+int ItemFactoryBinder::regDummy = LuaBinder::registerBinder( new ItemFactoryBinder );
 
 Item *ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string fileName )
 {

@@ -70,6 +70,7 @@ E_GAME_STATE ExploreGame::run()
             level->getProperties()->get( "Spawn.Position", vector3df() );
 
     WorldPlayer world( mExplore );
+    luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayer*)&world;
 
     LocalPlayer p( mExplore, &world );
     p.getEntity()->setPosition( spawnPos );

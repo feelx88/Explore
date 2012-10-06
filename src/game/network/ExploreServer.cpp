@@ -18,6 +18,7 @@
 */
 
 #include "ExploreServer.h"
+#include <engine/LuaBinder.h>
 #include <iostream>
 
 enum E_ACTIONID
@@ -25,13 +26,14 @@ enum E_ACTIONID
     EAID_ACK = 0,
     EAID_NAK,
     EAID_REQUEST_SERVERINFO,
-    EAID_SEND_SERVERINFO,
     EAID_CONNECT
 };
 
 enum E_STATUS_BITS
 {
-    ESB_RUNNING = 1
+    ESB_SERVER = 0,
+    ESB_WAIT_FOR_INFO,
+    ESB_COUNT
 };
 
 struct LoginRequest
@@ -40,14 +42,46 @@ struct LoginRequest
     std::string passwordHash;
 };
 
-ExploreServer::ExploreServer( const ServerInfo &info )
-    : mSelfInfo( info )
+class ExploreServerBinder : public LuaBinder
 {
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+
+        module( state.get() )
+        [
+            class_<ExploreServer>( "ExploreServer" )
+                .def( "requestServerInfo", &ExploreServer::requestServerInfo )
+        ];
+    }
+
+private:
+    static int regDummy;
+};
+int ExploreServerBinder::regDummy = LuaBinder::registerBinder( new ExploreServerBinder );
+
+ExploreServer::ExploreServer( const ServerInfo &info )
+    : NetworkSyncable( 0, 0 ),
+      mSelfInfo( info ),
+      mStatusBits( ESB_COUNT )
+{
+}
+
+void ExploreServer::setServerMode( bool server )
+{
+    mStatusBits[ESB_SERVER] = server;
+}
+
+bool ExploreServer::serverMode() const
+{
+    return mStatusBits[ESB_SERVER];
 }
 
 void ExploreServer::requestServerInfo( NetworkMessenger *msg,
                                        const std::string &ip, const int &port )
 {
+    mStatusBits[ESB_WAIT_FOR_INFO] = true;
     msg->sendTo( serialize( EAID_REQUEST_SERVERINFO ), ip, port );
 }
 
@@ -69,16 +103,17 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal( Netwo
     {
     case EAID_REQUEST_SERVERINFO:
     {
-        return serialize( EAID_SEND_SERVERINFO );
-        break;
-    }
-    case EAID_SEND_SERVERINFO:
-    {
-        ServerInfo info;
-        info.ServerName = packet.readString();
-        info.maxPlayers = packet.readUInt8();
-        info.connectedPlayers = packet.readUInt8();
-        mServerInfoQueue.push( info );
+        if( mStatusBits[ESB_WAIT_FOR_INFO] )
+        {
+            ServerInfo info;
+            info.ServerName = packet.readString();
+            info.maxPlayers = packet.readUInt8();
+            info.connectedPlayers = packet.readUInt8();
+            mServerInfoQueue.push( info );
+            mStatusBits[ESB_WAIT_FOR_INFO] = false;
+        }
+        else
+            return serialize( EAID_REQUEST_SERVERINFO );
         break;
     }
     default:
@@ -94,10 +129,6 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
     switch( actionID )
     {
     case EAID_REQUEST_SERVERINFO:
-    {
-        break;
-    }
-    case EAID_SEND_SERVERINFO:
     {
         packet.writeString( mSelfInfo.ServerName );
         packet.writeUInt8( mSelfInfo.maxPlayers );
