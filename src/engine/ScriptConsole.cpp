@@ -66,11 +66,14 @@ ScriptConsole::~ScriptConsole()
 {
 }
 
-void ScriptConsole::setVisible(bool visible)
+void ScriptConsole::setVisible( bool visible )
 {
     mMainWindow->setVisible( visible );
     mGUI->getRootGUIElement()->bringToFront( mMainWindow );
-    mGUI->setFocus( mInputBox );
+    if( visible )
+        mGUI->setFocus( mInputBox );
+    else
+        mGUI->removeFocus( mInputBox );
 }
 
 bool ScriptConsole::visible() const
