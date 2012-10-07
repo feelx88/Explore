@@ -52,7 +52,15 @@ public:
         module( state.get() )
         [
             class_<ExploreServer>( "ExploreServer" )
+                .def( "setServerMode", &ExploreServer::setServerMode )
                 .def( "requestServerInfo", &ExploreServer::requestServerInfo )
+                .scope
+                [
+                    class_<ExploreServer::ServerInfo>( "ServerInfo" )
+                        .def( constructor<>() )
+                        .def_readwrite( "ServerName",
+                                        &ExploreServer::ServerInfo::ServerName )
+                ]
         ];
     }
 
