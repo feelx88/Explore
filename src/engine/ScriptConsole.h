@@ -51,6 +51,8 @@ private:
     IGUIEditBoxPtr mInputBox;
     IGUIListBoxPtr mOutputBox;
     IGUIButtonPtr mSendButton;
+
+    int mListIndex;
 };
 
 #endif // SCRIPTCONSOLE_H

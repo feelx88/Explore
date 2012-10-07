@@ -98,6 +98,23 @@ bool EventReceiver::OnEvent( const SEvent &event )
         {
             if( event.KeyInput.Key == KEY_RETURN && !event.KeyInput.PressedDown )
                 sendScriptConsoleCommand();
+            if( event.KeyInput.Key == KEY_UP && !event.KeyInput.PressedDown )
+            {
+                if( mScriptConsole->mListIndex > 0 )
+                    mScriptConsole->mListIndex--;
+                mScriptConsole->mInputBox->setText(
+                            mScriptConsole->mOutputBox->getListItem(
+                                mScriptConsole->mListIndex ) );
+            }
+            if( event.KeyInput.Key == KEY_DOWN && !event.KeyInput.PressedDown )
+            {
+                if( mScriptConsole->mListIndex <
+                        mScriptConsole->mOutputBox->getItemCount() )
+                    mScriptConsole->mListIndex++;
+                mScriptConsole->mInputBox->setText(
+                            mScriptConsole->mOutputBox->getListItem(
+                                mScriptConsole->mListIndex ) );
+            }
         }
     }
 
@@ -282,4 +299,5 @@ void EventReceiver::sendScriptConsoleCommand()
     mScriptConsole->mInputBox->setText( L"" );
     mScriptConsole->mOutputBox->setSelected(
                 mScriptConsole->mOutputBox->getItemCount() - 1 );
+    mScriptConsole->mListIndex = mScriptConsole->mOutputBox->getItemCount();
 }

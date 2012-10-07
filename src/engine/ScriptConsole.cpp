@@ -31,7 +31,8 @@ ScriptConsole::ScriptConsole(IrrlichtDevicePtr device, LuaStatePtr luaState,
     : mDevice( device ),
       mGUI( mDevice->getGUIEnvironment() ),
       mLuaState( luaState ),
-      mProperties( properties )
+      mProperties( properties ),
+      mListIndex( 0 )
 {
     recti windowSize( vector2di(),
                       mProperties->get( "Console.Size", vector2di( 640, 480 ) ) );
