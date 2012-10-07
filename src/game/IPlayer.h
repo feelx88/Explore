@@ -23,9 +23,8 @@
 
 #include <engine/Entity.h>
 #include "Explore.h"
-#include <vector>
 
-typedef std::vector<ItemPtr> ItemVector;
+typedef boost::unordered::unordered_map<Item*,ItemPtr> ItemMap;
 
 class IPlayer
 {
@@ -39,6 +38,7 @@ public:
             irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
 
     void addOwnedItem( Item* item );
+    void removeOwnedItem( Item *item );
 
     EntityPtr getEntity() const;
     IPlayer *getParent() const;
@@ -55,7 +55,7 @@ protected:
     EntityPtr mEntity;
 
     std::vector<Item*> mInventory;
-    ItemVector mOwnedItems;
+    ItemMap mOwnedItems;
 
     IPlayerPtr mParent;
 };

@@ -39,8 +39,30 @@ using namespace irr;
 using namespace core;
 
 PropTreePtr Explore::sKeyCodes( new boost::property_tree::ptree() );
-int Explore::ExploreBinder::regDummy =
-        LuaBinder::registerBinder( new Explore::ExploreBinder() );
+
+class ExploreBinder : public LuaBinder
+{
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+        module( state.get() )
+        [
+                def( "exit", &exit ),
+                class_<Explore>( "Explore" )
+                    .def( "readConfigValue", &Explore::readConfigValue<std::string> )
+                    .def( "getExploreServer", &Explore::getExploreServer )
+                    .scope
+                    [
+                        def( "getKeyCode", &Explore::getKeyCode )
+                    ]
+        ];
+    }
+
+private:
+    static int regDummy;
+};
+int ExploreBinder::regDummy = LuaBinder::registerBinder( new ExploreBinder );
 
 struct ScriptConsoleKeyCallback : public EventReceiver::KeyCallback
 {
@@ -335,20 +357,4 @@ void Explore::initServer()
     info.maxPlayers = readConfigValue<int>( "Server.MaxPlayers", 8 );
     info.connectedPlayers = 0;
     setServerInfo( info );
-}
-
-void Explore::ExploreBinder::reg( LuaStatePtr state )
-{
-    using namespace luabind;
-    module( state.get() )
-    [
-            def( "exit", &exit ),
-            class_<Explore>( "Explore" )
-                .def( "readConfigValue", &Explore::readConfigValue<std::string> )
-                .def( "getExploreServer", &Explore::getExploreServer )
-                .scope
-                [
-                    def( "getKeyCode", &Explore::getKeyCode )
-                ]
-    ];
 }

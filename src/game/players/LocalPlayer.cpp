@@ -61,15 +61,15 @@ void LocalPlayer::update()
     processControls();
     drawCrosshair();
 
-    for( size_t x = 0; x < mOwnedItems.size(); ++x )
+    for( ItemMap::iterator item = mOwnedItems.begin();
+         item != mOwnedItems.end(); ++item )
     {
-        ItemPtr item = mOwnedItems.at( x );
-        item->startAction( EIA_UPDATE_ACTION );
+        item->second->startAction( EIA_UPDATE_ACTION );
 
-        if( item->getHitPoints() <= 0.f )
+        if( item->second->getHitPoints() <= 0.f )
         {
-            item->startAction( EIA_DESTROY_ACTION );
-            mOwnedItems.erase( mOwnedItems.begin() + x );
+            item->second->startAction( EIA_DESTROY_ACTION );
+            mOwnedItems.erase( item );
         }
     }
 }

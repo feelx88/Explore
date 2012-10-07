@@ -22,6 +22,7 @@
 #include "IPlayer.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
+#include <luabind/adopt_policy.hpp>
 
 ItemCreatorMapPtr ItemFactory::sCreators( ItemFactory::sCreators );
 

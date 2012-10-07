@@ -27,8 +27,8 @@ WorldPlayer::WorldPlayer( ExplorePtr explore )
 
 void WorldPlayer::update()
 {
-    for( ItemVector::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
+    for( ItemMap::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
     {
-        ( *x )->startAction( EIA_UPDATE_ACTION );
+        x->second->startAction( EIA_UPDATE_ACTION );
     }
 }

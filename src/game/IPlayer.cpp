@@ -40,6 +40,7 @@ public:
         module( state.get() )
         [
             class_<IPlayer>( "IPlayer" )
+                .def( "removeOwnedItem", &IPlayer::removeOwnedItem )
         ];
     }
 private:
@@ -66,7 +67,15 @@ IPlayer::~IPlayer()
 
 void IPlayer::addOwnedItem( Item *item )
 {
-    mOwnedItems.push_back( ItemPtr( item ) );
+    mOwnedItems.insert( std::make_pair( item, ItemPtr( item ) ) );
+}
+
+void IPlayer::removeOwnedItem( Item *item )
+{
+    ItemMap::iterator x = mOwnedItems.find( item );
+
+    if( x != mOwnedItems.end() )
+        mOwnedItems.erase( x );
 }
 
 
