@@ -42,7 +42,7 @@ namespace core
 {
 
 template <typename T>
-static std::ostream &operator<<( std::ostream &stream,
+static inline std::ostream &operator<<( std::ostream &stream,
                           const irr::core::vector3d<T> &in )
 {
     stream << in.X << "," << in.Y << "," << in.Z;
@@ -50,7 +50,7 @@ static std::ostream &operator<<( std::ostream &stream,
 }
 
 template <typename T>
-static std::istream &operator>>( std::istream &stream,
+static inline std::istream &operator>>( std::istream &stream,
                           irr::core::vector3d<T> &out )
 {
     char tmp;
@@ -59,7 +59,7 @@ static std::istream &operator>>( std::istream &stream,
 }
 
 template <typename T>
-static std::ostream &operator<<( std::ostream &stream,
+static inline std::ostream &operator<<( std::ostream &stream,
                           const irr::core::vector2d<T> &in )
 {
     stream << in.X << "," << in.Y;
@@ -67,7 +67,7 @@ static std::ostream &operator<<( std::ostream &stream,
 }
 
 template <typename T>
-static std::istream &operator>>( std::istream &stream,
+static inline std::istream &operator>>( std::istream &stream,
                           irr::core::vector2d<T> &out )
 {
     char tmp;
@@ -80,7 +80,7 @@ static std::istream &operator>>( std::istream &stream,
 namespace video
 {
 
-static std::ostream &operator<<( std::ostream &stream,
+static inline std::ostream &operator<<( std::ostream &stream,
                           const irr::video::SColor &in )
 {
     stream << in.getAlpha() << ","
@@ -90,7 +90,7 @@ static std::ostream &operator<<( std::ostream &stream,
     return stream;
 }
 
-static std::istream &operator>>( std::istream &stream,
+static inline std::istream &operator>>( std::istream &stream,
                           irr::video::SColor &out )
 {
     char tmp;

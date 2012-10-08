@@ -90,7 +90,7 @@ void LocalPlayer::switchItem( int index )
 
     mActiveItem = index;
 
-    if( mActiveItem >= mInventory.size() )
+    if( mActiveItem >= static_cast<int>( mInventory.size() ) )
         mActiveItem = 0;
     if( mActiveItem < 0 )
         mActiveItem = mInventory.size() - 1;
@@ -126,7 +126,7 @@ void LocalPlayer::createGUI()
     win->getCloseButton()->remove();
     win->move( vector2di( 10 * 32, 0 ) );
 
-    for( int x = 0; x < mInventory.size(); ++x )
+    for( unsigned int x = 0; x < mInventory.size(); ++x )
     {
         IGUIButton *img = mDevice->getGUIEnvironment()->addButton(
                     recti( x * 32 + 1, 1, ( x + 1 ) * 32 + 1, 33 ), win );

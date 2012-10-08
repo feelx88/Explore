@@ -71,8 +71,8 @@ int ExploreServerBinder::regDummy = LuaBinder::registerBinder( new ExploreServer
 
 ExploreServer::ExploreServer( const ServerInfo &info )
     : NetworkSyncable( 0, 0 ),
-      mSelfInfo( info ),
-      mStatusBits( ESB_COUNT )
+      mStatusBits( ESB_COUNT ),
+      mSelfInfo( info )
 {
 }
 

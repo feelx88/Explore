@@ -127,6 +127,10 @@ int Explore::run()
         case EGS_GAME:
             mGameState = mGame->run();
             break;
+        case EGS_CONNECT:
+        case EGS_LOAD:
+        default:
+            break;
         }
         mIOService->poll();
     }

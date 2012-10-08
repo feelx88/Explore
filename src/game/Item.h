@@ -87,7 +87,7 @@ private:
     static int sRegisterDummy;
 };
 
-static std::ostream &operator<<( std::ostream &stream,
+static inline std::ostream &operator<<( std::ostream &stream,
                           const E_ITEM_ACTION &in )
 {
     if( in == EIA_FIRST_ACTION )
@@ -106,7 +106,7 @@ static std::ostream &operator<<( std::ostream &stream,
     return stream;
 }
 
-static std::istream &operator>>( std::istream &stream,
+static inline std::istream &operator>>( std::istream &stream,
                           E_ITEM_ACTION &out )
 {
     std::string action;

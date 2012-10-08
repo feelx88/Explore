@@ -52,7 +52,7 @@ private:
     IGUIListBoxPtr mOutputBox;
     IGUIButtonPtr mSendButton;
 
-    int mListIndex;
+    unsigned int mListIndex;
 };
 
 #endif // SCRIPTCONSOLE_H
