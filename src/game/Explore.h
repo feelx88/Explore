@@ -51,7 +51,7 @@ public:
     void drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
     {
         driver->setMaterial( driver->getMaterial2D() );
-        driver->setTransform( irr::video::ETS_VIEW, irr::core::IdentityMatrix );
+        //driver->setTransform( irr::video::ETS_VIEW, irr::core::IdentityMatrix );
         irr::video::SColor c( 255,
                                   (int)color.x() * 255, (int)color.y() * 255,
                                   (int)color.z() * 255 );

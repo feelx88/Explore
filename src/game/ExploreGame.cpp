@@ -48,7 +48,7 @@ public:
         module( state.get() )
         [
                 class_<ExploreGame>( "ExploreGame" )
-                    .def( "setBulletDebugging", &ExploreGame::setBulletDebugging )
+                    .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw )
         ];
     }
 private:
@@ -66,7 +66,7 @@ ExploreGame::ExploreGame( ExplorePtr explore )
       mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
       mLua( explore->getLuaVM() ),
-      mBulletDebugging( true )
+      mBulletDebugDraw( false )
 {
 }
 
@@ -119,7 +119,7 @@ E_GAME_STATE ExploreGame::run()
         world.update();
         p.update();
 
-        if( mBulletDebugging )
+        if( mBulletDebugDraw )
             mBulletWorld->debugDrawWorld();
 
         mVideoDriver->endScene();
@@ -134,7 +134,7 @@ E_GAME_STATE ExploreGame::run()
     return state;
 }
 
-void ExploreGame::setBulletDebugging( bool enabled )
+void ExploreGame::setBulletDebugDraw( bool enabled )
 {
-    mBulletDebugging = enabled;
+    mBulletDebugDraw = enabled;
 }

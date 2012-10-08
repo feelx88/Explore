@@ -31,7 +31,7 @@ public:
 
     E_GAME_STATE run();
 
-    void setBulletDebugging( bool enabled );
+    void setBulletDebugDraw( bool enabled );
 
 private:
     ExplorePtr mExplore;
@@ -46,7 +46,7 @@ private:
 
     LuaStatePtr mLua;
 
-    bool mBulletDebugging;
+    bool mBulletDebugDraw;
 };
 
 #endif // EXPLOREGAME_H
