@@ -31,6 +31,8 @@ public:
 
     E_GAME_STATE run();
 
+    void setBulletDebugging( bool enabled );
+
 private:
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
@@ -43,6 +45,8 @@ private:
     BulletWorldPtr mBulletWorld;
 
     LuaStatePtr mLua;
+
+    bool mBulletDebugging;
 };
 
 #endif // EXPLOREGAME_H

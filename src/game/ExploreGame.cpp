@@ -39,6 +39,24 @@ using namespace gui;
 
 #define EPATH std::string( "data/Entities/" )
 
+class ExploreGameBinder : public LuaBinder
+{
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+        module( state.get() )
+        [
+                class_<ExploreGame>( "ExploreGame" )
+                    .def( "setBulletDebugging", &ExploreGame::setBulletDebugging )
+        ];
+    }
+private:
+    static int regDummy;
+};
+int ExploreGameBinder::regDummy =
+        LuaBinder::registerBinder( new ExploreGameBinder );
+
 ExploreGame::ExploreGame( ExplorePtr explore )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
@@ -47,7 +65,8 @@ ExploreGame::ExploreGame( ExplorePtr explore )
       mGUI( mDevice->getGUIEnvironment() ),
       mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
-      mLua( explore->getLuaVM() )
+      mLua( explore->getLuaVM() ),
+      mBulletDebugging( true )
 {
 }
 
@@ -71,6 +90,7 @@ E_GAME_STATE ExploreGame::run()
 
     WorldPlayer world( mExplore );
     luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayer*)&world;
+    luabind::globals( mLua.get() )["Explore"]["Game"] = this;
 
     LocalPlayer p( mExplore, &world );
     p.getEntity()->setPosition( spawnPos );
@@ -99,7 +119,8 @@ E_GAME_STATE ExploreGame::run()
         world.update();
         p.update();
 
-        //mBulletWorld->debugDrawWorld();
+        if( mBulletDebugging )
+            mBulletWorld->debugDrawWorld();
 
         mVideoDriver->endScene();
 
@@ -107,6 +128,13 @@ E_GAME_STATE ExploreGame::run()
     }
 
     mEventReceiver->lockMouse( false );
+    luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = luabind::nil;
+    luabind::globals( mLua.get() )["Explore"]["GameInstance"] = luabind::nil;
 
     return state;
+}
+
+void ExploreGame::setBulletDebugging( bool enabled )
+{
+    mBulletDebugging = enabled;
 }
