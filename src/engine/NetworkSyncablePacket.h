@@ -50,6 +50,7 @@ public:
     void writeInt64( const int64_t &val );
     void writeFloat( const float &val );
     void writeString( const std::string &val );
+    void writeBool( const bool &val );
 
     uint8_t readUInt8();
     uint16_t readUInt16();
@@ -61,6 +62,7 @@ public:
     int64_t readInt64();
     float readFloat();
     std::string readString();
+    bool readBool();
 
     std::string serialize() const;
 

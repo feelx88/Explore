@@ -162,6 +162,12 @@ void NetworkSyncablePacket::writeString( const std::string &val )
     mBody.write( val.c_str(), size );
 }
 
+void NetworkSyncablePacket::writeBool( const bool &val )
+{
+    char x = val ? '1' : '0';
+    mBody.write( &x, 1 );
+}
+
 uint8_t NetworkSyncablePacket::readUInt8()
 {
     uint8_t val = 0;
@@ -260,6 +266,13 @@ std::string NetworkSyncablePacket::readString()
     mBody.read( &buf[0], size );
 
     return buf;
+}
+
+bool NetworkSyncablePacket::readBool()
+{
+    char x = '0';
+    mBody.read( &x, 1 );
+    return x == '1' ? true : false;
 }
 
 std::string NetworkSyncablePacket::serialize() const
