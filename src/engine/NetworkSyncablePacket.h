@@ -23,6 +23,7 @@
 #include <string>
 #include <sstream>
 #include <stdint.h>
+#include <boost/asio.hpp>
 
 class NetworkSyncablePacket
 {
@@ -39,6 +40,9 @@ public:
     std::string getBody() const;
 
     bool isValid();
+
+    boost::asio::ip::udp::endpoint getEndpoint();
+    void setEndpoint( const boost::asio::ip::udp::endpoint &endpoint );
 
     void writeUInt8( const uint8_t &val );
     void writeUInt16( const uint16_t &val );
@@ -73,6 +77,8 @@ private:
     std::stringstream mBody;
 
     bool mValid;
+
+    boost::asio::ip::udp::endpoint mEndpoint;
 };
 
 #endif // NETWORKSYNCABLEPACKET_H

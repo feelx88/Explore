@@ -142,11 +142,6 @@ void Explore::setGameState( const E_GAME_STATE &state )
     mGameState = state;
 }
 
-void Explore::setServerInfo( const ExploreServer::ServerInfo &info )
-{
-    mServer.reset( new ExploreServer( info ) );
-}
-
 IrrlichtDevicePtr Explore::getIrrlichtDevice() const
 {
     return mDevice;
@@ -322,6 +317,8 @@ void Explore::initLua()
     LuaBinder::registerAll( mLua );
 
     luabind::globals( mLua.get() )["Explore"]["Instance"] = this;
+
+    LuaTools::execFile( mLua, "init.lua" );
 }
 
 void Explore::initScriptConsole()
@@ -356,9 +353,12 @@ void Explore::initGame()
 
 void Explore::initServer()
 {
-    ExploreServer::ServerInfo info;
-    info.ServerName = readConfigValue<std::string>( "Server.Name", "ExploreServer" );
-    info.maxPlayers = readConfigValue<int>( "Server.MaxPlayers", 8 );
-    info.connectedPlayers = 0;
-    setServerInfo( info );
+    ExploreServer::HostInfo info;
+    info.hostName = readConfigValue<std::string>( "Server.Name", "ExploreServer" );
+    info.serverMaxPlayers = readConfigValue<int>( "Server.MaxPlayers", 8 );
+    info.serverConnectedPlayers = 0;
+    info.passwordHash = readConfigValue<std::string>( "Server.PasswordHash", "" );
+
+    mMessenger.reset( new NetworkMessenger( mIOService, mConfig ) );
+    mServer.reset( new ExploreServer( info, mMessenger ) );
 }

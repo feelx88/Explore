@@ -27,30 +27,40 @@
 class ExploreServer : public NetworkSyncable
 {
 public:
-    struct ServerInfo
+    struct HostInfo
     {
-        std::string ServerName;
-        uint8_t maxPlayers, connectedPlayers;
+        std::string hostName;
+        uint8_t serverMaxPlayers, serverConnectedPlayers;
+        std::string passwordHash;
     };
 
-    ExploreServer( const ServerInfo &info );
+    ExploreServer( const HostInfo &info, NetworkMessengerPtr messenger );
+
+    NetworkMessengerPtr getNetworkMessenger() const;
+
+    void setSelfInfo( const HostInfo &info );
+    HostInfo selfInfo() const;
 
     void setServerMode( bool server );
     bool serverMode() const;
 
-    void requestServerInfo( NetworkMessenger *msg, const std::string &ip,
-                            const int &port );
+    void requestServerInfo( const std::string &ip, const int &port );
     bool hasServerInfo() const;
-    ServerInfo nextServerInfo();
+    HostInfo nextServerInfo();
+
+    void requestConnection( const std::string &ip, const int &port );
+    bool hasConnection() const;
 
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
 
+    NetworkMessengerPtr mMessenger;
+
     boost::dynamic_bitset<> mStatusBits;
 
-    std::queue<ServerInfo> mServerInfoQueue;
-    ServerInfo mSelfInfo;
+    std::queue<HostInfo> mServerInfoQueue;
+    HostInfo mSelfInfo;
 };
 
 #endif // EXPLORESERVER_H

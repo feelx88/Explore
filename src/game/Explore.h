@@ -112,7 +112,6 @@ public:
     }
 
     void setGameState( const E_GAME_STATE &state );
-    void setServerInfo( const ExploreServer::ServerInfo &info );
 
     IrrlichtDevicePtr getIrrlichtDevice() const;
     EventReceiverPtr getEventReceiver() const;
@@ -164,6 +163,7 @@ private:
     boost::scoped_ptr<ExploreMenu> mMenu;
     boost::scoped_ptr<ExploreGame> mGame;
     ExploreServerPtr mServer;
+    NetworkMessengerPtr mMessenger;
 
     boost::scoped_ptr<BulletIrrlichtDebugDrawer> mBulletDebugDrawer;
 

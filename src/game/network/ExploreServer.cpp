@@ -18,6 +18,7 @@
 */
 
 #include "ExploreServer.h"
+#include <engine/LoggerSingleton.h>
 #include <engine/LuaBinder.h>
 #include <iostream>
 
@@ -26,20 +27,16 @@ enum E_ACTIONID
     EAID_ACK = 0,
     EAID_NAK,
     EAID_REQUEST_SERVERINFO,
-    EAID_CONNECT
+    EAID_REQUEST_CONNECTION
 };
 
 enum E_STATUS_BITS
 {
     ESB_SERVER = 0,
     ESB_WAIT_FOR_INFO,
+    ESB_WAIT_FOR_CONNECTION,
+    ESB_CONNECTED,
     ESB_COUNT
-};
-
-struct LoginRequest
-{
-    std::string playerName;
-    std::string passwordHash;
 };
 
 class ExploreServerBinder : public LuaBinder
@@ -54,12 +51,16 @@ public:
             class_<ExploreServer>( "ExploreServer" )
                 .def( "setServerMode", &ExploreServer::setServerMode )
                 .def( "requestServerInfo", &ExploreServer::requestServerInfo )
+                .def( "hasServerInfo", &ExploreServer::hasServerInfo )
+                .def( "nextServerInfo", &ExploreServer::nextServerInfo )
+                .def( "requestConnection", &ExploreServer::requestConnection )
+                .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
                 .scope
                 [
-                    class_<ExploreServer::ServerInfo>( "ServerInfo" )
+                    class_<ExploreServer::HostInfo>( "HostInfo" )
                         .def( constructor<>() )
-                        .def_readwrite( "ServerName",
-                                        &ExploreServer::ServerInfo::ServerName )
+                        .def_readwrite( "hostName",
+                                        &ExploreServer::HostInfo::hostName )
                 ]
         ];
     }
@@ -69,15 +70,32 @@ private:
 };
 int ExploreServerBinder::regDummy = LuaBinder::registerBinder( new ExploreServerBinder );
 
-ExploreServer::ExploreServer( const ServerInfo &info )
+ExploreServer::ExploreServer(const HostInfo &info , NetworkMessengerPtr messenger)
     : NetworkSyncable( 0, 0 ),
+      mMessenger( messenger ),
       mStatusBits( ESB_COUNT ),
       mSelfInfo( info )
 {
 }
 
+NetworkMessengerPtr ExploreServer::getNetworkMessenger() const
+{
+    return mMessenger;
+}
+
+void ExploreServer::setSelfInfo( const ExploreServer::HostInfo &info )
+{
+    mSelfInfo = info;
+}
+
+ExploreServer::HostInfo ExploreServer::selfInfo() const
+{
+    return mSelfInfo;
+}
+
 void ExploreServer::setServerMode( bool server )
 {
+    _LOG( "Server mode set to", server );
     mStatusBits[ESB_SERVER] = server;
 }
 
@@ -86,11 +104,10 @@ bool ExploreServer::serverMode() const
     return mStatusBits[ESB_SERVER];
 }
 
-void ExploreServer::requestServerInfo( NetworkMessenger *msg,
-                                       const std::string &ip, const int &port )
+void ExploreServer::requestServerInfo( const std::string &ip, const int &port )
 {
     mStatusBits[ESB_WAIT_FOR_INFO] = true;
-    msg->sendTo( serialize( EAID_REQUEST_SERVERINFO ), ip, port );
+    mMessenger->sendTo( serialize( EAID_REQUEST_SERVERINFO ), ip, port );
 }
 
 bool ExploreServer::hasServerInfo() const
@@ -98,30 +115,67 @@ bool ExploreServer::hasServerInfo() const
     return !mServerInfoQueue.empty();
 }
 
-ExploreServer::ServerInfo ExploreServer::nextServerInfo()
+ExploreServer::HostInfo ExploreServer::nextServerInfo()
 {
-    ServerInfo info = mServerInfoQueue.front();
+    HostInfo info = mServerInfoQueue.front();
     mServerInfoQueue.pop();
     return info;
 }
 
-boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal( NetworkSyncablePacket &packet )
+void ExploreServer::requestConnection( const std::string &ip, const int &port )
+{
+    mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
+    mStatusBits[ESB_CONNECTED] = false;
+
+    mMessenger->sendTo( serialize( EAID_REQUEST_CONNECTION ), ip, port );
+}
+
+bool ExploreServer::hasConnection() const
+{
+    return mStatusBits[ESB_CONNECTED];
+}
+
+boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
+        NetworkSyncablePacket &packet )
 {
     switch( packet.getActionID() )
     {
     case EAID_REQUEST_SERVERINFO:
     {
+        _LOG( "SERVERINFO_REQUEST received" );
         if( mStatusBits[ESB_WAIT_FOR_INFO] )
         {
-            ServerInfo info;
-            info.ServerName = packet.readString();
-            info.maxPlayers = packet.readUInt8();
-            info.connectedPlayers = packet.readUInt8();
+            HostInfo info;
+            info.hostName = packet.readString();
+            info.serverMaxPlayers = packet.readUInt8();
+            info.serverConnectedPlayers = packet.readUInt8();
             mServerInfoQueue.push( info );
             mStatusBits[ESB_WAIT_FOR_INFO] = false;
         }
         else
             return serialize( EAID_REQUEST_SERVERINFO );
+        break;
+    }
+    case EAID_REQUEST_CONNECTION:
+    {
+        _LOG( "CONNECTION_REQUEST received" );
+        if( mStatusBits[ESB_SERVER] )
+        {
+            HostInfo host;
+            host.hostName = packet.readString();
+            host.passwordHash = packet.readString();
+
+            if( mSelfInfo.serverConnectedPlayers >= mSelfInfo.serverMaxPlayers &&
+                    host.passwordHash == mSelfInfo.passwordHash )
+                return serialize( EAID_NAK );
+            else
+                return serialize( EAID_ACK );
+        }
+        break;
+    }
+    case EAID_ACK:
+    {
+        _LOG( "ACK received" );
         break;
     }
     default:
@@ -138,9 +192,19 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
     {
     case EAID_REQUEST_SERVERINFO:
     {
-        packet.writeString( mSelfInfo.ServerName );
-        packet.writeUInt8( mSelfInfo.maxPlayers );
-        packet.writeUInt8( mSelfInfo.connectedPlayers );
+        packet.writeString( mSelfInfo.hostName );
+        packet.writeUInt8( mSelfInfo.serverMaxPlayers );
+        packet.writeUInt8( mSelfInfo.serverConnectedPlayers );
+        break;
+    }
+    case EAID_REQUEST_CONNECTION:
+    {
+        packet.writeString( mSelfInfo.hostName );
+        packet.writeString( mSelfInfo.passwordHash );
+        break;
+    }
+    case EAID_ACK:
+    {
         break;
     }
     default:

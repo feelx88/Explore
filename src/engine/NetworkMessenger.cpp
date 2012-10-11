@@ -22,6 +22,25 @@
 #include "NetworkSyncable.h"
 
 using namespace boost::asio;
+class NetworkMessengerBinder : public LuaBinder
+{
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+        module( state.get() )
+        [
+            class_<NetworkMessenger>( "NetworkMessenger" )
+                .def( "send", &NetworkMessenger::send )
+                .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
+                .def( "nextPacket", &NetworkMessenger::nextPacket )
+        ];
+    }
+
+private:
+    static int regDummy;
+};
+int NetworkMessengerBinder::regDummy = LuaBinder::registerBinder( new NetworkMessengerBinder );
 
 NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properties )
     : mIOService( ioService ),
@@ -36,12 +55,18 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
 
     mSocket->set_option( socket_base::broadcast( true ) );
 
+    //TODO:only bind if server mode/bind method
     mSocket->bind( ip::udp::endpoint( ip::udp::v4(), mPort ) );
 
     mRemoteEndpoint = ip::udp::endpoint(
                 ip::address::from_string( mServerIP ), mPort );
 
     receive();
+}
+
+NetworkMessenger::~NetworkMessenger()
+{
+    mSocket->close();
 }
 
 void NetworkMessenger::send( const NetworkSyncablePacket &packet )
@@ -101,6 +126,7 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
 
     NetworkSyncablePacket packet( std::string( mReceiveBuffer.begin(),
                                                mReceiveBuffer.end() ) );
+    packet.setEndpoint( mRemoteEndpoint );
 
     NetworkSyncable *syncable = NetworkSyncable::getObject( packet.getUID() );
 
@@ -114,6 +140,8 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
         else
             send( *replyPacket );
     }
+    else
+        mPacketQueue.push( packet );
 
     receive();
 }

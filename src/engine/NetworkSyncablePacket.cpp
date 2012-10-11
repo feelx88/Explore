@@ -18,6 +18,7 @@
 */
 
 #include "NetworkSyncablePacket.h"
+#include "LuaBinder.h"
 #include <sstream>
 #include <cmath>
 #include <cstring>
@@ -25,6 +26,27 @@
 #define MANTISSA_SIZE 23  //ieee 754
 #define INT_SIZE 4
 #define PACKED_FLOAT_SIZE 8
+
+class NetworkSyncablePacketBinder : public LuaBinder
+{
+public:
+    void reg( LuaStatePtr state )
+    {
+        using namespace luabind;
+        module( state.get() )
+        [
+            class_<NetworkSyncablePacket>( "NetworkSyncablePacket" )
+                .def( constructor<int, int, int, std::string>() )
+                .def( "getUID", &NetworkSyncablePacket::getUID )
+                .def( "getTypeID", &NetworkSyncablePacket::getTypeID )
+                .def( "getActionID", &NetworkSyncablePacket::getActionID )
+        ];
+    }
+private:
+    static int regDummy;
+};
+int NetworkSyncablePacketBinder::regDummy =
+        LuaBinder::registerBinder( new NetworkSyncablePacketBinder );
 
 NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
 {
@@ -91,6 +113,16 @@ std::string NetworkSyncablePacket::getBody() const
 bool NetworkSyncablePacket::isValid()
 {
     return mValid;
+}
+
+boost::asio::ip::udp::endpoint NetworkSyncablePacket::getEndpoint()
+{
+    return mEndpoint;
+}
+
+void NetworkSyncablePacket::setEndpoint( const boost::asio::ip::udp::endpoint &endpoint )
+{
+    mEndpoint = endpoint;
 }
 
 void NetworkSyncablePacket::writeUInt8( const uint8_t &val )

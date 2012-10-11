@@ -25,10 +25,14 @@
 #include "NetworkSyncable.h"
 #include <queue>
 
+class NetworkMessenger;
+typedef boost::shared_ptr<NetworkMessenger> NetworkMessengerPtr;
+
 class NetworkMessenger
 {
 public:
     NetworkMessenger( IOServicePtr ioService, PropTreePtr properties );
+    virtual ~NetworkMessenger();
 
     void send( const NetworkSyncablePacket &packet );
     void sendTo( const NetworkSyncablePacket &packet,

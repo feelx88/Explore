@@ -186,6 +186,7 @@ E_GAME_STATE ExploreMenu::run()
         mGUI->drawAll();
 
         mVideoDriver->endScene();
+        mExplore->getIOService()->poll();
     }
 
     //Remove container
