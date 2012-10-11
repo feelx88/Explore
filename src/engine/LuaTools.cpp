@@ -31,3 +31,8 @@ void LuaTools::execString( LuaStatePtr lua, const std::string &script )
 {
     luaL_dostring( lua.get(), script.c_str() );
 }
+
+void LuaTools::execFile( LuaStatePtr lua, const std::string &fileName )
+{
+    luaL_dofile( lua.get(), fileName.c_str() );
+}
