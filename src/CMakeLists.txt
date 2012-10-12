@@ -22,6 +22,7 @@ file( GLOB assets
     ../build/config.ini
     ../build/keycodes.ini
     ../build/log.txt
+    ../build/init.lua
     ../build/data/*/*/*
     ../.gitignore
     ../README

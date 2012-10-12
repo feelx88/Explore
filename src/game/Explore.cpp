@@ -319,6 +319,7 @@ void Explore::initLua()
     luabind::globals( mLua.get() )["Explore"]["Instance"] = this;
 
     LuaTools::execFile( mLua, "init.lua" );
+    LuaTools::execString( mLua, "Explore.init()" );
 }
 
 void Explore::initScriptConsole()
