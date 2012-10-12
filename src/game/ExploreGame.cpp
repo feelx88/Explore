@@ -125,6 +125,7 @@ E_GAME_STATE ExploreGame::run()
         mVideoDriver->endScene();
 
         mDevice->setWindowCaption( stringw( mVideoDriver->getFPS() ).c_str() );
+        mExplore->getIOService()->poll();
     }
 
     mEventReceiver->lockMouse( false );
