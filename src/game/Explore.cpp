@@ -48,7 +48,6 @@ public:
         using namespace luabind;
         module( state.get() )
         [
-                def( "exit", &exit ),
                 class_<Explore>( "Explore" )
                     .def( "readConfigValue", &Explore::readConfigValue<std::string> )
                     .def( "getExploreServer", &Explore::getExploreServer )
