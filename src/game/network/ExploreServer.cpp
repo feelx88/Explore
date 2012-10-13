@@ -165,11 +165,11 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             host.hostName = packet.readString();
             host.passwordHash = packet.readString();
 
-            if( mSelfInfo.serverConnectedPlayers >= mSelfInfo.serverMaxPlayers &&
+            if( mSelfInfo.serverConnectedPlayers < mSelfInfo.serverMaxPlayers &&
                     host.passwordHash == mSelfInfo.passwordHash )
-                return serialize( EAID_NAK );
-            else
                 return serialize( EAID_ACK );
+            else
+                return serialize( EAID_NAK );
         }
         break;
     }

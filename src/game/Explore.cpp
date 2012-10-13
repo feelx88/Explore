@@ -104,6 +104,9 @@ Explore::Explore()
     initMenu();
     initGame();
     initServer();
+
+    //Run init script
+    LuaTools::execString( mLua, "Explore.init()" );
 }
 
 Explore::~Explore()
@@ -319,7 +322,6 @@ void Explore::initLua()
     luabind::globals( mLua.get() )["Explore"]["Instance"] = this;
 
     LuaTools::execFile( mLua, "init.lua" );
-    LuaTools::execString( mLua, "Explore.init()" );
 }
 
 void Explore::initScriptConsole()
