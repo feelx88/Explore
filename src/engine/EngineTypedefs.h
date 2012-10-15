@@ -93,7 +93,12 @@ typedef boost::shared_ptr<btRigidBody> RigidBodyPtr;
 typedef boost::shared_ptr<btCollisionShape> CollisionShapePtr;
 typedef boost::shared_ptr<btMotionState> MotionStatePtr;
 
-#include <lua.hpp>
+extern "C"
+{
+    #include <lua.h>
+    #include <lualib.h>
+    #include <lauxlib.h>
+}
 
 namespace specialDeleters
 {

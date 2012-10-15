@@ -13,7 +13,10 @@ file( GLOB Explore_SRCS
     game/*/*.h
 )
 
-add_library( Engine SHARED ${Engine_SRCS} )
+set( ENGINE_LIBRARY_TYPE SHARED CACHE STRING
+    "Build type of Engine library: STATIC or SHARED. Static builds work better with mingw." )
+
+add_library( Engine ${ENGINE_LIBRARY_TYPE} ${Engine_SRCS} )
 
 add_executable(Explore ${Explore_SRCS})
 

@@ -1,9 +1,11 @@
 build/config.ini
 build/log.txt
 build/Explore
-*.exe
+*.exe*
+*.a
 *.so
-*.dll
+*.dll*
+*.pdb
 CMakeFiles
 CMakeCache.txt
 CMakeLists.txt.*
@@ -15,3 +17,4 @@ Makefile
 *.blend3
 *.blend4
 *~
+contrib/*

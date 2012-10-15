@@ -18,7 +18,7 @@ Kd 0.8 0.8 0.8
 Ks 0.8 0.8 0.8
 d 1
 illum 2
-map_Kd /home/feelx/devel/Explore/build/data/Textures/crate.jpg
+map_Kd crate.jpg
 
 
 newmtl _defaultIcon.png
@@ -28,6 +28,6 @@ Kd 0.8 0.8 0.8
 Ks 0.8 0.8 0.8
 d 1
 illum 2
-map_Kd /home/feelx/devel/Explore/build/data/Textures/stone.jpg
+map_Kd stone.jpg
 
 
