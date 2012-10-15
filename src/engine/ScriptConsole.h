@@ -53,6 +53,8 @@ private:
     IGUIButtonPtr mSendButton;
 
     unsigned int mListIndex;
+
+    std::vector<std::string> mHistory;
 };
 
 #endif // SCRIPTCONSOLE_H

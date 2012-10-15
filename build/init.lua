@@ -1,6 +1,7 @@
 function Explore.init()
     log( "Running Init function" )
     server = Explore.Instance:getExploreServer()
+    messenger = server:getNetworkMessenger()
     ip = "127.0.0.1"
     port = 6556
     quit, q = os.exit, os.exit
@@ -12,4 +13,8 @@ end
 
 function deleteItem( item )
         Explore.WorldPlayer:removeOwnedItem( item )
+end
+
+function _LOG( what )
+    log( tostring( what ) )
 end

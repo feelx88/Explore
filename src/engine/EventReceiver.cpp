@@ -96,24 +96,30 @@ bool EventReceiver::OnEvent( const SEvent &event )
         }
         else if( mScriptConsole )
         {
-            if( event.KeyInput.Key == KEY_RETURN && !event.KeyInput.PressedDown )
+            unsigned int &lIndex= mScriptConsole->mListIndex;
+            std::vector<std::string> &hist = mScriptConsole->mHistory;
+
+            if( event.KeyInput.Key == KEY_RETURN && !event.KeyInput.PressedDown
+                    && core::stringw( mScriptConsole->mInputBox->getText() ).size() > 0 )
                 sendScriptConsoleCommand();
-            if( event.KeyInput.Key == KEY_UP && !event.KeyInput.PressedDown )
+            if( event.KeyInput.Key == KEY_UP && !event.KeyInput.PressedDown
+                    && !hist.empty() )
             {
-                if( mScriptConsole->mListIndex > 0 )
-                    mScriptConsole->mListIndex--;
-                mScriptConsole->mInputBox->setText(
-                            mScriptConsole->mOutputBox->getListItem(
-                                mScriptConsole->mListIndex ) );
+                if( lIndex > 0 )
+                    lIndex--;
+                irr::core::stringw string( hist.at( lIndex ).c_str() );
+                mScriptConsole->mInputBox->setText( string.c_str() );
             }
             if( event.KeyInput.Key == KEY_DOWN && !event.KeyInput.PressedDown )
             {
-                if( mScriptConsole->mListIndex <
-                        mScriptConsole->mOutputBox->getItemCount() )
-                    mScriptConsole->mListIndex++;
-                mScriptConsole->mInputBox->setText(
-                            mScriptConsole->mOutputBox->getListItem(
-                                mScriptConsole->mListIndex ) );
+                if( hist.empty() || lIndex >= hist.size() - 1 )
+                    mScriptConsole->mInputBox->setText( L"" );
+                else if( lIndex < hist.size() - 1 )
+                {
+                    lIndex++;
+                    irr::core::stringw string( hist.at( lIndex ).c_str() );
+                    mScriptConsole->mInputBox->setText( string.c_str() );
+                }
             }
         }
     }
@@ -295,9 +301,11 @@ void EventReceiver::sendScriptConsoleCommand()
     std::string script(
                 irr::core::stringc( mScriptConsole->mInputBox->getText() ).c_str() );
     LuaTools::execString( mScriptConsole->mLuaState, script );
-    mScriptConsole->mOutputBox->addItem( mScriptConsole->mInputBox->getText() );
+
+    mScriptConsole->mHistory.push_back( script );
+
     mScriptConsole->mInputBox->setText( L"" );
     mScriptConsole->mOutputBox->setSelected(
                 mScriptConsole->mOutputBox->getItemCount() - 1 );
-    mScriptConsole->mListIndex = mScriptConsole->mOutputBox->getItemCount();
+    mScriptConsole->mListIndex = mScriptConsole->mHistory.size();
 }
