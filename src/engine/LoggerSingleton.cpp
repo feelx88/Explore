@@ -38,7 +38,7 @@ void LoggerSingleton::log( const std::string &str )
     {
         irr::gui::IGUIListBox *output = mScriptConsole->mOutputBox;
         output->addItem( irr::core::stringw( str.c_str() ).c_str() );
-        output->setSelected( output->getItemCount() - 1 );
+        output->setSelected( -1 );
         mScriptConsole->mListIndex = output->getItemCount();
     }
 }

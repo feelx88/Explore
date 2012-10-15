@@ -305,7 +305,6 @@ void EventReceiver::sendScriptConsoleCommand()
     mScriptConsole->mHistory.push_back( script );
 
     mScriptConsole->mInputBox->setText( L"" );
-    mScriptConsole->mOutputBox->setSelected(
-                mScriptConsole->mOutputBox->getItemCount() - 1 );
+    mScriptConsole->mOutputBox->setSelected( -1 );
     mScriptConsole->mListIndex = mScriptConsole->mHistory.size();
 }
