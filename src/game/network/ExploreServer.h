@@ -49,6 +49,7 @@ public:
     HostInfo nextServerInfo();
 
     void requestConnection( const std::string &ip, const int &port );
+    bool isConnection() const;
     bool hasConnection() const;
 
 protected:

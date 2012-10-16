@@ -137,6 +137,11 @@ void ExploreServer::requestConnection( const std::string &ip, const int &port )
     mMessenger->sendTo( serialize( EAID_REQUEST_CONNECTION ), ip, port );
 }
 
+bool ExploreServer::isConnection() const
+{
+    return mStatusBits[ESB_WAIT_FOR_CONNECTION];
+}
+
 bool ExploreServer::hasConnection() const
 {
     return mStatusBits[ESB_CONNECTED];
@@ -182,7 +187,13 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
     }
     case EAID_ACK:
     {
-        _LOG( "ACK received" );
+        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
+        {
+            _LOG( "Connection accepted!" );
+            mStatusBits[ESB_CONNECTED] = true;
+        }
+        else
+            _LOG( "ACK received" );
         break;
     }
     default:

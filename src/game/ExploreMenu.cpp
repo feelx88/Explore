@@ -76,6 +76,25 @@ struct WindowCloseCallback : public EventReceiver::GUICallback
     }
 };
 
+struct ConnectClickedCallback : public EventReceiver::GUICallback
+{
+    bool call( IGUIElementPtr caller )
+    {
+        IGUIElementPtr win = caller->getParent();
+        IGUIEditBoxPtr ipBox = static_cast<IGUIEditBoxPtr>(
+                    win->getElementFromId( EGID_CONNECT_IP, true ) );
+        IGUIEditBoxPtr portBox = static_cast<IGUIEditBoxPtr>(
+                    win->getElementFromId( EGID_CONNECT_PORT, true ) );
+
+        std::string ip = core::stringc( ipBox->getText() ).c_str();
+        int port = boost::lexical_cast<int>( portBox->getText() );
+
+        mServer->requestConnection( ip, port );
+        return true;
+    }
+    ExploreServerPtr mServer;
+};
+
 ExploreMenu::ExploreMenu( ExplorePtr explore )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
@@ -177,6 +196,12 @@ E_GAME_STATE ExploreMenu::run()
     mExplore->getEventReceiver()->registerGUICallback( &optionsWindowClose,
                                                        EGID_OPTIONS_WINDOW,
                                                        EGET_ELEMENT_CLOSED );
+
+    ConnectClickedCallback connectButtonClicked;
+    connectButtonClicked.mServer = mExplore->getExploreServer();
+    mExplore->getEventReceiver()->registerGUICallback( &connectButtonClicked,
+                                                       EGID_CONNECT_BUTTON,
+                                                       EGET_BUTTON_CLICKED );
 
     //Main loop
     while( state == EGS_MAIN_MENU && mDevice->run() )
