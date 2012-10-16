@@ -106,13 +106,17 @@ bool ExploreServer::serverMode() const
 
 void ExploreServer::requestServerInfo( const std::string &ip, const int &port )
 {
+    _LOG( "Requesting server info from",
+          ip + std::string( ":" ) + boost::lexical_cast<std::string>( port ) );
     mStatusBits[ESB_WAIT_FOR_INFO] = true;
     mMessenger->sendTo( serialize( EAID_REQUEST_SERVERINFO ), ip, port );
 }
 
 bool ExploreServer::hasServerInfo() const
 {
-    return !mServerInfoQueue.empty();
+    bool status = !mServerInfoQueue.empty();
+    _LOG( "ExploreServer::hasServerInfo", status );
+    return status;
 }
 
 ExploreServer::HostInfo ExploreServer::nextServerInfo()
@@ -124,6 +128,9 @@ ExploreServer::HostInfo ExploreServer::nextServerInfo()
 
 void ExploreServer::requestConnection( const std::string &ip, const int &port )
 {
+    _LOG( "Requesting connection to",
+          ip + std::string( ":" ) + boost::lexical_cast<std::string>( port ) );
+
     mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
     mStatusBits[ESB_CONNECTED] = false;
 

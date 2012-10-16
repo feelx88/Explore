@@ -5,6 +5,7 @@ function Explore.init()
     ip = "127.0.0.1"
     port = 6556
     quit, q = os.exit, os.exit
+    exit = os.exit
 end
 
 function createItem( name )

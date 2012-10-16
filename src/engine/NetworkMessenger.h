@@ -44,6 +44,7 @@ public:
     NetworkSyncablePacket nextPacket();
 
     void setRemoteAddress( const std::string &address, const int &port );
+    void bind( int port );
 
 private:
     void receive();

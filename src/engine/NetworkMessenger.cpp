@@ -34,6 +34,7 @@ public:
                 .def( "send", &NetworkMessenger::send )
                 .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
                 .def( "nextPacket", &NetworkMessenger::nextPacket )
+                .def( "bind", &NetworkMessenger::bind )
         ];
     }
 
@@ -51,12 +52,8 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
     mReceiveBuffer.resize( mProperties->get( "Server.BufferSize", 512 ) );
 
     mSocket.reset( new ip::udp::socket( *mIOService.get() ) );
-    mSocket->open( ip::udp::v4() );
 
-    mSocket->set_option( socket_base::broadcast( true ) );
-
-    //TODO:only bind if server mode/bind method
-    mSocket->bind( ip::udp::endpoint( ip::udp::v4(), mPort ) );
+    bind( mPort );
 
     mRemoteEndpoint = ip::udp::endpoint(
                 ip::address::from_string( mServerIP ), mPort );
@@ -66,6 +63,7 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
 
 NetworkMessenger::~NetworkMessenger()
 {
+    mSocket->shutdown( ip::udp::socket::shutdown_both );
     mSocket->close();
 }
 
@@ -92,7 +90,9 @@ void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
 
 bool NetworkMessenger::hasPacketsInQueue() const
 {
-    return !mPacketQueue.empty();
+    bool status = !mPacketQueue.empty();
+    _LOG( "NetworkMessenger::hasPacketsInQueue", status );
+    return status;
 }
 
 NetworkSyncablePacket NetworkMessenger::nextPacket()
@@ -109,6 +109,33 @@ void NetworkMessenger::setRemoteAddress( const std::string &address, const int &
 
     mRemoteEndpoint = ip::udp::endpoint(
                 ip::address::from_string( mServerIP ), mPort );
+}
+
+void NetworkMessenger::bind( int port )
+{
+    _LOG( "Trying to bind socket to port", port );
+
+    try
+    {
+        mSocket->close();
+        mSocket->open( ip::udp::v4() );
+    }
+    catch( ... )
+    {
+        //Socket not opened
+    }
+
+    try
+    {
+        mSocket->bind( ip::udp::endpoint( ip::udp::v4(), port ) );
+    }
+    catch( ... )
+    {
+        _LOG( "Server could not bind to port", mPort );
+        mSocket->bind( ip::udp::endpoint( ip::udp::v4(), 0 ) );
+    }
+
+    receive();
 }
 
 void NetworkMessenger::receive()
