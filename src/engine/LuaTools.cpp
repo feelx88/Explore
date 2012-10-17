@@ -19,6 +19,7 @@
 
 
 #include "LuaTools.h"
+#include "LoggerSingleton.h"
 
 LuaStatePtr LuaTools::createLuaVM()
 {
@@ -29,10 +30,21 @@ LuaStatePtr LuaTools::createLuaVM()
 
 void LuaTools::execString( LuaStatePtr lua, const std::string &script )
 {
-    luaL_dostring( lua.get(), script.c_str() );
+    if( luaL_dostring( lua.get(), script.c_str() ) )
+    {
+        std::string error = "Error";
+        _LOG( error, lua_tostring( lua.get(), -1 ) );
+        lua_pop( lua.get(), 1 );
+    }
 }
 
 void LuaTools::execFile( LuaStatePtr lua, const std::string &fileName )
 {
-    luaL_dofile( lua.get(), fileName.c_str() );
+    if( luaL_dofile( lua.get(), fileName.c_str() ) )
+    {
+        std::string error = "Error in script file ";
+        error += fileName;
+        _LOG( error, lua_tostring( lua.get(), -1 ) );
+        lua_pop( lua.get(), 1 );
+    }
 }
