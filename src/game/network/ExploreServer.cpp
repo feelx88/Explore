@@ -21,13 +21,17 @@
 #include <engine/LoggerSingleton.h>
 #include <engine/LuaBinder.h>
 #include <iostream>
+#include "../Explore.h"
+
+using namespace boost::asio::ip;
 
 enum E_ACTIONID
 {
     EAID_ACK = 0,
     EAID_NAK,
     EAID_REQUEST_SERVERINFO,
-    EAID_REQUEST_CONNECTION
+    EAID_REQUEST_CONNECTION,
+    EAID_REQUEST_IS_STILL_ALIVE
 };
 
 enum E_STATUS_BITS
@@ -55,6 +59,15 @@ public:
                 .def( "nextServerInfo", &ExploreServer::nextServerInfo )
                 .def( "requestConnection", &ExploreServer::requestConnection )
                 .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
+                .def( "serialize", &ExploreServer::serialize )
+                .enum_( "E_ACTIONID" )
+                [
+                    value( "EAID_ACK", EAID_ACK ),
+                    value( "EAID_NAK", EAID_NAK ),
+                    value( "EAID_REQUEST_SERVERINFO", EAID_REQUEST_SERVERINFO ),
+                    value( "EAID_REQUEST_CONNECTION", EAID_REQUEST_CONNECTION ),
+                    value( "EAID_REQUEST_IS_STILL_ALIVE", EAID_REQUEST_IS_STILL_ALIVE )
+                ]
                 .scope
                 [
                     class_<ExploreServer::HostInfo>( "HostInfo" )
@@ -70,8 +83,10 @@ private:
 };
 int ExploreServerBinder::regDummy = LuaBinder::registerBinder( new ExploreServerBinder );
 
-ExploreServer::ExploreServer(const HostInfo &info , NetworkMessengerPtr messenger)
+ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
+                              NetworkMessengerPtr messenger )
     : NetworkSyncable( 0, 0 ),
+      mExplore( explore ),
       mMessenger( messenger ),
       mStatusBits( ESB_COUNT ),
       mSelfInfo( info )
@@ -147,6 +162,17 @@ bool ExploreServer::hasConnection() const
     return mStatusBits[ESB_CONNECTED];
 }
 
+void ExploreServer::updateConnectedClients()
+{
+    for( std::vector<ClientInfo>::iterator x = mClientInfo.begin();
+         x != mClientInfo.end(); ++x )
+    {
+        //if not alive -> kick
+        mMessenger->sendTo( serialize( EAID_REQUEST_IS_STILL_ALIVE ), x->endpoint );
+        //TODO:static NetworkSyncable->update
+    }
+}
+
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
@@ -179,7 +205,12 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
 
             if( mSelfInfo.serverConnectedPlayers < mSelfInfo.serverMaxPlayers &&
                     host.passwordHash == mSelfInfo.passwordHash )
+            {
+                ClientInfo info;
+                info.endpoint = packet.getEndpoint();
+                mClientInfo.push_back( info );
                 return serialize( EAID_ACK );
+            }
             else
                 return serialize( EAID_NAK );
         }
@@ -191,10 +222,24 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         {
             _LOG( "Connection accepted!" );
             mStatusBits[ESB_CONNECTED] = true;
+
+            boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
+            mMessenger->setRemoteAddress( endpoint.address().to_string(),
+                                          endpoint.port() );
+        }
+        else if( mStatusBits[ESB_SERVER] ) //Receive is_alive
+        {
+            ClientInfo *info = mEndpointClientMap[packet.getEndpoint().address().to_string()];
+            if( !info )
+                _LOG( "Unknown ACK received", packet.getEndpoint().address() );
         }
         else
             _LOG( "ACK received" );
         break;
+    }
+    case EAID_REQUEST_IS_STILL_ALIVE:
+    {
+        return serialize( EAID_ACK );
     }
     default:
     {

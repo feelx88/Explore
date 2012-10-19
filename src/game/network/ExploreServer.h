@@ -23,6 +23,8 @@
 #include <engine/NetworkSyncable.h>
 #include <engine/NetworkMessenger.h>
 #include <boost/dynamic_bitset.hpp>
+#include <boost/unordered_map.hpp>
+#include "../GameState.h"
 
 class ExploreServer : public NetworkSyncable
 {
@@ -34,7 +36,15 @@ public:
         std::string passwordHash;
     };
 
-    ExploreServer( const HostInfo &info, NetworkMessengerPtr messenger );
+    struct ClientInfo
+    {
+        HostInfo host;
+        boost::asio::ip::udp::endpoint endpoint;
+        int lastActiveTime;
+    };
+
+    ExploreServer( ExplorePtr explore, const HostInfo &info,
+                   NetworkMessengerPtr messenger );
 
     NetworkMessengerPtr getNetworkMessenger() const;
 
@@ -52,9 +62,13 @@ public:
     bool isConnection() const;
     bool hasConnection() const;
 
+    void updateConnectedClients();
+
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
+
+    ExplorePtr mExplore;
 
     NetworkMessengerPtr mMessenger;
 
@@ -62,6 +76,9 @@ protected:
 
     std::queue<HostInfo> mServerInfoQueue;
     HostInfo mSelfInfo;
+
+    std::vector<ClientInfo> mClientInfo;
+    boost::unordered::unordered_map<std::string, ClientInfo*> mEndpointClientMap;
 };
 
 #endif // EXPLORESERVER_H

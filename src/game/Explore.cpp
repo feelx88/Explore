@@ -362,5 +362,5 @@ void Explore::initServer()
     info.passwordHash = readConfigValue<std::string>( "Server.PasswordHash", "" );
 
     mMessenger.reset( new NetworkMessenger( mIOService, mConfig ) );
-    mServer.reset( new ExploreServer( info, mMessenger ) );
+    mServer.reset( new ExploreServer( this, info, mMessenger ) );
 }
