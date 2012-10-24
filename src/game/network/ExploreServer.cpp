@@ -222,11 +222,13 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             if( mSelfInfo.serverConnectedPlayers < mSelfInfo.serverMaxPlayers &&
                     host.passwordHash == mSelfInfo.passwordHash )
             {
-                _LOG( "Client accepted!" );
                 ClientInfo info;
                 info.endpoint = packet.getEndpoint();
                 info.id = nextClientID();
                 mClientIDMap.insert( std::make_pair( info.id, info ) );
+
+                _LOG( "Client accepted! New ID", info.id );
+
                 return serialize( EAID_ACCEPT_CONNECTION );
             }
             else
@@ -244,7 +246,6 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 _LOG( "Unknown ACK received with ClientID", clientID );
             else
             {
-                _LOG( "Client alive", x->second.host.hostName );
                 x->second.lastActiveTime = system_clock::now();
             }
         }
