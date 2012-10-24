@@ -128,41 +128,49 @@ void NetworkSyncablePacket::setEndpoint( const boost::asio::ip::udp::endpoint &e
 void NetworkSyncablePacket::writeUInt8( const uint8_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( uint8_t ) );
+    mBodySize += sizeof( uint8_t );
 }
 
 void NetworkSyncablePacket::writeUInt16( const uint16_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( uint16_t ) );
+    mBodySize += sizeof( uint16_t );
 }
 
 void NetworkSyncablePacket::writeUInt32( const uint32_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( uint32_t ) );
+    mBodySize += sizeof( uint32_t );
 }
 
 void NetworkSyncablePacket::writeUInt64( const uint64_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( uint64_t ) );
+    mBodySize += sizeof( uint64_t );
 }
 
 void NetworkSyncablePacket::writeInt8( const int8_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( int8_t ) );
+    mBodySize += sizeof( int8_t );
 }
 
 void NetworkSyncablePacket::writeInt16( const int16_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( int16_t ) );
+    mBodySize += sizeof( int16_t );
 }
 
 void NetworkSyncablePacket::writeInt32( const int32_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( int32_t ) );
+    mBodySize += sizeof( int32_t );
 }
 
 void NetworkSyncablePacket::writeInt64( const int64_t &val )
 {
     mBody.write( reinterpret_cast<const char*>( &val ), sizeof( int64_t ) );
+    mBodySize += sizeof( int64_t );
 }
 
 void NetworkSyncablePacket::writeFloat( const float &val )
@@ -185,6 +193,7 @@ void NetworkSyncablePacket::writeFloat( const float &val )
     stream.write( mantissaBits, INT_SIZE );
 
     mBody.write( stream.str().c_str(), PACKED_FLOAT_SIZE );
+    mBodySize += PACKED_FLOAT_SIZE;
 }
 
 void NetworkSyncablePacket::writeString( const std::string &val )
@@ -192,18 +201,21 @@ void NetworkSyncablePacket::writeString( const std::string &val )
     uint32_t size = val.size();
     writeUInt32( size );
     mBody.write( val.c_str(), size );
+    mBodySize += size;
 }
 
 void NetworkSyncablePacket::writeBool( const bool &val )
 {
     char x = val ? '1' : '0';
     mBody.write( &x, 1 );
+    mBodySize += 1;
 }
 
 uint8_t NetworkSyncablePacket::readUInt8()
 {
     uint8_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( uint8_t ) );
+    mBodySize -= sizeof( uint8_t );
     return val;
 }
 
@@ -211,6 +223,7 @@ uint16_t NetworkSyncablePacket::readUInt16()
 {
     uint16_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( uint16_t ) );
+    mBodySize -= sizeof( uint16_t );
     return val;
 }
 
@@ -218,6 +231,7 @@ uint32_t NetworkSyncablePacket::readUInt32()
 {
     uint32_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( uint32_t ) );
+    mBodySize -= sizeof( uint32_t );
     return val;
 }
 
@@ -225,6 +239,7 @@ uint64_t NetworkSyncablePacket::readUInt64()
 {
     uint64_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( uint64_t ) );
+    mBodySize -= sizeof( uint64_t );
     return val;
 }
 
@@ -232,6 +247,7 @@ int8_t NetworkSyncablePacket::readInt8()
 {
     int8_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( int8_t ) );
+    mBodySize -= sizeof( int8_t );
     return val;
 }
 
@@ -239,6 +255,7 @@ int16_t NetworkSyncablePacket::readInt16()
 {
     int16_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( int16_t ) );
+    mBodySize -= sizeof( int16_t );
     return val;
 }
 
@@ -246,6 +263,7 @@ int32_t NetworkSyncablePacket::readInt32()
 {
     int32_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( int32_t ) );
+    mBodySize -= sizeof( int32_t );
     return val;
 }
 
@@ -253,6 +271,7 @@ int64_t NetworkSyncablePacket::readInt64()
 {
     int64_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( int64_t ) );
+    mBodySize -= sizeof( int64_t );
     return val;
 }
 
@@ -285,6 +304,8 @@ float NetworkSyncablePacket::readFloat()
     if( negative )
         v *= -1.f;
 
+    mBodySize -= PACKED_FLOAT_SIZE;
+
     return v;
 }
 
@@ -297,6 +318,8 @@ std::string NetworkSyncablePacket::readString()
 
     mBody.read( &buf[0], size );
 
+    mBodySize -= size;
+
     return buf;
 }
 
@@ -304,6 +327,7 @@ bool NetworkSyncablePacket::readBool()
 {
     char x = '0';
     mBody.read( &x, 1 );
+    mBodySize -= 1;
     return x == '1' ? true : false;
 }
 
