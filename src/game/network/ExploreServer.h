@@ -23,7 +23,7 @@
 #include <engine/NetworkSyncable.h>
 #include <engine/NetworkMessenger.h>
 #include <boost/dynamic_bitset.hpp>
-#include <boost/unordered_map.hpp>
+#include <boost/chrono.hpp>
 #include "../GameState.h"
 
 class ExploreServer : public NetworkSyncable
@@ -38,9 +38,10 @@ public:
 
     struct ClientInfo
     {
+        uint32_t id;
         HostInfo host;
         boost::asio::ip::udp::endpoint endpoint;
-        int lastActiveTime;
+        boost::chrono::system_clock::time_point lastActiveTime;
     };
 
     ExploreServer( ExplorePtr explore, const HostInfo &info,
@@ -59,7 +60,7 @@ public:
     HostInfo nextServerInfo();
 
     void requestConnection( const std::string &ip, const int &port );
-    bool isConnection() const;
+    bool isConnecting() const;
     bool hasConnection() const;
 
     void updateConnectedClients();
@@ -67,6 +68,8 @@ public:
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
+
+    uint32_t nextClientID();
 
     ExplorePtr mExplore;
 
@@ -77,8 +80,11 @@ protected:
     std::queue<HostInfo> mServerInfoQueue;
     HostInfo mSelfInfo;
 
-    std::vector<ClientInfo> mClientInfo;
-    boost::unordered::unordered_map<std::string, ClientInfo*> mEndpointClientMap;
+    uint32_t mClientID;
+
+    std::map<uint32_t, ClientInfo> mClientIDMap;
+
+    boost::asio::deadline_timer mUpdateTimer;
 };
 
 #endif // EXPLORESERVER_H

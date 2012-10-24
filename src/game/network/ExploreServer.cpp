@@ -24,6 +24,7 @@
 #include "../Explore.h"
 
 using namespace boost::asio::ip;
+using namespace boost::chrono;
 
 enum E_ACTIONID
 {
@@ -31,6 +32,7 @@ enum E_ACTIONID
     EAID_NAK,
     EAID_REQUEST_SERVERINFO,
     EAID_REQUEST_CONNECTION,
+    EAID_ACCEPT_CONNECTION,
     EAID_REQUEST_IS_STILL_ALIVE
 };
 
@@ -89,8 +91,11 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
       mExplore( explore ),
       mMessenger( messenger ),
       mStatusBits( ESB_COUNT ),
-      mSelfInfo( info )
+      mSelfInfo( info ),
+      mClientID( 0 ),
+      mUpdateTimer( *mExplore->getIOService().get(), boost::posix_time::milliseconds( 200 ) )
 {
+    updateConnectedClients();
 }
 
 NetworkMessengerPtr ExploreServer::getNetworkMessenger() const
@@ -152,7 +157,7 @@ void ExploreServer::requestConnection( const std::string &ip, const int &port )
     mMessenger->sendTo( serialize( EAID_REQUEST_CONNECTION ), ip, port );
 }
 
-bool ExploreServer::isConnection() const
+bool ExploreServer::isConnecting() const
 {
     return mStatusBits[ESB_WAIT_FOR_CONNECTION];
 }
@@ -164,13 +169,24 @@ bool ExploreServer::hasConnection() const
 
 void ExploreServer::updateConnectedClients()
 {
-    for( std::vector<ClientInfo>::iterator x = mClientInfo.begin();
-         x != mClientInfo.end(); ++x )
+    system_clock::time_point now = system_clock::now();
+    system_clock::duration then = seconds( 10 );
+
+    for( std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.begin();
+         x != mClientIDMap.end(); ++x )
     {
-        //if not alive -> kick
-        mMessenger->sendTo( serialize( EAID_REQUEST_IS_STILL_ALIVE ), x->endpoint );
+        if( x->second.lastActiveTime > now + then )
+        {
+            mClientIDMap.erase( x );
+            continue;
+        }
+        mMessenger->sendTo( serialize( EAID_REQUEST_IS_STILL_ALIVE ), x->second.endpoint );
         //TODO:static NetworkSyncable->update
     }
+
+    mUpdateTimer.expires_from_now( boost::posix_time::milliseconds( 200 ) );
+    mUpdateTimer.async_wait(
+                boost::bind( &ExploreServer::updateConnectedClients, this ) );
 }
 
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
@@ -206,10 +222,12 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             if( mSelfInfo.serverConnectedPlayers < mSelfInfo.serverMaxPlayers &&
                     host.passwordHash == mSelfInfo.passwordHash )
             {
+                _LOG( "Client accepted!" );
                 ClientInfo info;
                 info.endpoint = packet.getEndpoint();
-                mClientInfo.push_back( info );
-                return serialize( EAID_ACK );
+                info.id = nextClientID();
+                mClientIDMap.insert( std::make_pair( info.id, info ) );
+                return serialize( EAID_ACCEPT_CONNECTION );
             }
             else
                 return serialize( EAID_NAK );
@@ -218,28 +236,44 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
     }
     case EAID_ACK:
     {
-        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
+        if( mStatusBits[ESB_SERVER] ) //Receive is_alive
         {
-            _LOG( "Connection accepted!" );
-            mStatusBits[ESB_CONNECTED] = true;
-
-            boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
-            mMessenger->setRemoteAddress( endpoint.address().to_string(),
-                                          endpoint.port() );
-        }
-        else if( mStatusBits[ESB_SERVER] ) //Receive is_alive
-        {
-            ClientInfo *info = mEndpointClientMap[packet.getEndpoint().address().to_string()];
-            if( !info )
-                _LOG( "Unknown ACK received", packet.getEndpoint().address() );
+            uint32_t clientID = packet.readUInt32();
+            std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.find( clientID );
+            if( x == mClientIDMap.end() )
+                _LOG( "Unknown ACK received with ClientID", clientID );
+            else
+            {
+                _LOG( "Client alive", x->second.host.hostName );
+                x->second.lastActiveTime = system_clock::now();
+            }
         }
         else
             _LOG( "ACK received" );
         break;
     }
+    case EAID_ACCEPT_CONNECTION:
+    {
+        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] && !mStatusBits[ESB_SERVER] )
+        {
+            _LOG( "Connection accepted!" );
+            mStatusBits[ESB_CONNECTED] = true;
+            mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
+
+            boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
+            mMessenger->setRemoteAddress( endpoint.address().to_string(),
+                                          endpoint.port() );
+
+            mClientID = packet.readUInt32();
+            _LOG( "New ClientID", mClientID );
+        }
+        break;
+    }
     case EAID_REQUEST_IS_STILL_ALIVE:
     {
-        return serialize( EAID_ACK );
+        if( mStatusBits[ESB_CONNECTED] )
+            return serialize( EAID_ACK );
+        break;
     }
     default:
     {
@@ -266,8 +300,15 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
         packet.writeString( mSelfInfo.passwordHash );
         break;
     }
+    case EAID_ACCEPT_CONNECTION:
+    {
+        packet.writeUInt32( nextClientID() - 1 );
+        break;
+    }
     case EAID_ACK:
     {
+        if( !mStatusBits[ESB_SERVER] ) //Alive ACK
+            packet.writeUInt32( mClientID );
         break;
     }
     default:
@@ -275,4 +316,13 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
         break;
     }
     }
+}
+
+uint32_t ExploreServer::nextClientID()
+{
+    if( mClientIDMap.empty() )
+        return 1;
+
+    std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.end()--;
+    return x->first + 1;
 }
