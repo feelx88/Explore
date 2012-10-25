@@ -197,9 +197,9 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
     {
     case EAID_REQUEST_SERVERINFO:
     {
-        _LOG( "SERVERINFO_REQUEST received" );
         if( mStatusBits[ESB_WAIT_FOR_INFO] )
         {
+            _LOG( "Server info received" );
             HostInfo info;
             info.hostName = packet.readString();
             info.serverMaxPlayers = packet.readUInt8();
@@ -207,15 +207,19 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             mServerInfoQueue.push( info );
             mStatusBits[ESB_WAIT_FOR_INFO] = false;
         }
-        else
+        else if( mStatusBits[ESB_SERVER] )
+        {
+            _LOG( "Client requesting server info" );
             return serialize( EAID_REQUEST_SERVERINFO );
+        }
         break;
     }
     case EAID_REQUEST_CONNECTION:
     {
-        _LOG( "CONNECTION_REQUEST received" );
         if( mStatusBits[ESB_SERVER] )
         {
+            _LOG( "Client requesting connection from ",
+                  packet.getEndpoint().address().to_string() );
             HostInfo host;
             host.hostName = packet.readString();
             host.passwordHash = packet.readString();
@@ -236,7 +240,15 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 return serialize( EAID_ACCEPT_CONNECTION );
             }
             else
+            {
+                _LOG( "Connection not accepted" );
                 return serialize( EAID_NAK );
+            }
+        }
+        else
+        {
+            _LOG( "Client requesting connection, but serverMode is false" );
+            return serialize( EAID_NAK );
         }
         break;
     }
