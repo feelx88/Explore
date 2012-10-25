@@ -61,6 +61,7 @@ public:
                 .def( "nextServerInfo", &ExploreServer::nextServerInfo )
                 .def( "requestConnection", &ExploreServer::requestConnection )
                 .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
+                .def( "setSelfInfo", &ExploreServer::setSelfInfo )
                 .def( "serialize", &ExploreServer::serialize )
                 .enum_( "E_ACTIONID" )
                 [
@@ -225,9 +226,12 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 ClientInfo info;
                 info.endpoint = packet.getEndpoint();
                 info.id = nextClientID();
+                info.host = host;
                 mClientIDMap.insert( std::make_pair( info.id, info ) );
 
-                _LOG( "Client accepted! New ID", info.id );
+                _LOG( "Client accepted!" );
+                _LOG( "New client's ID", info.id );
+                _LOG( "New client's name", info.host.hostName );
 
                 return serialize( EAID_ACCEPT_CONNECTION );
             }
