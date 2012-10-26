@@ -97,6 +97,8 @@ E_GAME_STATE ExploreGame::run()
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
+    mExplore->getExploreServer()->setServerMode( true );
+
     btClock clock;
 
     while( running && mDevice->run() )
@@ -131,6 +133,8 @@ E_GAME_STATE ExploreGame::run()
     mEventReceiver->lockMouse( false );
     luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = luabind::nil;
     luabind::globals( mLua.get() )["Explore"]["GameInstance"] = luabind::nil;
+
+    mExplore->getExploreServer()->setServerMode( false );
 
     return state;
 }
