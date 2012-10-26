@@ -59,6 +59,9 @@ IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
     boost::property_tree::xml_parser::read_xml(
                 PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ),
                 *mProperties );
+
+    if( parent )
+        parent->mChildren.push_back( this );
 }
 
 IPlayer::~IPlayer()

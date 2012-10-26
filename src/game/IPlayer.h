@@ -58,6 +58,7 @@ protected:
     ItemMap mOwnedItems;
 
     IPlayerPtr mParent;
+    std::vector<IPlayerPtr> mChildren;
 };
 
 #endif // PLAYER_H

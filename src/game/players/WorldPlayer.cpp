@@ -37,4 +37,8 @@ void WorldPlayer::update()
     {
         x->second->startAction( EIA_UPDATE_ACTION );
     }
+
+    for( std::vector<IPlayerPtr>::iterator x = mChildren.begin();
+         x != mChildren.end(); ++x )
+        ( *x )->update();
 }

@@ -118,7 +118,6 @@ E_GAME_STATE ExploreGame::run()
         }
 
         mWorldPlayer->update();
-        p.update();
 
         if( mBulletDebugDraw )
             mBulletWorld->debugDrawWorld();
