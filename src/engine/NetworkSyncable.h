@@ -39,15 +39,17 @@ public:
     NetworkSyncable( uint32_t uid, uint8_t typeID );
     virtual ~NetworkSyncable();
 
-    boost::optional<NetworkSyncablePacket> deserialize( NetworkSyncablePacket &packet );
+    boost::optional<NetworkSyncablePacket> deserialize(
+            NetworkSyncablePacket &packet );
     NetworkSyncablePacket serialize( uint8_t actionID );
 
     static NetworkSyncable *getObject( uint32_t uid );
 
 protected:
-    virtual boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet ) = 0;
+    virtual boost::optional<NetworkSyncablePacket> deserializeInternal(
+            NetworkSyncablePacket &packet ) = 0;
     virtual void serializeInternal( NetworkSyncablePacket &packet,
-                                                     uint8_t actionID ) = 0;
+                                    uint8_t actionID ) = 0;
 
     void setUID( uint32_t uid );
 
