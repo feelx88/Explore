@@ -45,46 +45,32 @@ enum E_STATUS_BITS
     ESB_COUNT
 };
 
-class ExploreServerBinder : public LuaBinder
-{
-public:
-    void reg( LuaStatePtr state )
-    {
-        using namespace luabind;
-
-        module( state.get() )
+LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
+    class_<ExploreServer>( "ExploreServer" )
+        .def( "setServerMode", &ExploreServer::setServerMode )
+        .def( "requestServerInfo", &ExploreServer::requestServerInfo )
+        .def( "hasServerInfo", &ExploreServer::hasServerInfo )
+        .def( "nextServerInfo", &ExploreServer::nextServerInfo )
+        .def( "requestConnection", &ExploreServer::requestConnection )
+        .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
+        .def( "setSelfInfo", &ExploreServer::setSelfInfo )
+        .def( "serialize", &ExploreServer::serialize )
+        .enum_( "E_ACTIONID" )
         [
-            class_<ExploreServer>( "ExploreServer" )
-                .def( "setServerMode", &ExploreServer::setServerMode )
-                .def( "requestServerInfo", &ExploreServer::requestServerInfo )
-                .def( "hasServerInfo", &ExploreServer::hasServerInfo )
-                .def( "nextServerInfo", &ExploreServer::nextServerInfo )
-                .def( "requestConnection", &ExploreServer::requestConnection )
-                .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
-                .def( "setSelfInfo", &ExploreServer::setSelfInfo )
-                .def( "serialize", &ExploreServer::serialize )
-                .enum_( "E_ACTIONID" )
-                [
-                    value( "EAID_ACK", EAID_ACK ),
-                    value( "EAID_NAK", EAID_NAK ),
-                    value( "EAID_REQUEST_SERVERINFO", EAID_REQUEST_SERVERINFO ),
-                    value( "EAID_REQUEST_CONNECTION", EAID_REQUEST_CONNECTION ),
-                    value( "EAID_REQUEST_IS_STILL_ALIVE", EAID_REQUEST_IS_STILL_ALIVE )
-                ]
-                .scope
-                [
-                    class_<ExploreServer::HostInfo>( "HostInfo" )
-                        .def( constructor<>() )
-                        .def_readwrite( "hostName",
-                                        &ExploreServer::HostInfo::hostName )
-                ]
-        ];
-    }
-
-private:
-    static int regDummy;
-};
-int ExploreServerBinder::regDummy = LuaBinder::registerBinder( new ExploreServerBinder );
+            value( "EAID_ACK", EAID_ACK ),
+            value( "EAID_NAK", EAID_NAK ),
+            value( "EAID_REQUEST_SERVERINFO", EAID_REQUEST_SERVERINFO ),
+            value( "EAID_REQUEST_CONNECTION", EAID_REQUEST_CONNECTION ),
+            value( "EAID_REQUEST_IS_STILL_ALIVE", EAID_REQUEST_IS_STILL_ALIVE )
+        ]
+        .scope
+        [
+            class_<ExploreServer::HostInfo>( "HostInfo" )
+                .def( constructor<>() )
+                .def_readwrite( "hostName",
+                                &ExploreServer::HostInfo::hostName )
+        ]
+LUABINDER_REGISTER_MODULE_END( ExploreServerBinder )
 
 ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
                               NetworkMessengerPtr messenger )

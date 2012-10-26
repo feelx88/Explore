@@ -26,25 +26,14 @@
 
 ItemCreatorMapPtr ItemFactory::sCreators( ItemFactory::sCreators );
 
-class ItemFactoryBinder : public LuaBinder
-{
-public:
-    void reg( LuaStatePtr state )
-    {
-        using namespace luabind;
-        module( state.get() )
+LUABINDER_REGISTER_MODULE_START( ItemFactoryBinder )
+    class_<ItemFactory>( "ItemFactory" )
+        .scope
         [
-                class_<ItemFactory>( "ItemFactory" )
-                    .scope
-                    [
-                        def( "create", (Item*(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
-                    ]
-        ];
-    }
-private:
-    static int regDummy;
-};
-int ItemFactoryBinder::regDummy = LuaBinder::registerBinder( new ItemFactoryBinder );
+            def( "create",
+                 (Item*(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
+        ]
+LUABINDER_REGISTER_MODULE_END( ItemFactoryBinder )
 
 Item *ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string fileName )
 {

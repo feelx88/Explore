@@ -27,26 +27,13 @@
 #define INT_SIZE 4
 #define PACKED_FLOAT_SIZE 8
 
-class NetworkSyncablePacketBinder : public LuaBinder
-{
-public:
-    void reg( LuaStatePtr state )
-    {
-        using namespace luabind;
-        module( state.get() )
-        [
-            class_<NetworkSyncablePacket>( "NetworkSyncablePacket" )
-                .def( constructor<int, int, int, std::string>() )
-                .def( "getUID", &NetworkSyncablePacket::getUID )
-                .def( "getTypeID", &NetworkSyncablePacket::getTypeID )
-                .def( "getActionID", &NetworkSyncablePacket::getActionID )
-        ];
-    }
-private:
-    static int regDummy;
-};
-int NetworkSyncablePacketBinder::regDummy =
-        LuaBinder::registerBinder( new NetworkSyncablePacketBinder );
+LUABINDER_REGISTER_MODULE_START( NetworkSyncablePacketBinder )
+    class_<NetworkSyncablePacket>( "NetworkSyncablePacket" )
+        .def( constructor<int, int, int, std::string>() )
+        .def( "getUID", &NetworkSyncablePacket::getUID )
+        .def( "getTypeID", &NetworkSyncablePacket::getTypeID )
+        .def( "getActionID", &NetworkSyncablePacket::getActionID )
+LUABINDER_REGISTER_MODULE_END( NetworkSyncablePacketBinder )
 
 NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
 {

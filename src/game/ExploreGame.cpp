@@ -37,23 +37,10 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-class ExploreGameBinder : public LuaBinder
-{
-public:
-    void reg( LuaStatePtr state )
-    {
-        using namespace luabind;
-        module( state.get() )
-        [
-                class_<ExploreGame>( "ExploreGame" )
-                    .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw )
-        ];
-    }
-private:
-    static int regDummy;
-};
-int ExploreGameBinder::regDummy =
-        LuaBinder::registerBinder( new ExploreGameBinder );
+LUABINDER_REGISTER_MODULE_START( ExploreGameBinder )
+    class_<ExploreGame>( "ExploreGame" )
+        .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw )
+LUABINDER_REGISTER_MODULE_END( ExploreGameBinder )
 
 ExploreGame::ExploreGame( ExplorePtr explore )
     : mExplore( explore ),

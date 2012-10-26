@@ -21,4 +21,20 @@ protected:
     static boost::shared_ptr<std::vector<LuaBinderPtr> > sBinders;
 };
 
+#define LUABINDER_REGISTER_MODULE_START( NAME ) class NAME : public LuaBinder\
+{\
+    public:\
+    void reg( LuaStatePtr state )\
+    {\
+    using namespace luabind;\
+    module( state.get() )[
+
+#define LUABINDER_REGISTER_MODULE_END( NAME ) ];\
+    }\
+    private:\
+    static int regDummy;\
+};\
+int NAME::regDummy = LuaBinder::registerBinder( new NAME );
+
+
 #endif // LUABINDER_H

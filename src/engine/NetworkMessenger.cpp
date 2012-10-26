@@ -22,26 +22,13 @@
 #include "NetworkSyncable.h"
 
 using namespace boost::asio;
-class NetworkMessengerBinder : public LuaBinder
-{
-public:
-    void reg( LuaStatePtr state )
-    {
-        using namespace luabind;
-        module( state.get() )
-        [
-            class_<NetworkMessenger>( "NetworkMessenger" )
-                .def( "send", &NetworkMessenger::send )
-                .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
-                .def( "nextPacket", &NetworkMessenger::nextPacket )
-                .def( "bind", &NetworkMessenger::bind )
-        ];
-    }
-
-private:
-    static int regDummy;
-};
-int NetworkMessengerBinder::regDummy = LuaBinder::registerBinder( new NetworkMessengerBinder );
+LUABINDER_REGISTER_MODULE_START( NetworkMessengerBinder )
+    class_<NetworkMessenger>( "NetworkMessenger" )
+        .def( "send", &NetworkMessenger::send )
+        .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
+        .def( "nextPacket", &NetworkMessenger::nextPacket )
+        .def( "bind", &NetworkMessenger::bind )
+LUABINDER_REGISTER_MODULE_END( NetworkMessengerBinder )
 
 NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properties )
     : mIOService( ioService ),

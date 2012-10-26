@@ -40,28 +40,15 @@ using namespace core;
 
 PropTreePtr Explore::sKeyCodes( new boost::property_tree::ptree() );
 
-class ExploreBinder : public LuaBinder
-{
-public:
-    void reg( LuaStatePtr state )
-    {
-        using namespace luabind;
-        module( state.get() )
+LUABINDER_REGISTER_MODULE_START( ExploreBinder )
+    class_<Explore>( "Explore" )
+        .def( "readConfigValue", &Explore::readConfigValue<std::string> )
+        .def( "getExploreServer", &Explore::getExploreServer )
+        .scope
         [
-                class_<Explore>( "Explore" )
-                    .def( "readConfigValue", &Explore::readConfigValue<std::string> )
-                    .def( "getExploreServer", &Explore::getExploreServer )
-                    .scope
-                    [
-                        def( "getKeyCode", &Explore::getKeyCode )
-                    ]
-        ];
-    }
-
-private:
-    static int regDummy;
-};
-int ExploreBinder::regDummy = LuaBinder::registerBinder( new ExploreBinder );
+            def( "getKeyCode", &Explore::getKeyCode )
+        ]
+LUABINDER_REGISTER_MODULE_END( ExploreBinder )
 
 struct ScriptConsoleKeyCallback : public EventReceiver::KeyCallback
 {
