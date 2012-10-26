@@ -22,10 +22,16 @@
 
 #include "../IPlayer.h"
 
+class WorldPlayer;
+typedef boost::shared_ptr<WorldPlayer> WorldPlayerPtr;
+
 class WorldPlayer : public IPlayer
 {
 public:
     WorldPlayer( ExplorePtr explore );
+
+    void sendUpdates( NetworkMessengerPtr messenger,
+                      boost::asio::ip::udp::endpoint endpoint );
 
     void update();
 };

@@ -22,6 +22,7 @@
 #define EXPLOREGAME_H
 
 #include "GameState.h"
+#include "players/WorldPlayer.h"
 #include <engine/EngineTypedefs.h>
 
 class ExploreGame
@@ -32,6 +33,8 @@ public:
     E_GAME_STATE run();
 
     void setBulletDebugDraw( bool enabled );
+
+    WorldPlayerPtr getWorldPlayer();
 
 private:
     ExplorePtr mExplore;
@@ -45,6 +48,8 @@ private:
     BulletWorldPtr mBulletWorld;
 
     LuaStatePtr mLua;
+
+    WorldPlayerPtr mWorldPlayer;
 
     bool mBulletDebugDraw;
 };

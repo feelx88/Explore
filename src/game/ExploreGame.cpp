@@ -37,8 +37,6 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-#define EPATH std::string( "data/Entities/" )
-
 class ExploreGameBinder : public LuaBinder
 {
 public:
@@ -88,11 +86,12 @@ E_GAME_STATE ExploreGame::run()
     vector3df spawnPos =
             level->getProperties()->get( "Spawn.Position", vector3df() );
 
-    WorldPlayer world( mExplore );
-    luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayer*)&world;
+    mWorldPlayer.reset( new WorldPlayer( mExplore ) );
+
+    luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayer*)mWorldPlayer.get();
     luabind::globals( mLua.get() )["Explore"]["Game"] = this;
 
-    LocalPlayer p( mExplore, &world );
+    LocalPlayer p( mExplore, mWorldPlayer.get() );
     p.getEntity()->setPosition( spawnPos );
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
@@ -118,7 +117,7 @@ E_GAME_STATE ExploreGame::run()
             running = false;
         }
 
-        world.update();
+        mWorldPlayer->update();
         p.update();
 
         if( mBulletDebugDraw )
@@ -136,10 +135,17 @@ E_GAME_STATE ExploreGame::run()
 
     mExplore->getExploreServer()->setServerMode( false );
 
+    mWorldPlayer.reset();
+
     return state;
 }
 
 void ExploreGame::setBulletDebugDraw( bool enabled )
 {
     mBulletDebugDraw = enabled;
+}
+
+WorldPlayerPtr ExploreGame::getWorldPlayer()
+{
+    return mWorldPlayer;
 }

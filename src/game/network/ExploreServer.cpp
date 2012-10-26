@@ -186,7 +186,8 @@ void ExploreServer::updateConnectedClients()
         }
         mMessenger->sendTo( serialize( EAID_REQUEST_IS_STILL_ALIVE ),
                             x->second.endpoint );
-        //TODO:static NetworkSyncable->update
+
+        //TODO: mExplore->getExploreGame()->getWorldPlayer()->sendUpdates(...);
     }
 
     if( toBeKicked > 0 )

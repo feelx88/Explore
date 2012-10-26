@@ -40,6 +40,8 @@ class ExploreMenu;
 class ExploreGame;
 
 #include "network/ExploreServer.h"
+typedef boost::shared_ptr<ExploreMenu> ExploreMenuPtr;
+typedef boost::shared_ptr<ExploreGame> ExploreGamePtr;
 typedef boost::shared_ptr<ExploreServer> ExploreServerPtr;
 
 class EventReceiver;
@@ -120,7 +122,9 @@ public:
     ScriptConsolePtr getScriptConsole() const;
     IOServicePtr getIOService() const;
 
-    ExploreServerPtr getExploreServer() const;
+    ExploreMenuPtr getExploreMenu();
+    ExploreGamePtr getExploreGame();
+    ExploreServerPtr getExploreServer();
 
     const StringVector &getAvailableItems() const;
 
@@ -160,8 +164,8 @@ private:
     bool mRunning;
     E_GAME_STATE mGameState;
 
-    boost::scoped_ptr<ExploreMenu> mMenu;
-    boost::scoped_ptr<ExploreGame> mGame;
+    ExploreMenuPtr mMenu;
+    ExploreGamePtr mGame;
     ExploreServerPtr mServer;
     NetworkMessengerPtr mMessenger;
 

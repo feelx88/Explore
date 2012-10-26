@@ -174,7 +174,17 @@ IOServicePtr Explore::getIOService() const
     return mIOService;
 }
 
-ExploreServerPtr Explore::getExploreServer() const
+ExploreMenuPtr Explore::getExploreMenu()
+{
+    return mMenu;
+}
+
+ExploreGamePtr Explore::getExploreGame()
+{
+    return mGame;
+}
+
+ExploreServerPtr Explore::getExploreServer()
 {
     return mServer;
 }

@@ -25,6 +25,12 @@ WorldPlayer::WorldPlayer( ExplorePtr explore )
 {
 }
 
+void WorldPlayer::sendUpdates( NetworkMessengerPtr messenger,
+                               boost::asio::ip::udp::endpoint endpoint )
+{
+    //TODO: messenger->send( serializedItems )
+}
+
 void WorldPlayer::update()
 {
     for( ItemMap::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
