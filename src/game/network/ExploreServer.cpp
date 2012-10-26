@@ -173,14 +173,14 @@ void ExploreServer::updateConnectedClients()
     system_clock::time_point now = system_clock::now();
     system_clock::duration then = seconds(  10 );
 
-    std::list<int> toBeKicked;
+    uint32_t toBeKicked = 0;
 
     for( std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.begin();
              x != mClientIDMap.end(); ++x )
     {
         if( x->second.lastActiveTime + then <= now )
         {
-            toBeKicked.push_back( x->second.id );
+            toBeKicked = x->second.id;
             _LOG( "Timeout; No response from", x->second.host.hostName );
             continue;
         }
@@ -189,13 +189,10 @@ void ExploreServer::updateConnectedClients()
         //TODO:static NetworkSyncable->update
     }
 
-    if( !toBeKicked.empty() )
+    if( toBeKicked > 0 )
     {
-        for( std::list<int>::iterator x = toBeKicked.begin();
-             x != toBeKicked.end(); ++x )
-        {
-            mClientIDMap.erase( *x );
-        }
+        _LOG( "Kicking client", mClientIDMap[toBeKicked].host.hostName );
+        mClientIDMap.erase( toBeKicked );
     }
 
     mUpdateTimer.expires_from_now( boost::posix_time::milliseconds( 200 ) );
