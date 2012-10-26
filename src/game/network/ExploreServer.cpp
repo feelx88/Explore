@@ -171,18 +171,31 @@ bool ExploreServer::hasConnection() const
 void ExploreServer::updateConnectedClients()
 {
     system_clock::time_point now = system_clock::now();
-    system_clock::duration then = seconds( 10 );
+    system_clock::duration then = seconds(  10 );
+
+    std::list<int> toBeKicked;
 
     for( std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.begin();
-         x != mClientIDMap.end(); ++x )
+             x != mClientIDMap.end(); ++x )
     {
-        if( x->second.lastActiveTime > now + then )
+        if( x->second.lastActiveTime + then <= now )
         {
-            mClientIDMap.erase( x );
+            toBeKicked.push_back( x->second.id );
+            _LOG( "Timeout; No response from", x->second.host.hostName );
             continue;
         }
-        mMessenger->sendTo( serialize( EAID_REQUEST_IS_STILL_ALIVE ), x->second.endpoint );
+        mMessenger->sendTo( serialize( EAID_REQUEST_IS_STILL_ALIVE ),
+                            x->second.endpoint );
         //TODO:static NetworkSyncable->update
+    }
+
+    if( !toBeKicked.empty() )
+    {
+        for( std::list<int>::iterator x = toBeKicked.begin();
+             x != toBeKicked.end(); ++x )
+        {
+            mClientIDMap.erase( *x );
+        }
     }
 
     mUpdateTimer.expires_from_now( boost::posix_time::milliseconds( 200 ) );
@@ -231,6 +244,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 info.endpoint = packet.getEndpoint();
                 info.id = nextClientID();
                 info.host = host;
+                info.lastActiveTime = system_clock::now();
                 mClientIDMap.insert( std::make_pair( info.id, info ) );
 
                 _LOG( "Client accepted!" );
