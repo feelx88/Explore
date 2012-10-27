@@ -21,7 +21,7 @@
 #include "../Item.h"
 
 WorldPlayer::WorldPlayer( ExplorePtr explore )
-    : IPlayer( explore, 0 )
+    : IPlayer( explore, IPlayerPtr() )
 {
 }
 
@@ -38,7 +38,7 @@ void WorldPlayer::update()
         x->second->startAction( EIA_UPDATE_ACTION );
     }
 
-    for( std::vector<IPlayerPtr>::iterator x = mChildren.begin();
+    for( std::vector<IPlayer*>::iterator x = mChildren.begin();
          x != mChildren.end(); ++x )
         ( *x )->update();
 }

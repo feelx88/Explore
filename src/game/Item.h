@@ -24,6 +24,7 @@
 #include <engine/EntityContainer.h>
 #include <engine/LuaScript.h>
 #include "Explore.h"
+#include "IPlayer.h"
 
 typedef boost::unordered::unordered_map<E_ITEM_ACTION, LuaScriptPtr> ScriptMap;
 typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
@@ -31,13 +32,14 @@ typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
 class Item
 {
 public:
-    Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
-          const std::string &basePath );
+    template <class T>
+    friend class ItemCreator;
 
     virtual ~Item();
 
     PropTreePtr getProperties() const;
     EntityContainerPtr getEntities() const;
+    virtual void setOwner( IPlayerPtr owner );
     IPlayerPtr getOwner() const;
 
     virtual void startAction( E_ITEM_ACTION actionID );
@@ -57,6 +59,10 @@ public:
     static Item* getItemFromEntity( Entity *entity );
 
 protected:
+
+    Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
+          const std::string &basePath );
+
     void registerScripts();
     void registerEntities();
     void loadIcon();
@@ -70,7 +76,7 @@ protected:
     std::string mBasePath;
     EntityContainerPtr mEntities;
 
-    IPlayerPtr mOwner;
+    IPlayerWeakPtr mOwner;
 
     ScriptMap mScripts;
 

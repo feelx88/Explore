@@ -65,9 +65,9 @@ void SimpleSpawnerItem::spawn( bool zeroMass )
     if( zeroMass )
         props->put( "Entity.Body.Mass", 0.f );
 
-    Item *item( ItemFactory::create(
-                mExplore, mOwner,
-                props, mBasePath ) );
+    ItemPtr item( ItemFactory::create(
+                      mExplore, getOwner(),
+                      props, mBasePath ) );
 
     item->getEntities()->getEntity( 0 )->setPosition( mSpawnPoint );
     mSpawnedItems.push_back( item );
@@ -81,8 +81,9 @@ void SimpleSpawnerItem::update()
     IVideoDriverPtr driver = mDevice->getVideoDriver();
 
     vector3df hitPoint, normal, start, end;
-    start = mOwner->getEntity()->getSceneNode()->getAbsolutePosition();
-    end = mOwner->rotateToDirection( vector3df( 0.f, 0.f, 5.f ) ) + start;
+    IPlayerPtr owner = getOwner();
+    start = owner->getEntity()->getSceneNode()->getAbsolutePosition();
+    end = owner->rotateToDirection( vector3df( 0.f, 0.f, 5.f ) ) + start;
 
     boost::optional<Entity*> e =
             EntityTools::getFirstEntityInRay( mExplore->getBulletWorld(),

@@ -30,6 +30,7 @@
 #include <engine/EntityContainer.h>
 #include <engine/LuaScript.h>
 #include <boost/property_tree/xml_parser.hpp>
+#include "ItemFactory.h"
 
 using namespace irr;
 using namespace core;
@@ -78,8 +79,12 @@ E_GAME_STATE ExploreGame::run()
     luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayer*)mWorldPlayer.get();
     luabind::globals( mLua.get() )["Explore"]["Game"] = this;
 
-    LocalPlayer p( mExplore, mWorldPlayer.get() );
-    p.getEntity()->setPosition( spawnPos );
+    boost::shared_ptr<LocalPlayer> p( new LocalPlayer( mExplore, mWorldPlayer ) );
+    p->getEntity()->setPosition( spawnPos );
+    p->addOwnedItem( ItemFactory::create( mExplore, p, "SimpleForceGun.item" ) );
+    p->addOwnedItem( ItemFactory::create( mExplore, p, "SimpleBlockSpawner.item" ) );
+    p->addOwnedItem( ItemFactory::create( mExplore, p, "SimpleGun.item" ) );
+    p->addOwnedItem( ItemFactory::create( mExplore, p, "SuzanneSpawner.item" ) );
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 

@@ -40,7 +40,7 @@ private:
     std::vector<EntityPtr> mPlacingMarkers;
     irr::video::SMaterial mMarkerMaterial;
 
-    std::vector<Item*> mSpawnedItems;
+    std::vector<ItemPtr> mSpawnedItems;
 
     int mCurItem;
     irr::core::vector3df mSpawnPoint;

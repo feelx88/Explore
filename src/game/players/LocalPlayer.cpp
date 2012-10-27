@@ -36,9 +36,10 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayer *parent )
+LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayerPtr parent )
     : IPlayer( explore, parent ),
       mActiveItem( -1 ),
+      mNumItems( 0 ),
       mJumped( false )
 {
     mEntity.reset( new Entity( mDevice, mBulletWorld, mProperties ) );
@@ -46,7 +47,7 @@ LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayer *parent )
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f ); //TODO:add to entity
     mEntity->getRigidBody()->setAngularFactor( btVector3( 0.f, 0.f, 0.f ) );
 
-    addItems();
+    //addItems();
     createGUI();
     setKeyMappings();
 }
@@ -74,10 +75,33 @@ void LocalPlayer::update()
     }
 }
 
-Item *LocalPlayer::getActiveItem() const
+void LocalPlayer::addOwnedItem( ItemPtr item )
+{
+    IPlayer::addOwnedItem( item );
+    mInventory.push_back( item );
+
+    IGUIButton *img = mDevice->getGUIEnvironment()->addButton(
+                recti( mNumItems * 32 + 1, 1, ( mNumItems + 1 ) * 32 + 1, 33 ), mItemWin );
+    img->setImage( mInventory.at( mNumItems )->getIcon() );
+    img->setUseAlphaChannel( true );
+
+    img->setDrawBorder( false );
+
+    mItemIcons[mNumItems] = img;
+
+    mNumItems++;
+
+    if( mActiveItem < 0 )
+    {
+        mActiveItem = 0;
+        switchItem( 0 );
+    }
+}
+
+ItemPtr LocalPlayer::getActiveItem() const
 {
     if( mActiveItem < 0 )
-        return 0;
+        return ItemPtr();
 
     return mInventory.at( mActiveItem );
 }
@@ -102,12 +126,6 @@ void LocalPlayer::switchItem( int index )
 
 void LocalPlayer::addItems()
 {
-    mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleForceGun.item" ) );
-    mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleBlockSpawner.item" ) );
-    mInventory.push_back( ItemFactory::create( mExplore, this, "SimpleGun.item" ) );
-    mInventory.push_back( ItemFactory::create( mExplore, this, "SuzanneSpawner.item" ) );
-
-    mNumItems = mInventory.size();
     mActiveItem = mInventory.empty() ? -1 : 0;
 
     if( mActiveItem >= 0 )
@@ -125,20 +143,6 @@ void LocalPlayer::createGUI()
     win->setDrawTitlebar( false );
     win->getCloseButton()->remove();
     win->move( vector2di( 10 * 32, 0 ) );
-
-    for( unsigned int x = 0; x < mInventory.size(); ++x )
-    {
-        IGUIButton *img = mDevice->getGUIEnvironment()->addButton(
-                    recti( x * 32 + 1, 1, ( x + 1 ) * 32 + 1, 33 ), win );
-        img->setImage( mInventory.at( x )->getIcon() );
-        img->setUseAlphaChannel( true );
-
-        img->setDrawBorder( false );
-
-        mItemIcons[x] = img;
-    }
-
-    mItemIcons[mActiveItem]->setDrawBorder( true );
 
     mItemWin = win;
 
@@ -195,15 +199,18 @@ void LocalPlayer::processControls()
 
         mCamera->setTarget( *( mEntity->getPosition() ) + target * 10000.f );
 
-        if( mEventReceiver->mouseClicked( 0 ) )
-            mInventory.at( mActiveItem )->startAction( EIA_FIRST_ACTION );
-        if( mEventReceiver->mouseClicked( 1 ) )
-            mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
+        if( mActiveItem > -1 )
+        {
+            if( mEventReceiver->mouseClicked( 0 ) )
+                mInventory.at( mActiveItem )->startAction( EIA_FIRST_ACTION );
+            if( mEventReceiver->mouseClicked( 1 ) )
+                mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
 
-        if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] ) )
-            switchItem( mActiveItem + 1 );
-        if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVIOUSSLOT] ) )
-            switchItem( mActiveItem - 1 );
+            if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] ) )
+                switchItem( mActiveItem + 1 );
+            if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVIOUSSLOT] ) )
+                switchItem( mActiveItem - 1 );
+        }
     }
 
     for( int x = 0; x < mNumItems; ++x )

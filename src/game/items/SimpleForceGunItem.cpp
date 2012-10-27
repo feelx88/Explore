@@ -52,8 +52,9 @@ void SimpleForceGunItem::startAction( E_ITEM_ACTION actionID )
 void SimpleForceGunItem::shoot( bool forward )
 {
     line3df ray;
-    ray.start = *( mOwner->getEntity()->getPosition() ) + vector3df( 0.f, 1.f, 0.f );
-    ray.end = ray.start + mOwner->rotateToDirection( vector3df( 0.f, 0.f, mRayDistance ) );
+    IPlayerPtr owner = getOwner();
+    ray.start = *( owner->getEntity()->getPosition() ) + vector3df( 0.f, 1.f, 0.f );
+    ray.end = ray.start + owner->rotateToDirection( vector3df( 0.f, 0.f, mRayDistance ) );
     vector3df out, normal;
     boost::optional<Entity*> e =
             EntityTools::getFirstEntityInRay( mBulletWorld, ray, out, normal );

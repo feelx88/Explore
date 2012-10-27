@@ -31,11 +31,11 @@ LUABINDER_REGISTER_MODULE_START( ItemFactoryBinder )
         .scope
         [
             def( "create",
-                 (Item*(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
+                 (ItemPtr(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
         ]
 LUABINDER_REGISTER_MODULE_END( ItemFactoryBinder )
 
-Item *ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string fileName )
+ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string fileName )
 {
     boost::optional<PropTreePtr> cachedProps = ItemCache::instance()->getItemProps( fileName );
 
@@ -57,26 +57,26 @@ Item *ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string fil
     ItemCreatorMap::iterator x = sCreators->find( className );
 
     if( x != sCreators->end() )
-        return x->second->create( explore, owner, properties, basePath );
+        return ItemPtr( x->second->create( explore, owner, properties, basePath ) );
     else
     {
         _LOG( "Item class not found", className );
-        return 0;
+        return ItemPtr();
     }
 }
 
-Item *ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
-                           std::string basePath )
+ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
+                             std::string basePath )
 {
     std::string className = props->get( "Item.Class", "Item" );
 
     ItemCreatorMap::iterator x = sCreators->find( className );
 
     if( x != sCreators->end() )
-        return x->second->create( explore, owner, props, basePath );
+        return ItemPtr( x->second->create( explore, owner, props, basePath ) );
     else
     {
         _LOG( "Item class not found", className );
-        return 0;
+        return ItemPtr();
     }
 }

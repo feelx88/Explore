@@ -57,8 +57,8 @@ class ItemFactory
 {
 public:
 
-    static Item *create( ExplorePtr explore, IPlayerPtr owner, std::string fileName );
-    static Item *create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
+    static ItemPtr create( ExplorePtr explore, IPlayerPtr owner, std::string fileName );
+    static ItemPtr create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
                          std::string basePath );
 
     template <typename T>

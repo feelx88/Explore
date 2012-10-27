@@ -41,29 +41,29 @@ IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
       mDevice( explore->getIrrlichtDevice() ),
       mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
-      mParent( parent )
+      mParent( parent.get() )
 {
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
                 PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ),
                 *mProperties );
 
-    if( parent )
-        parent->mChildren.push_back( this );
+    if( mParent )
+        mParent->mChildren.push_back( this );
 }
 
 IPlayer::~IPlayer()
 {
 }
 
-void IPlayer::addOwnedItem( Item *item )
+void IPlayer::addOwnedItem( ItemPtr item )
 {
-    mOwnedItems.insert( std::make_pair( item, ItemPtr( item ) ) );
+    mOwnedItems.insert( std::make_pair( item.get(), item ) );
 }
 
-void IPlayer::removeOwnedItem( Item *item )
+void IPlayer::removeOwnedItem( ItemPtr item )
 {
-    ItemMap::iterator x = mOwnedItems.find( item );
+    ItemMap::iterator x = mOwnedItems.find( item.get() );
 
     if( x != mOwnedItems.end() )
         mOwnedItems.erase( x );
@@ -75,14 +75,14 @@ EntityPtr IPlayer::getEntity() const
     return mEntity;
 }
 
-IPlayer *IPlayer::getParent() const
+IPlayer* IPlayer::getParent() const
 {
     return mParent;
 }
 
 void IPlayer::setParent( IPlayerPtr parent )
 {
-    mParent = parent;
+    mParent = parent.get();
 }
 
 vector3df IPlayer::rotateToDirection( vector3df dir ) const

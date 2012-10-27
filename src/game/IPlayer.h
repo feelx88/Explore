@@ -24,9 +24,13 @@
 #include <engine/Entity.h>
 #include "Explore.h"
 
+class IPlayer;
+typedef boost::shared_ptr<IPlayer> IPlayerPtr;
+typedef boost::weak_ptr<IPlayer> IPlayerWeakPtr;
+
 typedef boost::unordered::unordered_map<Item*,ItemPtr> ItemMap;
 
-class IPlayer
+class IPlayer : public boost::enable_shared_from_this<IPlayer>
 {
 public:
     IPlayer( ExplorePtr explore, IPlayerPtr parent );
@@ -37,8 +41,8 @@ public:
     irr::core::vector3df rotateToDirection(
             irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
 
-    void addOwnedItem( Item* item );
-    void removeOwnedItem( Item *item );
+    virtual void addOwnedItem( ItemPtr item );
+    virtual void removeOwnedItem( ItemPtr item );
 
     EntityPtr getEntity() const;
     IPlayer *getParent() const;
@@ -54,11 +58,11 @@ protected:
 
     EntityPtr mEntity;
 
-    std::vector<Item*> mInventory;
+    std::vector<ItemPtr> mInventory;
     ItemMap mOwnedItems;
 
-    IPlayerPtr mParent;
-    std::vector<IPlayerPtr> mChildren;
+    IPlayer* mParent;
+    std::vector<IPlayer*> mChildren;
 };
 
 #endif // PLAYER_H

@@ -80,9 +80,9 @@ void SimpleGunItem::shoot()
     if( mCurBullet >= mBulletCount )
         return;
 
-    EntityPtr e = mOwner->getEntity();
+    EntityPtr e = getOwner()->getEntity();
 
-    vector3df target = mOwner->rotateToDirection();
+    vector3df target = getOwner()->rotateToDirection();
 
     mBullets.at( mCurBullet )->setPosition(
                 e->getSceneNode()->getAbsolutePosition() + target );

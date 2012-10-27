@@ -34,7 +34,7 @@ LUABINDER_REGISTER_MODULE_START( ItemBinder )
     class_<Item>( "Item" )
 LUABINDER_REGISTER_MODULE_END( ItemBinder )
 
-Item::Item( ExplorePtr explore, IPlayer *owner, PropTreePtr properties,
+Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
             const std::string &basePath )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
@@ -46,8 +46,6 @@ Item::Item( ExplorePtr explore, IPlayer *owner, PropTreePtr properties,
       mGUI( 0 )
 {
     loadIcon();
-
-    mOwner->addOwnedItem( this );
 
     mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties, mBasePath ) );
 
@@ -88,9 +86,14 @@ EntityContainerPtr Item::getEntities() const
     return mEntities;
 }
 
+void Item::setOwner( IPlayerPtr owner )
+{
+    mOwner = owner;
+}
+
 IPlayerPtr Item::getOwner() const
 {
-    return mOwner;
+    return mOwner.lock();
 }
 
 void Item::registerEntities()

@@ -38,15 +38,17 @@ public:
         EPKM_COUNT
     };
 
-    LocalPlayer( ExplorePtr explore, IPlayer *parent );
+    LocalPlayer( ExplorePtr explore, IPlayerPtr parent );
 
     ~LocalPlayer();
 
     void update();
 
+    void addOwnedItem( ItemPtr item );
+
     void switchItem( int index );
 
-    Item *getActiveItem() const;
+    ItemPtr getActiveItem() const;
 
 private:
     void addItems();
