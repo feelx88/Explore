@@ -30,7 +30,8 @@ typedef boost::weak_ptr<IPlayer> IPlayerWeakPtr;
 
 typedef boost::unordered::unordered_map<Item*,ItemPtr> ItemMap;
 
-class IPlayer : public boost::enable_shared_from_this<IPlayer>
+class IPlayer : public boost::enable_shared_from_this<IPlayer>,
+        public NetworkSyncable
 {
 public:
     IPlayer( ExplorePtr explore, IPlayerPtr parent );
@@ -43,12 +44,20 @@ public:
 
     virtual void addOwnedItem( ItemPtr item );
     virtual void removeOwnedItem( ItemPtr item );
+    ItemMap &getOwnedItems();
 
     EntityPtr getEntity() const;
     IPlayer *getParent() const;
     void setParent( IPlayerPtr parent );
 
 protected:
+
+    virtual void serializeInternal( NetworkSyncablePacket &packet,
+                                    uint8_t actionID );
+    virtual boost::optional<NetworkSyncablePacket> deserializeInternal(
+            NetworkSyncablePacket &packet );
+
+
     PropTreePtr mProperties;
 
     ExplorePtr mExplore;

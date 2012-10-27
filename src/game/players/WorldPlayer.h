@@ -34,6 +34,12 @@ public:
                       boost::asio::ip::udp::endpoint endpoint );
 
     void update();
+
+    void setLocalPlayer( IPlayerPtr player );
+    IPlayerPtr getLocalPlayer() const;
+
+private:
+    IPlayerPtr mLocalPlayer;
 };
 
 #endif // WORLDPLAYER_H

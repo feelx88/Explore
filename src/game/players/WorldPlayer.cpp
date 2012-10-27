@@ -28,7 +28,21 @@ WorldPlayer::WorldPlayer( ExplorePtr explore )
 void WorldPlayer::sendUpdates( NetworkMessengerPtr messenger,
                                boost::asio::ip::udp::endpoint endpoint )
 {
-    //TODO: messenger->send( serializedItems )
+    for( ItemMap::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
+    {
+        messenger->sendTo( x->second->serialize( 0 ), endpoint );
+    }
+
+    if( !mLocalPlayer )
+        return;
+
+    messenger->sendTo( mLocalPlayer->serialize( 0 ), endpoint );
+
+    for( ItemMap::iterator x = mLocalPlayer->getOwnedItems().begin();
+         x != mLocalPlayer->getOwnedItems().end(); ++x )
+    {
+        messenger->sendTo( x->second->serialize( 0 ), endpoint );
+    }
 }
 
 void WorldPlayer::update()
@@ -41,4 +55,17 @@ void WorldPlayer::update()
     for( std::vector<IPlayer*>::iterator x = mChildren.begin();
          x != mChildren.end(); ++x )
         ( *x )->update();
+
+    //TODO: If Networkmessenger->hasPacketsInQueue => foreach packet
+    //=> if typeid==item => request item data => create item
+}
+
+void WorldPlayer::setLocalPlayer(IPlayerPtr player)
+{
+    mLocalPlayer = player;
+}
+
+IPlayerPtr WorldPlayer::getLocalPlayer() const
+{
+    return mLocalPlayer;
 }

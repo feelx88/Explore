@@ -29,7 +29,7 @@
 typedef boost::unordered::unordered_map<E_ITEM_ACTION, LuaScriptPtr> ScriptMap;
 typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
 
-class Item
+class Item : public NetworkSyncable
 {
 public:
     template <class T>
@@ -66,6 +66,11 @@ protected:
     void registerScripts();
     void registerEntities();
     void loadIcon();
+
+    virtual void serializeInternal( NetworkSyncablePacket &packet,
+                                    uint8_t actionID );
+    virtual boost::optional<NetworkSyncablePacket> deserializeInternal(
+            NetworkSyncablePacket &packet );
 
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;

@@ -69,6 +69,11 @@ void IPlayer::removeOwnedItem( ItemPtr item )
         mOwnedItems.erase( x );
 }
 
+ItemMap &IPlayer::getOwnedItems()
+{
+    return mOwnedItems;
+}
+
 
 EntityPtr IPlayer::getEntity() const
 {
@@ -83,6 +88,16 @@ IPlayer* IPlayer::getParent() const
 void IPlayer::setParent( IPlayerPtr parent )
 {
     mParent = parent.get();
+}
+
+void IPlayer::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
+{
+}
+
+boost::optional<NetworkSyncablePacket> IPlayer::deserializeInternal(
+        NetworkSyncablePacket &packet )
+{
+    return boost::none;
 }
 
 vector3df IPlayer::rotateToDirection( vector3df dir ) const

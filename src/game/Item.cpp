@@ -114,6 +114,16 @@ void Item::loadIcon()
     mIcon = mDevice->getVideoDriver()->getTexture( iconFileName.c_str() );
 }
 
+void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
+{
+}
+
+boost::optional<NetworkSyncablePacket> Item::deserializeInternal(
+        NetworkSyncablePacket &packet )
+{
+    return boost::none;
+}
+
 void Item::startAction( E_ITEM_ACTION actionID )
 {
     ScriptMap::iterator x = mScripts.find( actionID );
