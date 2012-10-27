@@ -78,6 +78,7 @@ E_GAME_STATE ExploreGame::run()
 
     boost::shared_ptr<LocalPlayer> p( new LocalPlayer( mExplore, mWorldPlayer ) );
     p->getEntity()->setPosition( spawnPos );
+
     ItemFactory::create( mExplore, p, "SimpleForceGun.item" );
     ItemFactory::create( mExplore, p, "SimpleBlockSpawner.item" );
     ItemFactory::create( mExplore, p, "SimpleGun.item" );
@@ -125,6 +126,9 @@ E_GAME_STATE ExploreGame::run()
     luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = luabind::nil;
     luabind::globals( mLua.get() )["Explore"]["LocalPlayer"] = luabind::nil;
     luabind::globals( mLua.get() )["Explore"]["GameInstance"] = luabind::nil;
+
+    //start lua garbage collection to clear smart pointers
+    lua_gc( mLua.get(), LUA_GCCOLLECT, 0 );
 
     mExplore->getExploreServer()->setServerMode( false );
 
