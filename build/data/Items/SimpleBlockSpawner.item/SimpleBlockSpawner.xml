@@ -4,6 +4,7 @@
         <InternalItem>TestCubeItem</InternalItem>
     </CanSpawn>
     <Icon>icon.png</Icon>
+    <Useable>true</Useable>
 </Item>
 
 <InternalItem Name="TestCubeItem">

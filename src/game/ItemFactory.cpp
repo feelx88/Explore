@@ -57,7 +57,11 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string f
     ItemCreatorMap::iterator x = sCreators->find( className );
 
     if( x != sCreators->end() )
-        return ItemPtr( x->second->create( explore, owner, properties, basePath ) );
+    {
+        ItemPtr item( x->second->create( explore, owner, properties, basePath ) );
+        owner->addOwnedItem( item );
+        return item;
+    }
     else
     {
         _LOG( "Item class not found", className );
@@ -73,7 +77,11 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr p
     ItemCreatorMap::iterator x = sCreators->find( className );
 
     if( x != sCreators->end() )
-        return ItemPtr( x->second->create( explore, owner, props, basePath ) );
+    {
+        ItemPtr item( x->second->create( explore, owner, props, basePath ) );
+        owner->addOwnedItem( item );
+        return item;
+    }
     else
     {
         _LOG( "Item class not found", className );

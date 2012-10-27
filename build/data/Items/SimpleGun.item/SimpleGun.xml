@@ -5,4 +5,5 @@
     <BulletCount>20</BulletCount>
     <Acceleration>100</Acceleration>
     <Destructible>false</Destructible>
+    <Useable>true</Useable>
 </Item>

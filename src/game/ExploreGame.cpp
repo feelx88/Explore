@@ -81,10 +81,10 @@ E_GAME_STATE ExploreGame::run()
 
     boost::shared_ptr<LocalPlayer> p( new LocalPlayer( mExplore, mWorldPlayer ) );
     p->getEntity()->setPosition( spawnPos );
-    p->addOwnedItem( ItemFactory::create( mExplore, p, "SimpleForceGun.item" ) );
-    p->addOwnedItem( ItemFactory::create( mExplore, p, "SimpleBlockSpawner.item" ) );
-    p->addOwnedItem( ItemFactory::create( mExplore, p, "SimpleGun.item" ) );
-    p->addOwnedItem( ItemFactory::create( mExplore, p, "SuzanneSpawner.item" ) );
+    ItemFactory::create( mExplore, p, "SimpleForceGun.item" );
+    ItemFactory::create( mExplore, p, "SimpleBlockSpawner.item" );
+    ItemFactory::create( mExplore, p, "SimpleGun.item" );
+    ItemFactory::create( mExplore, p, "SuzanneSpawner.item" );
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 

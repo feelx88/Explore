@@ -8,6 +8,7 @@
     <PlacingMarkerUseAlpha>true</PlacingMarkerUseAlpha>
     <PlacingMarkerColor>128,255,0,0</PlacingMarkerColor>
     <PlacingMarkerWireframe>false</PlacingMarkerWireframe>
+    <Useable>true</Useable>
 </Item>
 
 <InternalItem Name="SuzanneItem">

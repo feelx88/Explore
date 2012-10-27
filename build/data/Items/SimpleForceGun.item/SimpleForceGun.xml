@@ -3,4 +3,5 @@
     <Icon>icon.png</Icon>
     <RayDistance>100</RayDistance>
     <ForceMultiplicator>1</ForceMultiplicator>
+    <Useable>true</Useable>
 </Item>

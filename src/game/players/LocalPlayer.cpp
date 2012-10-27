@@ -78,6 +78,10 @@ void LocalPlayer::update()
 void LocalPlayer::addOwnedItem( ItemPtr item )
 {
     IPlayer::addOwnedItem( item );
+
+    if( !item->getProperties()->get<bool>( "Item.Useable", false ) )
+        return;
+
     mInventory.push_back( item );
 
     IGUIButton *img = mDevice->getGUIEnvironment()->addButton(
