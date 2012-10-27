@@ -125,7 +125,7 @@ E_GAME_STATE ExploreGame::run()
     mEventReceiver->lockMouse( false );
     luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = luabind::nil;
     luabind::globals( mLua.get() )["Explore"]["LocalPlayer"] = luabind::nil;
-    luabind::globals( mLua.get() )["Explore"]["GameInstance"] = luabind::nil;
+    luabind::globals( mLua.get() )["Explore"]["Game"] = luabind::nil;
 
     //start lua garbage collection to clear smart pointers
     lua_gc( mLua.get(), LUA_GCCOLLECT, 0 );
