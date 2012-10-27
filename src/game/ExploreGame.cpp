@@ -76,15 +76,16 @@ E_GAME_STATE ExploreGame::run()
 
     mWorldPlayer.reset( new WorldPlayer( mExplore ) );
 
-    luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayer*)mWorldPlayer.get();
-    luabind::globals( mLua.get() )["Explore"]["Game"] = this;
-
     boost::shared_ptr<LocalPlayer> p( new LocalPlayer( mExplore, mWorldPlayer ) );
     p->getEntity()->setPosition( spawnPos );
     ItemFactory::create( mExplore, p, "SimpleForceGun.item" );
     ItemFactory::create( mExplore, p, "SimpleBlockSpawner.item" );
     ItemFactory::create( mExplore, p, "SimpleGun.item" );
     ItemFactory::create( mExplore, p, "SuzanneSpawner.item" );
+
+    luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayerPtr)mWorldPlayer;
+    luabind::globals( mLua.get() )["Explore"]["LocalPlayer"] = (IPlayerPtr)p;
+    luabind::globals( mLua.get() )["Explore"]["Game"] = this;
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
@@ -122,6 +123,7 @@ E_GAME_STATE ExploreGame::run()
 
     mEventReceiver->lockMouse( false );
     luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = luabind::nil;
+    luabind::globals( mLua.get() )["Explore"]["LocalPlayer"] = luabind::nil;
     luabind::globals( mLua.get() )["Explore"]["GameInstance"] = luabind::nil;
 
     mExplore->getExploreServer()->setServerMode( false );
