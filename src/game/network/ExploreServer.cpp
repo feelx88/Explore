@@ -80,7 +80,7 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
       mStatusBits( ESB_COUNT ),
       mSelfInfo( info ),
       mClientID( 0 ),
-      mUpdateTimer( *mExplore->getIOService().get(), boost::posix_time::milliseconds( 200 ) )
+      mUpdateTimer( *mExplore->getIOService().get() )
 {
     updateConnectedClients();
 }
