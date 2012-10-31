@@ -42,6 +42,13 @@ enum E_ITEM_ACTION
     EIA_COUNT
 };
 
+enum E_NETWORKSYNCABLE_TYPE_IDS
+{
+    ENTI_EXPLORE_SERVER = 0,
+    ENTI_ITEM,
+    ENTI_PLAYER
+};
+
 class Explore;
 typedef Explore* ExplorePtr;
 
