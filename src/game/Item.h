@@ -34,6 +34,7 @@ class Item : public NetworkSyncable
 public:
     template <class T>
     friend class ItemCreator;
+    friend class ItemFactory;
 
     virtual ~Item();
 
@@ -55,6 +56,8 @@ public:
 
     void setActivationState( bool state );
     bool getActivationState() const;
+
+    std::string getFileName() const;
 
     static Item* getItemFromEntity( Entity *entity );
 
@@ -91,6 +94,8 @@ protected:
     float mHitPoints;
     bool mActivated;
     bool mDestructible;
+
+    std::string mFileName;
 
 private:
     static EntityItemMap sEntityItemMap;

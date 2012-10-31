@@ -35,9 +35,11 @@ LUABINDER_REGISTER_MODULE_START( ItemFactoryBinder )
         ]
 LUABINDER_REGISTER_MODULE_END( ItemFactoryBinder )
 
-ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string fileName )
+ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
+                             std::string fileName )
 {
-    boost::optional<PropTreePtr> cachedProps = ItemCache::instance()->getItemProps( fileName );
+    boost::optional<PropTreePtr> cachedProps =
+            ItemCache::instance()->getItemProps( fileName );
 
     fileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
     std::string basePath = PathTools::getBasePathFromFile( fileName );
@@ -60,6 +62,7 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string f
     {
         ItemPtr item( x->second->create( explore, owner, properties, basePath ) );
         owner->addOwnedItem( item );
+        item->mFileName = fileName;
         return item;
     }
     else
@@ -69,8 +72,8 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, std::string f
     }
 }
 
-ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
-                             std::string basePath )
+ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
+                             PropTreePtr props, std::string basePath )
 {
     std::string className = props->get( "Item.Class", "Item" );
 
@@ -80,6 +83,7 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr p
     {
         ItemPtr item( x->second->create( explore, owner, props, basePath ) );
         owner->addOwnedItem( item );
+        item->mFileName = "INTERNAL";
         return item;
     }
     else

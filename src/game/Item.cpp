@@ -177,6 +177,11 @@ bool Item::getActivationState() const
     return mActivated;
 }
 
+std::string Item::getFileName() const
+{
+    return mFileName;
+}
+
 Item *Item::getItemFromEntity( Entity *entity )
 {
     EntityItemMap::iterator x = sEntityItemMap.find( entity );
