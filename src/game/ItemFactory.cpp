@@ -83,7 +83,7 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
     {
         ItemPtr item( x->second->create( explore, owner, props, basePath ) );
         owner->addOwnedItem( item );
-        item->mFileName = "INTERNAL";
+        item->mFileName = props->get( "Item.Name", "INTERNAL" );
         return item;
     }
     else
