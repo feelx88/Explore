@@ -114,12 +114,12 @@ void Item::loadIcon()
     mIcon = mDevice->getVideoDriver()->getTexture( iconFileName.c_str() );
 }
 
-void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
+void Item::serializeInternal( NetworkSyncablePacket &/*packet*/, uint8_t /*actionID*/ )
 {
 }
 
 boost::optional<NetworkSyncablePacket> Item::deserializeInternal(
-        NetworkSyncablePacket &packet )
+        NetworkSyncablePacket &/*packet*/ )
 {
     return boost::none;
 }

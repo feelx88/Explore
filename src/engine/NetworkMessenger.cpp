@@ -164,6 +164,4 @@ void NetworkMessenger::sendHandler(const boost::system::error_code &error, size_
 {
     if( error )
         return;
-
-    //TODO:Do something
 }

@@ -90,12 +90,12 @@ void IPlayer::setParent( IPlayerPtr parent )
     mParent = parent.get();
 }
 
-void IPlayer::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
+void IPlayer::serializeInternal( NetworkSyncablePacket &/*packet*/, uint8_t /*actionID*/ )
 {
 }
 
 boost::optional<NetworkSyncablePacket> IPlayer::deserializeInternal(
-        NetworkSyncablePacket &packet )
+        NetworkSyncablePacket &/*packet*/ )
 {
     return boost::none;
 }
