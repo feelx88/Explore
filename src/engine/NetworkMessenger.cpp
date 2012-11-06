@@ -136,7 +136,11 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
                                        size_t )
 {
     if( error )
+    {
+        _LOG( error.message() );
+        receive();
         return;
+    }
 
     NetworkSyncablePacket packet( std::string( mReceiveBuffer.begin(),
                                                mReceiveBuffer.end() ) );
@@ -160,8 +164,11 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
     receive();
 }
 
-void NetworkMessenger::sendHandler(const boost::system::error_code &error, size_t )
+void NetworkMessenger::sendHandler( const boost::system::error_code &error, size_t )
 {
     if( error )
+    {
+        _LOG( error.message() );
         return;
+    }
 }
