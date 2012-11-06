@@ -21,6 +21,10 @@
 #ifndef ENGINETYPEDEFS_H
 #define ENGINETYPEDEFS_H
 
+#include <boost/foreach_fwd.hpp>
+#define foreach_ BOOST_FOREACH
+#define foreach_r_ BOOST_REVERSE_FOREACH
+
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 

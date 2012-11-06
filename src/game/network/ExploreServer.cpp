@@ -18,9 +18,11 @@
 */
 
 #include "ExploreServer.h"
+#include "../ExploreGame.h"
 #include <engine/LoggerSingleton.h>
 #include <engine/LuaBinder.h>
 #include <iostream>
+#include <boost/foreach.hpp>
 #include "../Explore.h"
 
 using namespace boost::asio::ip;
@@ -157,30 +159,26 @@ bool ExploreServer::hasConnection() const
 
 void ExploreServer::updateConnectedClients()
 {
-    system_clock::time_point now = system_clock::now();
-    system_clock::duration then = seconds(  10 );
-
-    uint32_t toBeKicked = 0;
-
-    for( std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.begin();
-             x != mClientIDMap.end(); ++x )
+    if( mStatusBits[ESB_SERVER] )
     {
-        if( x->second.lastActiveTime + then <= now )
+        system_clock::time_point now = system_clock::now();
+        system_clock::duration then = seconds( 10 );
+
+        typedef std::pair<uint32_t, ClientInfo> pair_t;
+        foreach_( pair_t x, mClientIDMap )
         {
-            toBeKicked = x->second.id;
-            _LOG( "Timeout; No response from", x->second.host.hostName );
-            continue;
+            if( x.second.lastActiveTime + then <= now )
+            {
+                std::string name = x.second.host.hostName;
+                _LOG( "Timeout; No response from", name );
+                _LOG( "Kicking client", name );
+                mClientIDMap.erase( x.second.id );
+                break;
+            }
         }
-        mMessenger->sendTo( serialize( EAID_REQUEST_IS_STILL_ALIVE ),
-                            x->second.endpoint );
 
-        //TODO: mExplore->getExploreGame()->getWorldPlayer()->sendUpdates(...);
-    }
-
-    if( toBeKicked > 0 )
-    {
-        _LOG( "Kicking client", mClientIDMap[toBeKicked].host.hostName );
-        mClientIDMap.erase( toBeKicked );
+        send( serialize( EAID_REQUEST_IS_STILL_ALIVE ) );
+        mExplore->getExploreGame()->getWorldPlayer()->sendUpdates();
     }
 
     mUpdateTimer.expires_from_now( boost::posix_time::milliseconds( 200 ) );
@@ -188,14 +186,14 @@ void ExploreServer::updateConnectedClients()
                 boost::bind( &ExploreServer::updateConnectedClients, this ) );
 }
 
-void ExploreServer::send( NetworkSyncablePacket &packet )
+void ExploreServer::send( const NetworkSyncablePacket &packet )
 {
     if( mStatusBits[ESB_SERVER] )
     {
-        for( std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.begin();
-                 x != mClientIDMap.end(); ++x )
+        typedef std::pair<uint32_t, ClientInfo> pair_t;
+        foreach_( pair_t x, mClientIDMap )
         {
-            mMessenger->sendTo( packet, x->second.endpoint );
+            mMessenger->sendTo( packet, x.second.endpoint );
         }
     }
     else

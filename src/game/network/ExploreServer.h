@@ -65,7 +65,7 @@ public:
 
     void updateConnectedClients();
 
-    void send( NetworkSyncablePacket &packet );
+    void send( const NetworkSyncablePacket &packet );
 
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );

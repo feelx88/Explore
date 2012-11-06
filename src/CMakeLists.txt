@@ -39,7 +39,7 @@ set( IRRLICHT_LIBRARIES Irrlicht )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
 find_package( Lua51 REQUIRED )
 find_package( Boost COMPONENTS system filesystem REQUIRED )
-find_package( Boost COMPONENTS chrono )
+find_package( Boost COMPONENTS chrono foreach )
 #find_package( luabind REQUIRED )
 set( LUABIND_LIBRARIES luabind )
 

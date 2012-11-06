@@ -30,8 +30,7 @@ class WorldPlayer : public IPlayer
 public:
     WorldPlayer( ExplorePtr explore );
 
-    void sendUpdates( NetworkMessengerPtr messenger,
-                      boost::asio::ip::udp::endpoint endpoint );
+    void sendUpdates();
 
     void update();
 

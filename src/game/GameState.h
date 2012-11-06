@@ -52,4 +52,6 @@ enum E_NETWORKSYNCABLE_TYPE_IDS
 class Explore;
 typedef Explore* ExplorePtr;
 
+#define NETWORK_SYNC_ACTIONID 0
+
 #endif // GAMESTATE_H

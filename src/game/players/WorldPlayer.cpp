@@ -19,29 +19,30 @@
 
 #include "WorldPlayer.h"
 #include "../Item.h"
+#include <boost/foreach.hpp>
 
 WorldPlayer::WorldPlayer( ExplorePtr explore )
     : IPlayer( explore, IPlayerPtr() )
 {
 }
 
-void WorldPlayer::sendUpdates( NetworkMessengerPtr messenger,
-                               boost::asio::ip::udp::endpoint endpoint )
+void WorldPlayer::sendUpdates()
 {
-    for( ItemMap::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
+    typedef std::pair<Item*,ItemPtr> itemPair_t;
+
+    foreach_( itemPair_t x, mOwnedItems )
     {
-        messenger->sendTo( x->second->serialize( 0 ), endpoint );
+        mExplore->getExploreServer()->send( x.second->serialize( NETWORK_SYNC_ACTIONID ) );
     }
 
     if( !mLocalPlayer )
         return;
 
-    messenger->sendTo( mLocalPlayer->serialize( 0 ), endpoint );
+    mExplore->getExploreServer()->send( mLocalPlayer->serialize( NETWORK_SYNC_ACTIONID ) );
 
-    for( ItemMap::iterator x = mLocalPlayer->getOwnedItems().begin();
-         x != mLocalPlayer->getOwnedItems().end(); ++x )
+    foreach_( itemPair_t x, mLocalPlayer->getOwnedItems() )
     {
-        messenger->sendTo( x->second->serialize( 0 ), endpoint );
+        mExplore->getExploreServer()->send( x.second->serialize( NETWORK_SYNC_ACTIONID ) );
     }
 }
 
