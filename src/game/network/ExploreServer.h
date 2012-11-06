@@ -55,6 +55,8 @@ public:
 
     void setServerMode( bool server );
     bool serverMode() const;
+    void setUpdateInterval( const int &interval );
+    int updateInterval() const;
 
     void requestServerInfo( const std::string &ip, const int &port );
     bool hasServerInfo() const;
@@ -88,6 +90,7 @@ protected:
     std::map<uint32_t, ClientInfo> mClientIDMap;
 
     boost::asio::deadline_timer mUpdateTimer;
+    int mUpdateInterval;
 };
 
 #endif // EXPLORESERVER_H

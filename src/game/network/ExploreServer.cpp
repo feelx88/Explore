@@ -58,6 +58,8 @@ LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
         .def( "setSelfInfo", &ExploreServer::setSelfInfo )
         .def( "serialize", &ExploreServer::serialize )
         .def( "send", &ExploreServer::send )
+        .def( "setUpdateInterval", &ExploreServer::setUpdateInterval )
+        .def( "updateInterval", &ExploreServer::updateInterval )
         .enum_( "E_ACTIONID" )
         [
             value( "EAID_ACK", EAID_ACK ),
@@ -85,6 +87,7 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
       mClientID( 0 ),
       mUpdateTimer( *mExplore->getIOService().get() )
 {
+    setUpdateInterval( 200 );
     updateConnectedClients();
 }
 
@@ -112,6 +115,16 @@ void ExploreServer::setServerMode( bool server )
 bool ExploreServer::serverMode() const
 {
     return mStatusBits[ESB_SERVER];
+}
+
+void ExploreServer::setUpdateInterval(const int &interval)
+{
+    mUpdateInterval = interval;
+}
+
+int ExploreServer::updateInterval() const
+{
+    return mUpdateInterval;
 }
 
 void ExploreServer::requestServerInfo( const std::string &ip, const int &port )
@@ -196,7 +209,8 @@ void ExploreServer::updateConnectedClients()
             send( packet );
     }
 
-    mUpdateTimer.expires_from_now( boost::posix_time::milliseconds( 200 ) );
+    mUpdateTimer.expires_from_now(
+                boost::posix_time::milliseconds( mUpdateInterval ) );
     mUpdateTimer.async_wait(
                 boost::bind( &ExploreServer::updateConnectedClients, this ) );
 }
