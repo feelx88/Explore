@@ -55,6 +55,7 @@ LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
         .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
         .def( "setSelfInfo", &ExploreServer::setSelfInfo )
         .def( "serialize", &ExploreServer::serialize )
+        .def( "send", &ExploreServer::send )
         .enum_( "E_ACTIONID" )
         [
             value( "EAID_ACK", EAID_ACK ),
@@ -187,6 +188,20 @@ void ExploreServer::updateConnectedClients()
                 boost::bind( &ExploreServer::updateConnectedClients, this ) );
 }
 
+void ExploreServer::send( NetworkSyncablePacket &packet )
+{
+    if( mStatusBits[ESB_SERVER] )
+    {
+        for( std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.begin();
+                 x != mClientIDMap.end(); ++x )
+        {
+            mMessenger->sendTo( packet, x->second.endpoint );
+        }
+    }
+    else
+        mMessenger->send( packet );
+}
+
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
@@ -265,6 +280,11 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         }
         else
             _LOG( "ACK received" );
+        break;
+    }
+    case EAID_NAK:
+    {
+        _LOG( "NAK received" );
         break;
     }
     case EAID_ACCEPT_CONNECTION:

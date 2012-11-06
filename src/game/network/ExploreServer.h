@@ -65,6 +65,8 @@ public:
 
     void updateConnectedClients();
 
+    void send( NetworkSyncablePacket &packet );
+
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
