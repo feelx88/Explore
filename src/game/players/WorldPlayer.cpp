@@ -26,23 +26,24 @@ WorldPlayer::WorldPlayer( ExplorePtr explore )
 {
 }
 
-void WorldPlayer::sendUpdates()
+void WorldPlayer::serializeAll( const uint8_t actionID,
+                                std::list<NetworkSyncablePacket> &list )
 {
     typedef std::pair<Item*,ItemPtr> itemPair_t;
 
     foreach_( itemPair_t x, mOwnedItems )
     {
-        mExplore->getExploreServer()->send( x.second->serialize( NETWORK_SYNC_ACTIONID ) );
+        list.push_back( x.second->serialize( actionID ) );
     }
 
     if( !mLocalPlayer )
         return;
 
-    mExplore->getExploreServer()->send( mLocalPlayer->serialize( NETWORK_SYNC_ACTIONID ) );
+    list.push_back( mLocalPlayer->serialize( actionID ) );
 
     foreach_( itemPair_t x, mLocalPlayer->getOwnedItems() )
     {
-        mExplore->getExploreServer()->send( x.second->serialize( NETWORK_SYNC_ACTIONID ) );
+        list.push_back( x.second->serialize( actionID ) );
     }
 }
 

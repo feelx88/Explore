@@ -178,7 +178,14 @@ void ExploreServer::updateConnectedClients()
         }
 
         send( serialize( EAID_REQUEST_IS_STILL_ALIVE ) );
-        mExplore->getExploreGame()->getWorldPlayer()->sendUpdates();
+        std::list<NetworkSyncablePacket> syncableList;
+        mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
+                    NETWORK_SYNC_ACTIONID, syncableList );
+
+        foreach_( NetworkSyncablePacket &packet, syncableList )
+        {
+            send( packet );
+        }
     }
 
     mUpdateTimer.expires_from_now( boost::posix_time::milliseconds( 200 ) );

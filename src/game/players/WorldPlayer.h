@@ -30,7 +30,8 @@ class WorldPlayer : public IPlayer
 public:
     WorldPlayer( ExplorePtr explore );
 
-    void sendUpdates();
+    void serializeAll( const uint8_t actionID,
+                                    std::list<NetworkSyncablePacket> &list );
 
     void update();
 
