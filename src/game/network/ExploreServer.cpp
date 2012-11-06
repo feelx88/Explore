@@ -167,7 +167,7 @@ void ExploreServer::updateConnectedClients()
         typedef std::pair<uint32_t, ClientInfo> pair_t;
         foreach_( pair_t x, mClientIDMap )
         {
-            if( x.second.lastActiveTime + then <= now )
+            if( x.second.initialized && x.second.lastActiveTime + then <= now )
             {
                 std::string name = x.second.host.hostName;
                 _LOG( "Timeout; No response from", name );
@@ -175,17 +175,25 @@ void ExploreServer::updateConnectedClients()
                 mClientIDMap.erase( x.second.id );
                 break;
             }
+            else if( !x.second.initialized )
+            {
+                std::list<NetworkSyncablePacket> newList;
+                mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
+                            ENGA_CREATE, newList );
+
+                foreach_( NetworkSyncablePacket &packet, newList )
+                    mMessenger->sendTo( packet, x.second.endpoint );
+            }
         }
 
         send( serialize( EAID_REQUEST_IS_STILL_ALIVE ) );
+
         std::list<NetworkSyncablePacket> syncableList;
         mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                    NETWORK_SYNC_ACTIONID, syncableList );
+                    ENGA_UPDATE, syncableList );
 
         foreach_( NetworkSyncablePacket &packet, syncableList )
-        {
             send( packet );
-        }
     }
 
     mUpdateTimer.expires_from_now( boost::posix_time::milliseconds( 200 ) );
@@ -249,6 +257,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 info.id = nextClientID();
                 info.host = host;
                 info.lastActiveTime = system_clock::now();
+                info.initialized = false;
                 mClientIDMap.insert( std::make_pair( info.id, info ) );
 
                 _LOG( "Client accepted!" );

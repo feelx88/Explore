@@ -49,9 +49,15 @@ enum E_NETWORKSYNCABLE_TYPE_IDS
     ENTI_PLAYER
 };
 
+enum E_NETWORKSYNCABLE_GLOBAL_ACTIONID
+{
+    ENGA_UPDATE = 0,
+    ENGA_CREATE,
+    ENGA_DELETE,
+    ENGA_COUNT
+};
+
 class Explore;
 typedef Explore* ExplorePtr;
-
-#define NETWORK_SYNC_ACTIONID 0
 
 #endif // GAMESTATE_H

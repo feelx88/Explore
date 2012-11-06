@@ -42,6 +42,7 @@ public:
         HostInfo host;
         boost::asio::ip::udp::endpoint endpoint;
         boost::chrono::system_clock::time_point lastActiveTime;
+        bool initialized;
     };
 
     ExploreServer( ExplorePtr explore, const HostInfo &info,
