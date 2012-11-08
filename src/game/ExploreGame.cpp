@@ -60,8 +60,6 @@ E_GAME_STATE ExploreGame::run()
 {
     bool running = true;
 
-    E_GAME_STATE state = EGS_GAME;
-
     mEventReceiver->lockMouse( true );
 
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
@@ -79,6 +77,8 @@ E_GAME_STATE ExploreGame::run()
     boost::shared_ptr<LocalPlayer> p( new LocalPlayer( mExplore, mWorldPlayer ) );
     p->getEntity()->setPosition( spawnPos );
 
+    mWorldPlayer->setLocalPlayer( static_cast<IPlayerPtr>( p ) );
+
     ItemFactory::create( mExplore, p, "SimpleForceGun.item" );
     ItemFactory::create( mExplore, p, "SimpleBlockSpawner.item" );
     ItemFactory::create( mExplore, p, "SimpleGun.item" );
@@ -89,8 +89,6 @@ E_GAME_STATE ExploreGame::run()
     luabind::globals( mLua.get() )["Explore"]["Game"] = this;
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
-
-    mExplore->getExploreServer()->setServerMode( true );
 
     btClock clock;
 
@@ -107,7 +105,7 @@ E_GAME_STATE ExploreGame::run()
         if( mEventReceiver->keyClicked( irr::KEY_ESCAPE ) )
         {
             _LOG( "Escape key pressed" );
-            state = EGS_MAIN_MENU;
+            mExplore->setGameState( EGS_MAIN_MENU );
             running = false;
         }
 
@@ -131,10 +129,13 @@ E_GAME_STATE ExploreGame::run()
     lua_gc( mLua.get(), LUA_GCCOLLECT, 0 );
 
     mExplore->getExploreServer()->setServerMode( false );
+    mExplore->getExploreServer()->disconnect();
 
     mWorldPlayer.reset();
 
-    return state;
+    mExplore->setGameState( EGS_MAIN_MENU );
+
+    return EGS_MAIN_MENU;//TODO: change signature
 }
 
 void ExploreGame::setBulletDebugDraw( bool enabled )

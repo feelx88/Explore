@@ -112,6 +112,7 @@ public:
     }
 
     void setGameState( const E_GAME_STATE &state );
+    E_GAME_STATE getGameState() const;
 
     IrrlichtDevicePtr getIrrlichtDevice() const;
     EventReceiverPtr getEventReceiver() const;

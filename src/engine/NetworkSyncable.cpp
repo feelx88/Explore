@@ -42,6 +42,16 @@ NetworkSyncable::~NetworkSyncable()
     sUIDMap.erase( mUID );
 }
 
+uint32_t NetworkSyncable::getUID() const
+{
+    return mUID;
+}
+
+uint8_t NetworkSyncable::getTypeID() const
+{
+    return mTypeID;
+}
+
 boost::optional<NetworkSyncablePacket> NetworkSyncable::deserialize( NetworkSyncablePacket &packet )
 {
     return deserializeInternal( packet );
@@ -74,6 +84,11 @@ void NetworkSyncable::setUID( uint32_t uid )
 
     sUIDMap.insert( std::make_pair( uid, this ) );
     mUID = uid;
+}
+
+void NetworkSyncable::setTypeID( uint8_t typeID )
+{
+    mTypeID = typeID;
 }
 
 uint32_t NetworkSyncable::nextUID()

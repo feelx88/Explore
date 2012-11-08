@@ -78,7 +78,6 @@ void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
 bool NetworkMessenger::hasPacketsInQueue() const
 {
     bool status = !mPacketQueue.empty();
-    _LOG( "NetworkMessenger::hasPacketsInQueue", status );
     return status;
 }
 
@@ -153,9 +152,7 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
         boost::optional<NetworkSyncablePacket> replyPacket =
                 syncable->deserialize( packet );
 
-        if( !replyPacket )
-            mPacketQueue.push( packet );
-        else
+        if( replyPacket )
             send( *replyPacket );
     }
     else

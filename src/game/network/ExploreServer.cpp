@@ -19,6 +19,7 @@
 
 #include "ExploreServer.h"
 #include "../ExploreGame.h"
+#include "../ItemFactory.h"
 #include <engine/LoggerSingleton.h>
 #include <engine/LuaBinder.h>
 #include <iostream>
@@ -79,7 +80,7 @@ LUABINDER_REGISTER_MODULE_END( ExploreServerBinder )
 
 ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
                               NetworkMessengerPtr messenger )
-    : NetworkSyncable( 0, 0 ),
+    : NetworkSyncable( 1, 0 ),
       mExplore( explore ),
       mMessenger( messenger ),
       mStatusBits( ESB_COUNT ),
@@ -88,7 +89,7 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
       mUpdateTimer( *mExplore->getIOService().get() )
 {
     setUpdateInterval( 200 );
-    updateConnectedClients();
+    update();
 }
 
 NetworkMessengerPtr ExploreServer::getNetworkMessenger() const
@@ -170,8 +171,33 @@ bool ExploreServer::hasConnection() const
     return mStatusBits[ESB_CONNECTED];
 }
 
-void ExploreServer::updateConnectedClients()
+void ExploreServer::disconnect()
 {
+    mStatusBits[ESB_CONNECTED] = false;
+}
+
+void ExploreServer::update()
+{
+    //Create new items and distribute them if this is a server
+    while( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
+    {
+        NetworkSyncablePacket p = mMessenger->nextPacket();
+
+        if( p.getTypeID() == ENTI_ITEM )
+        {
+            std::string fileName = p.readString();
+            //TODO: more data in create packages, e.g. transformation
+            //uint32_t ownerUID = p.readUInt32();
+            //NetworkSyncable *owner = NetworkSyncable::getObject( ownerUID );
+
+            ItemFactory::create( mExplore, //TODO: pin to right owner
+                                 mExplore->getExploreGame()->getWorldPlayer(),
+                                 fileName );
+        }
+
+        if( mStatusBits[ESB_SERVER] )
+            send( p );
+    }
     if( mStatusBits[ESB_SERVER] )
     {
         system_clock::time_point now = system_clock::now();
@@ -196,23 +222,28 @@ void ExploreServer::updateConnectedClients()
 
                 foreach_( NetworkSyncablePacket &packet, newList )
                     mMessenger->sendTo( packet, x.second.endpoint );
+                mClientIDMap[x.second.id].initialized = true;
+                //TODO:send more infos to be able to show a status bar
             }
         }
 
         send( serialize( EAID_REQUEST_IS_STILL_ALIVE ) );
 
-        std::list<NetworkSyncablePacket> syncableList;
-        mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                    ENGA_UPDATE, syncableList );
+        if( mExplore->getExploreGame()->getWorldPlayer() )
+        {//TODO:this does not look neat
+            std::list<NetworkSyncablePacket> syncableList;
+            mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
+                        ENGA_UPDATE, syncableList );
 
-        foreach_( NetworkSyncablePacket &packet, syncableList )
-            send( packet );
+            foreach_( NetworkSyncablePacket &packet, syncableList )
+                send( packet );
+        }
     }
 
     mUpdateTimer.expires_from_now(
                 boost::posix_time::milliseconds( mUpdateInterval ) );
     mUpdateTimer.async_wait(
-                boost::bind( &ExploreServer::updateConnectedClients, this ) );
+                boost::bind( &ExploreServer::update, this ) );
 }
 
 void ExploreServer::send( const NetworkSyncablePacket &packet )

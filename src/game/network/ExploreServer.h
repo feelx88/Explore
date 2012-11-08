@@ -66,7 +66,9 @@ public:
     bool isConnecting() const;
     bool hasConnection() const;
 
-    void updateConnectedClients();
+    void disconnect();
+
+    void update();
 
     void send( const NetworkSyncablePacket &packet );
 

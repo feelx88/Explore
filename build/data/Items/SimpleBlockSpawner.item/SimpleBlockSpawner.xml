@@ -12,6 +12,7 @@
         <Class>Item</Class>
         <AutoAddEntities>true</AutoAddEntities>
         <HitPoints>2.5</HitPoints>
+        <Name>TestCubeItem</Name>
     </Item>
     <Entity Name="Crate" ID="0">
         <Node>

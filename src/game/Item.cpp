@@ -36,7 +36,8 @@ LUABINDER_REGISTER_MODULE_END( ItemBinder )
 
 Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
             const std::string &basePath )
-    : mExplore( explore ),
+    : NetworkSyncable(),
+      mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
       mBulletWorld( explore->getBulletWorld() ),
       mLua( explore->getLuaVM() ),
@@ -45,6 +46,7 @@ Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
       mOwner( owner ),
       mGUI( 0 )
 {
+    setTypeID( ENTI_ITEM );
     loadIcon();
 
     mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties, mBasePath ) );
@@ -114,8 +116,14 @@ void Item::loadIcon()
     mIcon = mDevice->getVideoDriver()->getTexture( iconFileName.c_str() );
 }
 
-void Item::serializeInternal( NetworkSyncablePacket &/*packet*/, uint8_t /*actionID*/ )
+void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 {
+    if( actionID == ENGA_CREATE )
+    {
+        packet.writeString( mFileName );
+        packet.writeUInt32( mOwner.lock()->getUID() );
+        return;
+    }
 }
 
 boost::optional<NetworkSyncablePacket> Item::deserializeInternal(

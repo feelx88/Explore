@@ -111,10 +111,10 @@ int Explore::run()
             mRunning = false;
             break;
         case EGS_MAIN_MENU:
-            mGameState = mMenu->run();
+            mMenu->run();
             break;
         case EGS_GAME:
-            mGameState = mGame->run();
+            mGame->run();
             break;
         case EGS_CONNECT:
         case EGS_LOAD:
@@ -129,6 +129,11 @@ int Explore::run()
 void Explore::setGameState( const E_GAME_STATE &state )
 {
     mGameState = state;
+}
+
+E_GAME_STATE Explore::getGameState() const
+{
+    return mGameState;
 }
 
 IrrlichtDevicePtr Explore::getIrrlichtDevice() const

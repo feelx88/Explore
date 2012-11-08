@@ -20,6 +20,7 @@
 
 #include "ExploreMenu.h"
 #include "Explore.h"
+#include "network/ExploreServer.h"
 #include <engine/LoggerSingleton.h>
 #include <engine/IrrlichtTools.h>
 
@@ -105,8 +106,6 @@ ExploreMenu::ExploreMenu( ExplorePtr explore )
 
 E_GAME_STATE ExploreMenu::run()
 {
-    E_GAME_STATE state = EGS_MAIN_MENU;
-
     int windowWidth = mExplore->readConfigValue<int>( "Engine.WindowWidth", 640 );
     int windowHeight = mExplore->readConfigValue<int>( "Engine.WindowHeight", 480 );
 
@@ -140,12 +139,13 @@ E_GAME_STATE ExploreMenu::run()
     struct : public EventReceiver::GUICallback {
         bool call( IGUIElementPtr ) {
             _LOG( "New Game button pressed" );
-            *state = EGS_GAME;
+            explore->setGameState( EGS_GAME );
+            explore->getExploreServer()->setServerMode( true );
             return true;
         }
-        E_GAME_STATE *state;
+        ExplorePtr explore;
     } newGameClicked;
-    newGameClicked.state = &state;
+    newGameClicked.explore = mExplore;
 
     struct : public EventReceiver::GUICallback {
         bool call( IGUIElementPtr ) {
@@ -161,12 +161,12 @@ E_GAME_STATE ExploreMenu::run()
     struct : public EventReceiver::GUICallback {
         bool call( IGUIElementPtr ) {
             _LOG( "Quit button pressed" );
-            *state = EGS_QUIT;
+            explore->setGameState( EGS_QUIT );
             return true;
         }
-        E_GAME_STATE *state;
+        ExplorePtr explore;
     } quitClicked;
-    quitClicked.state = &state;
+    quitClicked.explore = mExplore;
 
     mExplore->getEventReceiver()->registerGUICallback( &newGameClicked,
                                                        EGID_NEW_GAME,
@@ -204,11 +204,14 @@ E_GAME_STATE ExploreMenu::run()
                                                        EGET_BUTTON_CLICKED );
 
     //Main loop
-    while( state == EGS_MAIN_MENU && mDevice->run() )
+    while( mExplore->getGameState() == EGS_MAIN_MENU && mDevice->run() )
     {
         mVideoDriver->beginScene( true, true,
                                   irr::video::SColor( 255, 100, 100, 100 ) );
         mGUI->drawAll();
+
+        if( mExplore->getExploreServer()->hasConnection() )
+            mExplore->setGameState( EGS_GAME );
 
         mVideoDriver->endScene();
         mExplore->getIOService()->poll();
@@ -220,5 +223,5 @@ E_GAME_STATE ExploreMenu::run()
     //Reset window background
     mGUI->getSkin()->setColor( EGDC_3D_FACE, oldBGColor );
 
-    return state;
+    return EGS_MAIN_MENU;
 }

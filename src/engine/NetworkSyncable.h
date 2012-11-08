@@ -39,6 +39,9 @@ public:
     NetworkSyncable( uint32_t uid, uint8_t typeID );
     virtual ~NetworkSyncable();
 
+    uint32_t getUID() const;
+    uint8_t getTypeID() const;
+
     boost::optional<NetworkSyncablePacket> deserialize(
             NetworkSyncablePacket &packet );
     NetworkSyncablePacket serialize( uint8_t actionID );
@@ -52,6 +55,7 @@ protected:
                                     uint8_t actionID ) = 0;
 
     void setUID( uint32_t uid );
+    void setTypeID( uint8_t typeID );
 
     uint32_t mUID;
     uint8_t mTypeID;
