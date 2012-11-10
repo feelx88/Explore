@@ -183,16 +183,17 @@ void ExploreServer::update()
     {
         NetworkSyncablePacket p = mMessenger->nextPacket();
 
-        if( p.getTypeID() == ENTI_ITEM )
+        if( p.getTypeID() == ENTI_ITEM && p.getActionID() == ENGA_CREATE )
         {
             std::string fileName = p.readString();
             //TODO: more data in create packages, e.g. transformation
             //uint32_t ownerUID = p.readUInt32();
             //NetworkSyncable *owner = NetworkSyncable::getObject( ownerUID );
 
-            ItemFactory::create( mExplore, //TODO: pin to right owner
-                                 mExplore->getExploreGame()->getWorldPlayer(),
-                                 fileName );
+            if( fileName.length() > 0 )
+                ItemFactory::create( mExplore, //TODO: pin to right owner
+                                     mExplore->getExploreGame()->getWorldPlayer(),
+                                     fileName );
         }
 
         if( mStatusBits[ESB_SERVER] )
@@ -203,8 +204,8 @@ void ExploreServer::update()
         system_clock::time_point now = system_clock::now();
         system_clock::duration then = seconds( 10 );
 
-        typedef std::pair<uint32_t, ClientInfo> pair_t;
-        foreach_( pair_t x, mClientIDMap )
+        typedef std::map<uint32_t, ClientInfo> map_t;
+        foreach_( map_t::value_type &x, mClientIDMap )
         {
             if( x.second.initialized && x.second.lastActiveTime + then <= now )
             {
@@ -222,7 +223,8 @@ void ExploreServer::update()
 
                 foreach_( NetworkSyncablePacket &packet, newList )
                     mMessenger->sendTo( packet, x.second.endpoint );
-                mClientIDMap[x.second.id].initialized = true;
+
+                x.second.initialized = true;
                 //TODO:send more infos to be able to show a status bar
             }
         }
@@ -250,10 +252,11 @@ void ExploreServer::send( const NetworkSyncablePacket &packet )
 {
     if( mStatusBits[ESB_SERVER] )
     {
-        typedef std::pair<uint32_t, ClientInfo> pair_t;
-        foreach_( pair_t x, mClientIDMap )
+        typedef std::map<uint32_t, ClientInfo> map_t;
+        foreach_( map_t::value_type &x, mClientIDMap )
         {
-            mMessenger->sendTo( packet, x.second.endpoint );
+            if( x.second.initialized )
+                mMessenger->sendTo( packet, x.second.endpoint );
         }
     }
     else

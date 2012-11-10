@@ -37,12 +37,14 @@ LUABINDER_REGISTER_MODULE_START( IPlayerBinder )
 LUABINDER_REGISTER_MODULE_END( IPlayerBinder )
 
 IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
-    : mExplore( explore ),
+    : NetworkSyncable(),
+      mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
       mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
       mParent( parent.get() )
 {
+    setTypeID( ENTI_PLAYER );
     mProperties.reset( new boost::property_tree::ptree() );
     boost::property_tree::xml_parser::read_xml(
                 PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ),

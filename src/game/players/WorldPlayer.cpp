@@ -29,9 +29,9 @@ WorldPlayer::WorldPlayer( ExplorePtr explore )
 void WorldPlayer::serializeAll( const uint8_t actionID,
                                 std::list<NetworkSyncablePacket> &list )
 {
-    typedef std::pair<Item*,ItemPtr> itemPair_t;
+    typedef std::map<Item*,ItemPtr> itemMap_t;
 
-    foreach_( itemPair_t x, mOwnedItems )
+    foreach_( itemMap_t::value_type &x, mOwnedItems )
     {
         list.push_back( x.second->serialize( actionID ) );
     }
@@ -41,7 +41,7 @@ void WorldPlayer::serializeAll( const uint8_t actionID,
 
     list.push_back( mLocalPlayer->serialize( actionID ) );
 
-    foreach_( itemPair_t x, mLocalPlayer->getOwnedItems() )
+    foreach_( itemMap_t::value_type &x, mLocalPlayer->getOwnedItems() )
     {
         list.push_back( x.second->serialize( actionID ) );
     }
