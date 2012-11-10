@@ -41,15 +41,15 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
     boost::optional<PropTreePtr> cachedProps =
             ItemCache::instance()->getItemProps( fileName );
 
-    fileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
-    std::string basePath = PathTools::getBasePathFromFile( fileName );
+    std::string newFileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
+    std::string basePath = PathTools::getBasePathFromFile( newFileName );
 
     PropTreePtr properties;
 
     if( !cachedProps )
     {
         properties.reset( new boost::property_tree::ptree() );
-        boost::property_tree::xml_parser::read_xml( fileName, *properties );
+        boost::property_tree::xml_parser::read_xml( newFileName, *properties );
     }
     else
         properties.reset( new boost::property_tree::ptree( **cachedProps ) );
