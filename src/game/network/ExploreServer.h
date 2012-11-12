@@ -67,7 +67,7 @@ public:
     bool hasConnection() const;
 
     void setClientTimeout( int timeout );
-    int getClientTimeout() const;
+    int clientTimeout() const;
 
     void disconnect();
 

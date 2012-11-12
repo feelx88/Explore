@@ -62,7 +62,7 @@ LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
         .def( "setUpdateInterval", &ExploreServer::setUpdateInterval )
         .def( "updateInterval", &ExploreServer::updateInterval )
         .def( "setClientTimeout", &ExploreServer::setClientTimeout )
-        .def( "clientTimeout", &ExploreServer::clientTTimeout )
+        .def( "clientTimeout", &ExploreServer::clientTimeout )
         .enum_( "E_ACTIONID" )
         [
             value( "EAID_ACK", EAID_ACK ),
@@ -178,7 +178,7 @@ void ExploreServer::setClientTimeout(int timeout)
     mClientTimeout = timeout;
 }
 
-int ExploreServer::getClientTimeout() const
+int ExploreServer::clientTimeout() const
 {
     return mClientTimeout;
 }
