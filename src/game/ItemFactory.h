@@ -60,6 +60,7 @@ public:
     static ItemPtr create( ExplorePtr explore, IPlayerPtr owner, std::string fileName );
     static ItemPtr create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
                          std::string basePath );
+    static ItemPtr create( ExplorePtr explore, NetworkSyncablePacket &packet );
 
     template <typename T>
     static int registerItem( std::string name )

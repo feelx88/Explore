@@ -20,6 +20,7 @@
 #include "ItemFactory.h"
 #include "ItemCache.h"
 #include "IPlayer.h"
+#include "ExploreGame.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <luabind/adopt_policy.hpp>
@@ -91,4 +92,15 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
         _LOG( "Item class not found", className );
         return ItemPtr();
     }
+}
+
+ItemPtr ItemFactory::create( ExplorePtr explore, NetworkSyncablePacket &packet )
+{
+    std::string fileName = packet.readString();
+    //uint32_t ownerID = packet.readUInt32();
+    IPlayerPtr owner = explore->getExploreGame()->getWorldPlayer(); //TODO: find possibility to attach right IPlayer
+
+    ItemPtr item = create( explore, owner, fileName );
+    item->setUID( packet.getUID() );
+    return item;
 }

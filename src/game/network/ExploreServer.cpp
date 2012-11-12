@@ -196,17 +196,7 @@ void ExploreServer::update()
         NetworkSyncablePacket p = mMessenger->nextPacket();
 
         if( p.getTypeID() == ENTI_ITEM && p.getActionID() == ENGA_CREATE )
-        {
-            std::string fileName = p.readString();
-            //TODO: more data in create packages, e.g. transformation
-            //uint32_t ownerUID = p.readUInt32();
-            //NetworkSyncable *owner = NetworkSyncable::getObject( ownerUID );
-
-            if( fileName.length() > 0 )
-                ItemFactory::create( mExplore, //TODO: pin to right owner
-                                     mExplore->getExploreGame()->getWorldPlayer(),
-                                     fileName );
-        }
+            ItemFactory::create( mExplore, p );
 
         if( mStatusBits[ESB_SERVER] )
             send( p );
