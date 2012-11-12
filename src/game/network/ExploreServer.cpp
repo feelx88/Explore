@@ -61,6 +61,8 @@ LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
         .def( "send", &ExploreServer::send )
         .def( "setUpdateInterval", &ExploreServer::setUpdateInterval )
         .def( "updateInterval", &ExploreServer::updateInterval )
+        .def( "setClientTimeout", &ExploreServer::setClientTimeout )
+        .def( "clientTimeout", &ExploreServer::clientTTimeout )
         .enum_( "E_ACTIONID" )
         [
             value( "EAID_ACK", EAID_ACK ),
@@ -171,6 +173,16 @@ bool ExploreServer::hasConnection() const
     return mStatusBits[ESB_CONNECTED];
 }
 
+void ExploreServer::setClientTimeout(int timeout)
+{
+    mClientTimeout = timeout;
+}
+
+int ExploreServer::getClientTimeout() const
+{
+    return mClientTimeout;
+}
+
 void ExploreServer::disconnect()
 {
     mStatusBits[ESB_CONNECTED] = false;
@@ -202,7 +214,7 @@ void ExploreServer::update()
     if( mStatusBits[ESB_SERVER] )
     {
         system_clock::time_point now = system_clock::now();
-        system_clock::duration then = seconds( 10 );
+        system_clock::duration then = seconds( mClientTimeout );
 
         typedef std::map<uint32_t, ClientInfo> map_t;
         foreach_( map_t::value_type &x, mClientIDMap )

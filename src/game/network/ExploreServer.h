@@ -66,6 +66,9 @@ public:
     bool isConnecting() const;
     bool hasConnection() const;
 
+    void setClientTimeout( int timeout );
+    int getClientTimeout() const;
+
     void disconnect();
 
     void update();
@@ -93,6 +96,7 @@ protected:
 
     boost::asio::deadline_timer mUpdateTimer;
     int mUpdateInterval;
+    int mClientTimeout;
 };
 
 #endif // EXPLORESERVER_H
