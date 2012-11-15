@@ -30,15 +30,39 @@
 LUABINDER_REGISTER_MODULE_START( NetworkSyncablePacketBinder )
     class_<NetworkSyncablePacket>( "NetworkSyncablePacket" )
         .def( constructor<int, int, int, std::string>() )
+        .def( constructor<std::string>() )
+        .def( "serialize", &NetworkSyncablePacket::serialize )
         .def( "getUID", &NetworkSyncablePacket::getUID )
         .def( "getTypeID", &NetworkSyncablePacket::getTypeID )
         .def( "getActionID", &NetworkSyncablePacket::getActionID )
+        .def( "readUInt8", &NetworkSyncablePacket::readUInt8 )
+        .def( "writeUInt8", &NetworkSyncablePacket::writeUInt8 )
+        .def( "readUInt16", &NetworkSyncablePacket::readUInt16 )
+        .def( "writeUInt16", &NetworkSyncablePacket::writeUInt16 )
+        .def( "readUInt32", &NetworkSyncablePacket::readUInt32 )
+        .def( "writeUInt32", &NetworkSyncablePacket::writeUInt32 )
+        .def( "readUInt64", &NetworkSyncablePacket::readUInt64 )
+        .def( "writeUInt64", &NetworkSyncablePacket::writeUInt64 )
+        .def( "readInt8", &NetworkSyncablePacket::readInt8 )
+        .def( "writeInt8", &NetworkSyncablePacket::writeInt8 )
+        .def( "readInt16", &NetworkSyncablePacket::readInt16 )
+        .def( "writeInt16", &NetworkSyncablePacket::writeInt16 )
+        .def( "readInt32", &NetworkSyncablePacket::readInt32 )
+        .def( "writeInt32", &NetworkSyncablePacket::writeInt32 )
+        .def( "readInt64", &NetworkSyncablePacket::readInt64 )
+        .def( "writeInt64", &NetworkSyncablePacket::writeInt64 )
+        .def( "readString", &NetworkSyncablePacket::readString )
+        .def( "writeString", &NetworkSyncablePacket::writeString )
+        .def( "readFloat", &NetworkSyncablePacket::readFloat )
+        .def( "writeFloat", &NetworkSyncablePacket::writeFloat )
+        .def( "readBool", &NetworkSyncablePacket::readBool )
+        .def( "writeBool", &NetworkSyncablePacket::writeBool )
 LUABINDER_REGISTER_MODULE_END( NetworkSyncablePacketBinder )
 
 NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
 {
     std::stringstream stream;
-    stream.write( data.c_str(), data.size() );
+    stream.write( data.data(), data.size() );
 
     stream.read( reinterpret_cast<char*>( &mUID ), sizeof( uint32_t ) );
     stream.read( reinterpret_cast<char*>( &mActionID ), sizeof( uint8_t ) );
@@ -49,7 +73,7 @@ NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
     buf.resize( mBodySize );
     stream.read( &buf[0], mBodySize );
 
-    mBody.write( buf.c_str(), mBodySize );
+    mBody.write( buf.data(), mBodySize );
 }
 
 NetworkSyncablePacket::NetworkSyncablePacket( uint32_t uid, uint8_t typeID,
@@ -60,7 +84,7 @@ NetworkSyncablePacket::NetworkSyncablePacket( uint32_t uid, uint8_t typeID,
       mActionID( actionID ),
       mBodySize( body.length() )
 {
-    mBody.write( body.c_str(), mBodySize );
+    mBody.write( body.data(), mBodySize );
 }
 
 NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other )
@@ -69,7 +93,7 @@ NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other
       mActionID( other.getActionID() ),
       mBodySize( other.getBodySize() )
 {
-    mBody.write( other.getBody().c_str(), other.getBodySize() );
+    mBody.write( other.getBody().data(), other.getBodySize() );
 }
 
 uint32_t NetworkSyncablePacket::getUID() const
@@ -330,7 +354,7 @@ std::string NetworkSyncablePacket::serialize() const
     stream.write( reinterpret_cast<const char*>( &mTypeID ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &size ), sizeof( uint32_t ) );
 
-    stream.write( body.c_str(), size );
+    stream.write( body.data(), size );
 
     return stream.str();
 }
