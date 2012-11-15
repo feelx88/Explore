@@ -76,6 +76,9 @@ NetworkSyncable *NetworkSyncable::getObject( uint32_t uid )
 
 void NetworkSyncable::setUID( uint32_t uid )
 {
+    if( uid == mUID )
+        return;
+
     if( sUIDMap.find( uid ) != sUIDMap.end() )
         throw new UIDAlreadyUsedException( uid );
 
