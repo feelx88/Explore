@@ -36,7 +36,7 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
 {
     mServerIP = mProperties->get( "Server.IP", "127.0.0.1" );
     mPort = mProperties->get( "Server.Port", 6556 );
-    mReceiveBuffer.resize( mProperties->get( "Server.BufferSize", 512 ) );
+    mReceiveBuffer.resize( mProperties->get( "Server.BufferSize", 4096 ) );
 
     mSocket.reset( new ip::udp::socket( *mIOService.get() ) );
 
