@@ -300,7 +300,7 @@ float NetworkSyncablePacket::readFloat()
     const char *bits = val.c_str();
 
     memcpy( &exponent, bits, INT_SIZE );
-    memcpy( &mantissaInt, bits + 4, INT_SIZE );
+    memcpy( &mantissaInt, bits + INT_SIZE, INT_SIZE );
 
     if( exponent < 0 )
     {
