@@ -209,7 +209,7 @@ void NetworkSyncablePacket::writeFloat( const float &val )
 
 void NetworkSyncablePacket::writeString( const std::string &val )
 {
-    uint32_t size = val.size();
+    uint32_t size = val.length();
     writeUInt32( size );
     mBody.write( val.c_str(), size );
     mBodySize += size;
@@ -288,19 +288,16 @@ int64_t NetworkSyncablePacket::readInt64()
 
 float NetworkSyncablePacket::readFloat()
 {
-    std::string val( "" );
-    val.resize( PACKED_FLOAT_SIZE );
-    mBody.read( &val[0], PACKED_FLOAT_SIZE );
+    char tmp[PACKED_FLOAT_SIZE];
+    mBody.read( &tmp[0], PACKED_FLOAT_SIZE );
 
     uint32_t mantissaInt = 0;
     int32_t exponent = 0;
 
     bool negative = false;
 
-    const char *bits = val.c_str();
-
-    memcpy( &exponent, bits, INT_SIZE );
-    memcpy( &mantissaInt, bits + INT_SIZE, INT_SIZE );
+    memcpy( &exponent, tmp, INT_SIZE );
+    memcpy( &mantissaInt, tmp + INT_SIZE, INT_SIZE );
 
     if( exponent < 0 )
     {
@@ -324,14 +321,17 @@ std::string NetworkSyncablePacket::readString()
 {
     uint32_t size = readUInt32();
 
-    std::string buf;
-    buf.resize( size );
+    char* buf = new char[size];
 
     mBody.read( &buf[0], size );
 
     mBodySize -= size;
 
-    return buf;
+    std::string val = std::string( buf, size );
+
+    delete[] buf;
+
+    return val;
 }
 
 bool NetworkSyncablePacket::readBool()
