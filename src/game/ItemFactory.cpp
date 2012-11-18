@@ -96,11 +96,19 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
 
 ItemPtr ItemFactory::create( ExplorePtr explore, NetworkSyncablePacket &packet )
 {
+    if( NetworkSyncable::getObject( packet.getUID() ) )
+    {
+        _LOG( "UID exists, maybe double transferred", packet.getUID() );
+        return ItemPtr();
+    }
+
     std::string fileName = packet.readString();
-    //uint32_t ownerID = packet.readUInt32();
-    IPlayerPtr owner = explore->getExploreGame()->getWorldPlayer(); //TODO: find possibility to attach right IPlayer
+    /*uint32_t ownerID =*/ packet.readUInt32();
+    IPlayerPtr owner = explore->getExploreGame()->getWorldPlayer(); //TODO: attach right IPlayer
 
     ItemPtr item = create( explore, owner, fileName );
     item->setUID( packet.getUID() );
+    item->deserialize( packet );
+
     return item;
 }
