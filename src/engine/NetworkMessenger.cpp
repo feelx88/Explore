@@ -25,6 +25,10 @@ using namespace boost::asio;
 LUABINDER_REGISTER_MODULE_START( NetworkMessengerBinder )
     class_<NetworkMessenger>( "NetworkMessenger" )
         .def( "send", &NetworkMessenger::send )
+        .def( "sendTo",
+              (void(NetworkMessenger::*)(const NetworkSyncablePacket&,
+                                         const std::string&,
+                                         const int&)) &NetworkMessenger::sendTo )
         .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
         .def( "nextPacket", &NetworkMessenger::nextPacket )
         .def( "bind", &NetworkMessenger::bind )
@@ -132,7 +136,7 @@ void NetworkMessenger::receive()
 }
 
 void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
-                                       size_t )
+                                       size_t /*transferred*/ )
 {
     if( error )
     {

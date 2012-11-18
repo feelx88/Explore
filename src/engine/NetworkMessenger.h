@@ -60,7 +60,7 @@ private:
     std::string mServerIP;
     int mPort;
 
-    std::vector<char> mReceiveBuffer;
+    std::vector<unsigned char> mReceiveBuffer;
     std::queue<NetworkSyncablePacket> mPacketQueue;
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
 };
