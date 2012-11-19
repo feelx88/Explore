@@ -75,6 +75,9 @@ protected:
     virtual boost::optional<NetworkSyncablePacket> deserializeInternal(
             NetworkSyncablePacket &packet );
 
+    void serializeEntities( NetworkSyncablePacket &packet );
+    void deserializeEntities( NetworkSyncablePacket &packet );
+
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     BulletWorldPtr mBulletWorld;

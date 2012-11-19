@@ -123,57 +123,89 @@ void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
         packet.writeString( mFileName );
         packet.writeUInt32( mOwner.lock()->getUID() );
 
-        const EntityMap &entities = mEntities->getEntities();
-
-        packet.writeUInt16( entities.size() );
-
-        foreach_( const EntityMap::value_type &x, entities )
-        {
-            RigidBodyPtr body = x.second->getRigidBody();
-            btTransform trans = body->getWorldTransform();
-
-            packet.writeFloat( trans.getOrigin().getX() );
-            packet.writeFloat( trans.getOrigin().getY() );
-            packet.writeFloat( trans.getOrigin().getZ() );
-
-            packet.writeFloat( trans.getRotation().getX() );
-            packet.writeFloat( trans.getRotation().getY() );
-            packet.writeFloat( trans.getRotation().getZ() );
-            packet.writeFloat( trans.getRotation().getW() );
-        }
+        serializeEntities( packet );
 
         return;
+    }
+    else if( actionID == ENGA_UPDATE )
+    {
+        serializeEntities( packet );
     }
 }
 
 boost::optional<NetworkSyncablePacket> Item::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
-    if( packet.getActionID() == ENGA_CREATE )
+    if( packet.getActionID() == ENGA_CREATE || packet.getActionID() == ENGA_UPDATE )
     {
-        //String(name) and UInt32(ownerID) already read
-
-        /*uint16_t size = */packet.readUInt16();//TODO: range check?
-
-        const EntityMap &entities = mEntities->getEntities();
-
-        foreach_( const EntityMap::value_type &x, entities )
-        {
-
-            btVector3 origin( packet.readFloat(),
-                              packet.readFloat(),
-                              packet.readFloat() );
-
-            btQuaternion rotation( packet.readFloat(),
-                                   packet.readFloat(),
-                                   packet.readFloat(),
-                                   packet.readFloat() );
-
-            RigidBodyPtr body = x.second->getRigidBody();
-            body->setWorldTransform( btTransform( rotation, origin ) );
-        }
+        //ENGA_CREATE: string[name] and uint32_t[ownerID] already read
+        deserializeEntities( packet );
     }
     return boost::none;
+}
+
+void Item::serializeEntities( NetworkSyncablePacket &packet )
+{
+    const EntityMap &entities = mEntities->getEntities();
+
+    packet.writeUInt16( entities.size() );
+
+    foreach_( const EntityMap::value_type &x, entities )
+    {
+        RigidBodyPtr body = x.second->getRigidBody();
+        btTransform trans = body->getWorldTransform();
+
+        packet.writeFloat( trans.getOrigin().getX() );
+        packet.writeFloat( trans.getOrigin().getY() );
+        packet.writeFloat( trans.getOrigin().getZ() );
+
+        packet.writeFloat( trans.getRotation().getX() );
+        packet.writeFloat( trans.getRotation().getY() );
+        packet.writeFloat( trans.getRotation().getZ() );
+        packet.writeFloat( trans.getRotation().getW() );
+
+        btVector3 linvel = body->getLinearVelocity(),
+                angvel = body->getAngularVelocity();
+        packet.writeFloat( linvel.getX() );
+        packet.writeFloat( linvel.getY() );
+        packet.writeFloat( linvel.getZ() );
+        packet.writeFloat( angvel.getX() );
+        packet.writeFloat( angvel.getY() );
+        packet.writeFloat( angvel.getZ() );
+    }
+}
+
+void Item::deserializeEntities( NetworkSyncablePacket &packet )
+{
+    const EntityMap &entities = mEntities->getEntities();
+
+    /*uint16_t size = */packet.readUInt16();//TODO: range check?
+
+    foreach_( const EntityMap::value_type &x, entities )
+    {
+
+        btVector3 origin( packet.readFloat(),
+                          packet.readFloat(),
+                          packet.readFloat() );
+
+        btQuaternion rotation( packet.readFloat(),
+                               packet.readFloat(),
+                               packet.readFloat(),
+                               packet.readFloat() );
+
+        btVector3 linvel( packet.readFloat(),
+                          packet.readFloat(),
+                          packet.readFloat() );
+
+        btVector3 angvel( packet.readFloat(),
+                          packet.readFloat(),
+                          packet.readFloat() );
+
+        RigidBodyPtr body = x.second->getRigidBody();
+        body->setWorldTransform( btTransform( rotation, origin ) );
+        body->setLinearVelocity( linvel );
+        body->setAngularVelocity( angvel );
+    }
 }
 
 void Item::startAction( E_ITEM_ACTION actionID )
