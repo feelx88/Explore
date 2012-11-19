@@ -19,6 +19,7 @@
 
 #include "NetworkSyncablePacket.h"
 #include "LuaBinder.h"
+#include "LoggerSingleton.h"
 #include <sstream>
 #include <cmath>
 #include <cstring>
@@ -69,11 +70,11 @@ NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
     stream.read( reinterpret_cast<char*>( &mTypeID ), sizeof( uint8_t ) );
     stream.read( reinterpret_cast<char*>( &mBodySize ), sizeof( uint32_t ) );
 
-    std::string buf;
-    buf.resize( mBodySize );
-    stream.read( &buf[0], mBodySize );
+    char *tmp = new char[mBodySize];
+    stream.read( tmp, mBodySize );
 
-    mBody.write( buf.data(), mBodySize );
+    mBody.write( tmp, mBodySize );
+    delete[] tmp;
 }
 
 NetworkSyncablePacket::NetworkSyncablePacket( uint32_t uid, uint8_t typeID,
@@ -186,25 +187,12 @@ void NetworkSyncablePacket::writeInt64( const int64_t &val )
 
 void NetworkSyncablePacket::writeFloat( const float &val )
 {
-    std::stringstream stream;
-
-    float negative = val < 0.f ? -1.f : 1.f;
-
     int32_t exponent = 0;
-    float mantissa = frexp( val * negative, &exponent );
-    uint32_t mantissaInt = ldexp( mantissa, MANTISSA_SIZE );
+    float mantissa = frexp( val, &exponent );
+    int32_t mantissaInt = ldexp( mantissa, MANTISSA_SIZE );
 
-    exponent *= (int)negative;
-
-    char exponentBits[INT_SIZE], mantissaBits[INT_SIZE];
-    memcpy( &exponentBits, &exponent, INT_SIZE );
-    memcpy( &mantissaBits, &mantissaInt, INT_SIZE );
-
-    stream.write( exponentBits, INT_SIZE );
-    stream.write( mantissaBits, INT_SIZE );
-
-    mBody.write( stream.str().c_str(), PACKED_FLOAT_SIZE );
-    mBodySize += PACKED_FLOAT_SIZE;
+    writeInt32( exponent );
+    writeInt32( mantissaInt );
 }
 
 void NetworkSyncablePacket::writeString( const std::string &val )
@@ -288,31 +276,12 @@ int64_t NetworkSyncablePacket::readInt64()
 
 float NetworkSyncablePacket::readFloat()
 {
-    char tmp[PACKED_FLOAT_SIZE];
-    mBody.read( &tmp[0], PACKED_FLOAT_SIZE );
-
-    uint32_t mantissaInt = 0;
-    int32_t exponent = 0;
-
-    bool negative = false;
-
-    memcpy( &exponent, tmp, INT_SIZE );
-    memcpy( &mantissaInt, tmp + INT_SIZE, INT_SIZE );
-
-    if( exponent < 0 )
-    {
-        exponent *= -1;
-        negative = true;
-    }
+    int32_t exponent = readInt32();
+    int32_t mantissaInt = readInt32();
 
     float mantissa = (float)( mantissaInt ) / pow( 2.f, MANTISSA_SIZE );
 
     float v = ldexp( mantissa, exponent );
-
-    if( negative )
-        v *= -1.f;
-
-    mBodySize -= PACKED_FLOAT_SIZE;
 
     return v;
 }
@@ -347,7 +316,7 @@ std::string NetworkSyncablePacket::serialize() const
     std::stringstream stream;
 
     std::string body = mBody.str();
-    uint32_t size = body.size();
+    uint32_t size = body.length();
 
     stream.write( reinterpret_cast<const char*>( &mUID ), sizeof( uint32_t ) );
     stream.write( reinterpret_cast<const char*>( &mActionID ), sizeof( uint8_t ) );
