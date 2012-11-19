@@ -127,44 +127,20 @@ void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 
         packet.writeUInt16( entities.size() );
 
-        _LOG( "**************************************************" );
-        _LOG( "UID", getUID() );
-        _LOG( "#entities", entities.size() );
-
         foreach_( const EntityMap::value_type &x, entities )
         {
             RigidBodyPtr body = x.second->getRigidBody();
             btTransform trans = body->getWorldTransform();
-            btVector3 origin = trans.getOrigin();
-            btQuaternion rotation = trans.getRotation();
 
-            float xx = origin.getX();
-            float xy = origin.getY();
-            float xz = origin.getZ();
+            packet.writeFloat( trans.getOrigin().getX() );
+            packet.writeFloat( trans.getOrigin().getY() );
+            packet.writeFloat( trans.getOrigin().getZ() );
 
-            float yx = rotation.getX();
-            float yy = rotation.getY();
-            float yz = rotation.getZ();
-            float yw = rotation.getW();
-
-            _LOG( "xx", xx );
-            _LOG( "xy", xy );
-            _LOG( "xz", xz );
-            _LOG( "yx", yx );
-            _LOG( "yy", yy );
-            _LOG( "yz", yz );
-            _LOG( "yw", yw );
-
-            packet.writeFloat( xx );//trans.getOrigin().getX() );
-            packet.writeFloat( xy );//trans.getOrigin().getY() );
-            packet.writeFloat( xz );//trans.getOrigin().getZ() );
-
-            packet.writeFloat( yx );//trans.getRotation().getX() );
-            packet.writeFloat( yy );//trans.getRotation().getY() );
-            packet.writeFloat( yz );//trans.getRotation().getZ() );
-            packet.writeFloat( yw );//trans.getRotation().getW() );
+            packet.writeFloat( trans.getRotation().getX() );
+            packet.writeFloat( trans.getRotation().getY() );
+            packet.writeFloat( trans.getRotation().getZ() );
+            packet.writeFloat( trans.getRotation().getW() );
         }
-        _LOG( "**************************************************" );
 
         return;
     }
@@ -177,46 +153,25 @@ boost::optional<NetworkSyncablePacket> Item::deserializeInternal(
     {
         //String(name) and UInt32(ownerID) already read
 
-        uint16_t size = packet.readUInt16();//TODO: range check?
+        /*uint16_t size = */packet.readUInt16();//TODO: range check?
 
         const EntityMap &entities = mEntities->getEntities();
 
-        _LOG( "**************************************************" );
-        _LOG( "UID", getUID() );
-        _LOG( "#entities", size );
-
         foreach_( const EntityMap::value_type &x, entities )
         {
-            float xx = packet.readFloat();
-            float xy = packet.readFloat();
-            float xz = packet.readFloat();
 
-            float yx = packet.readFloat();
-            float yy = packet.readFloat();
-            float yz = packet.readFloat();
-            float yw = packet.readFloat();
+            btVector3 origin( packet.readFloat(),
+                              packet.readFloat(),
+                              packet.readFloat() );
 
-            _LOG( "xx", xx );
-            _LOG( "xy", xy );
-            _LOG( "xz", xz );
-            _LOG( "yx", yx );
-            _LOG( "yy", yy );
-            _LOG( "yz", yz );
-            _LOG( "yw", yw );
-
-            btVector3 origin( xx,//packet.readFloat(),
-                              xy,//packet.readFloat(),
-                              xz );//packet.readFloat() );
-
-            btQuaternion rotation( yx,//packet.readFloat(),
-                                   yy,//packet.readFloat(),
-                                   yz,//packet.readFloat(),
-                                   yw );//packet.readFloat() );
+            btQuaternion rotation( packet.readFloat(),
+                                   packet.readFloat(),
+                                   packet.readFloat(),
+                                   packet.readFloat() );
 
             RigidBodyPtr body = x.second->getRigidBody();
             body->setWorldTransform( btTransform( rotation, origin ) );
         }
-        _LOG( "**************************************************" );
     }
     return boost::none;
 }
