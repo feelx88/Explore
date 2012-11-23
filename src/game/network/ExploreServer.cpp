@@ -36,7 +36,8 @@ enum E_SERVER_ACTIONID
     ESAID_REQUEST_SERVERINFO,
     ESAID_REQUEST_CONNECTION,
     ESAID_ACCEPT_CONNECTION,
-    ESAID_REQUEST_IS_STILL_ALIVE
+    ESAID_REQUEST_IS_STILL_ALIVE,
+    ESAID_REQUEST_ITEM_INFO
 };
 
 enum E_STATUS_BITS
@@ -195,8 +196,17 @@ void ExploreServer::update()
     {
         NetworkSyncablePacket p = mMessenger->nextPacket();
 
-        if( p.getTypeID() == ENTI_ITEM && p.getActionID() == EAID_CREATE )
-            ItemFactory::create( mExplore, p );
+        if( p.getTypeID() == ENTI_ITEM )
+        {
+            if( p.getActionID() == EAID_CREATE )
+                ItemFactory::create( mExplore, p );
+            else
+            {
+                NetworkSyncablePacket packet = serialize( ESAID_REQUEST_ITEM_INFO );
+                packet.writeUInt32( p.getUID() );
+                send( packet );
+            }
+        }
 
         if( mStatusBits[ESB_SERVER] )
             send( p );
@@ -372,6 +382,16 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
     {
         if( mStatusBits[ESB_CONNECTED] )
             return serialize( ESAID_ACK );
+        break;
+    }
+    case ESAID_REQUEST_ITEM_INFO:
+    {
+        uint32_t uuid = packet.readUInt32();
+
+        NetworkSyncable *syncable = NetworkSyncable::getObject( uuid );
+        if( syncable )
+            return syncable->serialize( EAID_CREATE );
+
         break;
     }
     default:
