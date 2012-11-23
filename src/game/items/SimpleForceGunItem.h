@@ -29,7 +29,7 @@ public:
     SimpleForceGunItem( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
                         const std::string &basePath );
 
-    void startAction( E_ITEM_ACTION actionID );
+    void startAction( uint8_t actionID );
 
 private:
     void shoot( bool forward );

@@ -29,14 +29,14 @@
 using namespace boost::asio::ip;
 using namespace boost::chrono;
 
-enum E_ACTIONID
+enum E_SERVER_ACTIONID
 {
-    EAID_ACK = 0,
-    EAID_NAK,
-    EAID_REQUEST_SERVERINFO,
-    EAID_REQUEST_CONNECTION,
-    EAID_ACCEPT_CONNECTION,
-    EAID_REQUEST_IS_STILL_ALIVE
+    ESAID_ACK = 0,
+    ESAID_NAK,
+    ESAID_REQUEST_SERVERINFO,
+    ESAID_REQUEST_CONNECTION,
+    ESAID_ACCEPT_CONNECTION,
+    ESAID_REQUEST_IS_STILL_ALIVE
 };
 
 enum E_STATUS_BITS
@@ -65,11 +65,11 @@ LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
         .def( "clientTimeout", &ExploreServer::clientTimeout )
         .enum_( "E_ACTIONID" )
         [
-            value( "EAID_ACK", EAID_ACK ),
-            value( "EAID_NAK", EAID_NAK ),
-            value( "EAID_REQUEST_SERVERINFO", EAID_REQUEST_SERVERINFO ),
-            value( "EAID_REQUEST_CONNECTION", EAID_REQUEST_CONNECTION ),
-            value( "EAID_REQUEST_IS_STILL_ALIVE", EAID_REQUEST_IS_STILL_ALIVE )
+            value( "EAID_ACK", ESAID_ACK ),
+            value( "EAID_NAK", ESAID_NAK ),
+            value( "EAID_REQUEST_SERVERINFO", ESAID_REQUEST_SERVERINFO ),
+            value( "EAID_REQUEST_CONNECTION", ESAID_REQUEST_CONNECTION ),
+            value( "EAID_REQUEST_IS_STILL_ALIVE", ESAID_REQUEST_IS_STILL_ALIVE )
         ]
         .scope
         [
@@ -135,7 +135,7 @@ void ExploreServer::requestServerInfo( const std::string &ip, const int &port )
     _LOG( "Requesting server info from",
           ip + std::string( ":" ) + boost::lexical_cast<std::string>( port ) );
     mStatusBits[ESB_WAIT_FOR_INFO] = true;
-    mMessenger->sendTo( serialize( EAID_REQUEST_SERVERINFO ), ip, port );
+    mMessenger->sendTo( serialize( ESAID_REQUEST_SERVERINFO ), ip, port );
 }
 
 bool ExploreServer::hasServerInfo() const
@@ -160,7 +160,7 @@ void ExploreServer::requestConnection( const std::string &ip, const int &port )
     mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
     mStatusBits[ESB_CONNECTED] = false;
 
-    mMessenger->sendTo( serialize( EAID_REQUEST_CONNECTION ), ip, port );
+    mMessenger->sendTo( serialize( ESAID_REQUEST_CONNECTION ), ip, port );
 }
 
 bool ExploreServer::isConnecting() const
@@ -195,7 +195,7 @@ void ExploreServer::update()
     {
         NetworkSyncablePacket p = mMessenger->nextPacket();
 
-        if( p.getTypeID() == ENTI_ITEM && p.getActionID() == ENGA_CREATE )
+        if( p.getTypeID() == ENTI_ITEM && p.getActionID() == EAID_CREATE )
             ItemFactory::create( mExplore, p );
 
         if( mStatusBits[ESB_SERVER] )
@@ -221,7 +221,7 @@ void ExploreServer::update()
             {
                 std::list<NetworkSyncablePacket> newList;
                 mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                            ENGA_CREATE, newList );
+                            EAID_CREATE, newList );
 
                 foreach_( NetworkSyncablePacket &packet, newList )
                     mMessenger->sendTo( packet, x.second.endpoint );
@@ -231,13 +231,13 @@ void ExploreServer::update()
             }
         }
 
-        send( serialize( EAID_REQUEST_IS_STILL_ALIVE ) );
+        send( serialize( ESAID_REQUEST_IS_STILL_ALIVE ) );
 
         if( mExplore->getExploreGame()->getWorldPlayer() )
         {//TODO:this does not look neat
             std::list<NetworkSyncablePacket> syncableList;
             mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                        ENGA_UPDATE, syncableList );
+                        EAID_UPDATE, syncableList );
 
             foreach_( NetworkSyncablePacket &packet, syncableList )
                 send( packet );
@@ -270,7 +270,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
 {
     switch( packet.getActionID() )
     {
-    case EAID_REQUEST_SERVERINFO:
+    case ESAID_REQUEST_SERVERINFO:
     {
         if( mStatusBits[ESB_WAIT_FOR_INFO] )
         {
@@ -285,11 +285,11 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         else if( mStatusBits[ESB_SERVER] )
         {
             _LOG( "Client requesting server info" );
-            return serialize( EAID_REQUEST_SERVERINFO );
+            return serialize( ESAID_REQUEST_SERVERINFO );
         }
         break;
     }
-    case EAID_REQUEST_CONNECTION:
+    case ESAID_REQUEST_CONNECTION:
     {
         if( mStatusBits[ESB_SERVER] )
         {
@@ -314,22 +314,22 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 _LOG( "New client's ID", info.id );
                 _LOG( "New client's name", info.host.hostName );
 
-                return serialize( EAID_ACCEPT_CONNECTION );
+                return serialize( ESAID_ACCEPT_CONNECTION );
             }
             else
             {
                 _LOG( "Connection not accepted" );
-                return serialize( EAID_NAK );
+                return serialize( ESAID_NAK );
             }
         }
         else
         {
             _LOG( "Client requesting connection, but serverMode is false" );
-            return serialize( EAID_NAK );
+            return serialize( ESAID_NAK );
         }
         break;
     }
-    case EAID_ACK:
+    case ESAID_ACK:
     {
         if( mStatusBits[ESB_SERVER] ) //Receive is_alive
         {
@@ -346,12 +346,12 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             _LOG( "ACK received" );
         break;
     }
-    case EAID_NAK:
+    case ESAID_NAK:
     {
         _LOG( "NAK received" );
         break;
     }
-    case EAID_ACCEPT_CONNECTION:
+    case ESAID_ACCEPT_CONNECTION:
     {
         if( mStatusBits[ESB_WAIT_FOR_CONNECTION] && !mStatusBits[ESB_SERVER] )
         {
@@ -368,10 +368,10 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         }
         break;
     }
-    case EAID_REQUEST_IS_STILL_ALIVE:
+    case ESAID_REQUEST_IS_STILL_ALIVE:
     {
         if( mStatusBits[ESB_CONNECTED] )
-            return serialize( EAID_ACK );
+            return serialize( ESAID_ACK );
         break;
     }
     default:
@@ -386,25 +386,25 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
 {
     switch( actionID )
     {
-    case EAID_REQUEST_SERVERINFO:
+    case ESAID_REQUEST_SERVERINFO:
     {
         packet.writeString( mSelfInfo.hostName );
         packet.writeUInt8( mSelfInfo.serverMaxPlayers );
         packet.writeUInt8( mSelfInfo.serverConnectedPlayers );
         break;
     }
-    case EAID_REQUEST_CONNECTION:
+    case ESAID_REQUEST_CONNECTION:
     {
         packet.writeString( mSelfInfo.hostName );
         packet.writeString( mSelfInfo.passwordHash );
         break;
     }
-    case EAID_ACCEPT_CONNECTION:
+    case ESAID_ACCEPT_CONNECTION:
     {
         packet.writeUInt32( nextClientID() - 1 );
         break;
     }
-    case EAID_ACK:
+    case ESAID_ACK:
     {
         if( !mStatusBits[ESB_SERVER] ) //Alive ACK
             packet.writeUInt32( mClientID );

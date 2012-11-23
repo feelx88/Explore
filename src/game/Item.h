@@ -26,7 +26,7 @@
 #include "Explore.h"
 #include "IPlayer.h"
 
-typedef boost::unordered::unordered_map<E_ITEM_ACTION, LuaScriptPtr> ScriptMap;
+typedef boost::unordered::unordered_map<uint8_t, LuaScriptPtr> ScriptMap;
 typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
 
 class Item : public NetworkSyncable
@@ -43,7 +43,7 @@ public:
     virtual void setOwner( IPlayerPtr owner );
     IPlayerPtr getOwner() const;
 
-    virtual void startAction( E_ITEM_ACTION actionID );
+    virtual void startAction( uint8_t actionID );
 
     void setGUIVisible( bool visible );
 
@@ -106,18 +106,18 @@ private:
     static int sRegisterDummy;
 };
 
-static inline std::ostream &operator<<( std::ostream &stream,
-                          const E_ITEM_ACTION &in )
+/*static inline std::ostream &operator<<( std::ostream &stream,
+                          const uint8_t &in )
 {
-    if( in == EIA_FIRST_ACTION )
+    if( in == EIAID_FIRST_ACTION )
         stream << "FIRST";
-    else if( in == EIA_SECOND_ACTION )
+    else if( in == EIAID_SECOND_ACTION )
         stream << "SECOND";
-    else if( in == EIA_USE_ACTION )
+    else if( in == EIAID_USE_ACTION )
         stream << "USE";
-    else if( in == EIA_UPDATE_ACTION )
+    else if( in == EAID_UPDATE )
         stream << "UPDATE";
-    else if( in == EIA_DESTROY_ACTION )
+    else if( in == EAID_DESTROY )
         stream << "DESTROY";
     else
         stream << "UNDEFINED";
@@ -126,25 +126,25 @@ static inline std::ostream &operator<<( std::ostream &stream,
 }
 
 static inline std::istream &operator>>( std::istream &stream,
-                          E_ITEM_ACTION &out )
+                          uint8_t &out )
 {
     std::string action;
     stream >> action;
 
     if( action == "FIRST" )
-        out = EIA_FIRST_ACTION;
+        out = EIAID_FIRST_ACTION;
     else if( action == "SECOND" )
-        out = EIA_SECOND_ACTION;
+        out = EIAID_SECOND_ACTION;
     else if( action == "USE" )
-        out = EIA_USE_ACTION;
+        out = EIAID_USE_ACTION;
     else if( action == "UPDATE" )
-        out = EIA_UPDATE_ACTION;
+        out = EAID_UPDATE;
     else if( action == "DESTROY" )
-        out = EIA_DESTROY_ACTION;
+        out = EAID_DESTROY;
     else
-        out = EIA_COUNT;
+        out = EAID_COUNT;
 
     return stream;
-}
+}*/
 
 #endif // ITEM_H

@@ -118,7 +118,7 @@ void Item::loadIcon()
 
 void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 {
-    if( actionID == ENGA_CREATE )
+    if( actionID == EAID_CREATE )
     {
         packet.writeString( mFileName );
         packet.writeUInt32( mOwner.lock()->getUID() );
@@ -127,7 +127,7 @@ void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 
         return;
     }
-    else if( actionID == ENGA_UPDATE )
+    else if( actionID == EAID_UPDATE )
     {
         serializeEntities( packet );
     }
@@ -136,7 +136,7 @@ void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 boost::optional<NetworkSyncablePacket> Item::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
-    if( packet.getActionID() == ENGA_CREATE || packet.getActionID() == ENGA_UPDATE )
+    if( packet.getActionID() == EAID_CREATE || packet.getActionID() == EAID_UPDATE )
     {
         //ENGA_CREATE: string[name] and uint32_t[ownerID] already read
         deserializeEntities( packet );
@@ -208,7 +208,7 @@ void Item::deserializeEntities( NetworkSyncablePacket &packet )
     }
 }
 
-void Item::startAction( E_ITEM_ACTION actionID )
+void Item::startAction( uint8_t actionID )
 {
     ScriptMap::iterator x = mScripts.find( actionID );
     if( x == mScripts.end() )
@@ -289,8 +289,8 @@ void Item::registerScripts()
     {
         if( x->first == "Script" )
         {
-            E_ITEM_ACTION actionID =
-                    x->second.get( "<xmlattr>.Action", EIA_FIRST_ACTION );
+            uint8_t actionID =
+                    x->second.get<uint8_t>( "<xmlattr>.Action", EIAID_FIRST_ACTION );
             LuaScriptPtr script( new LuaScript(
                                      mLua, x->second.data(),
                                      x->second.get( "<xmlattr>.File", false ) ) );

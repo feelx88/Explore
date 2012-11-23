@@ -65,11 +65,11 @@ void LocalPlayer::update()
     for( ItemMap::iterator item = mOwnedItems.begin();
          item != mOwnedItems.end(); ++item )
     {
-        item->second->startAction( EIA_UPDATE_ACTION );
+        item->second->startAction( EAID_UPDATE );
 
         if( item->second->getHitPoints() <= 0.f )
         {
-            item->second->startAction( EIA_DESTROY_ACTION );
+            item->second->startAction( EAID_DESTROY );
             mOwnedItems.erase( item );
         }
     }
@@ -206,9 +206,9 @@ void LocalPlayer::processControls()
         if( mActiveItem > -1 )
         {
             if( mEventReceiver->mouseClicked( 0 ) )
-                mInventory.at( mActiveItem )->startAction( EIA_FIRST_ACTION );
+                mInventory.at( mActiveItem )->startAction( EIAID_FIRST_ACTION );
             if( mEventReceiver->mouseClicked( 1 ) )
-                mInventory.at( mActiveItem )->startAction( EIA_SECOND_ACTION );
+                mInventory.at( mActiveItem )->startAction( EIAID_SECOND_ACTION );
 
             if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] ) )
                 switchItem( mActiveItem + 1 );

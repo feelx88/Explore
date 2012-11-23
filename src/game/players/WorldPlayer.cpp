@@ -51,7 +51,7 @@ void WorldPlayer::update()
 {
     for( ItemMap::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
     {
-        x->second->startAction( EIA_UPDATE_ACTION );
+        x->second->startAction( EAID_UPDATE );
     }
 
     for( std::vector<IPlayer*>::iterator x = mChildren.begin();

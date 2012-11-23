@@ -66,12 +66,12 @@ SimpleGunItem::~SimpleGunItem()
 {
 }
 
-void SimpleGunItem::startAction( E_ITEM_ACTION actionID )
+void SimpleGunItem::startAction( uint8_t actionID )
 {
     Item::startAction( actionID );
-    if( actionID == EIA_FIRST_ACTION )
+    if( actionID == EIAID_FIRST_ACTION )
         shoot();
-    else if( actionID == EIA_SECOND_ACTION )
+    else if( actionID == EIAID_SECOND_ACTION )
         reload();
 }
 

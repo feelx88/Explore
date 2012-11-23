@@ -28,7 +28,7 @@ public:
     SimpleSpawnerItem( ExplorePtr explore, IPlayerPtr owner,
                        PropTreePtr properties, const std::string &basePath );
 
-    void startAction( E_ITEM_ACTION actionID );
+    void startAction( uint8_t actionID );
 
 private:
     void spawn( bool zeroMass );

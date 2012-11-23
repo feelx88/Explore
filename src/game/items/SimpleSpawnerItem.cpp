@@ -42,14 +42,14 @@ SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, IPlayerPtr owner,
     createPlacingMarkers();
 }
 
-void SimpleSpawnerItem::startAction( E_ITEM_ACTION actionID )
+void SimpleSpawnerItem::startAction( uint8_t actionID )
 {
     Item::startAction( actionID );
-    if( actionID == EIA_FIRST_ACTION )
+    if( actionID == EIAID_FIRST_ACTION )
         spawn( false );
-    else if( actionID == EIA_SECOND_ACTION )
+    else if( actionID == EIAID_SECOND_ACTION )
         spawn( true );
-    else if( actionID == EIA_UPDATE_ACTION )
+    else if( actionID == EAID_UPDATE )
         update();
 
 }
