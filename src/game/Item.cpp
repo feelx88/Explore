@@ -116,6 +116,15 @@ void Item::loadIcon()
     mIcon = mDevice->getVideoDriver()->getTexture( iconFileName.c_str() );
 }
 
+void Item::startActionInternal( uint8_t actionID )
+{
+    ScriptMap::iterator x = mScripts.find( actionID );
+    if( x == mScripts.end() )
+        return;
+    else
+        mScripts.at( actionID )->exec();
+}
+
 void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 {
     if( actionID == EAID_CREATE )
@@ -141,6 +150,8 @@ boost::optional<NetworkSyncablePacket> Item::deserializeInternal(
         //ENGA_CREATE: string[name] and uint32_t[ownerID] already read
         deserializeEntities( packet );
     }
+    else
+        startActionInternal( packet.getActionID() );
     return boost::none;
 }
 
@@ -210,11 +221,10 @@ void Item::deserializeEntities( NetworkSyncablePacket &packet )
 
 void Item::startAction( uint8_t actionID )
 {
-    ScriptMap::iterator x = mScripts.find( actionID );
-    if( x == mScripts.end() )
-        return;
-    else
-        mScripts.at( actionID )->exec();
+    startActionInternal( actionID );
+
+    if( actionID != EAID_UPDATE )
+        mExplore->getExploreServer()->send( serialize( actionID ) );
 }
 
 void Item::setGUIVisible( bool visible )

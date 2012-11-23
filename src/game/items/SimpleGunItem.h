@@ -30,9 +30,8 @@ public:
                   const std::string &basePath );
     ~SimpleGunItem();
 
-    void startAction( uint8_t actionID );
-
 private:
+    void startActionInternal( uint8_t actionID );
     void shoot();
     void reload();
 

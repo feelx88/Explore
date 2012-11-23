@@ -40,9 +40,9 @@ SimpleForceGunItem::SimpleForceGunItem( ExplorePtr explore, IPlayerPtr owner,
     mDamage = mProperties->get( "Item.Damage", 1.f );
 }
 
-void SimpleForceGunItem::startAction( uint8_t actionID )
+void SimpleForceGunItem::startActionInternal( uint8_t actionID )
 {
-    Item::startAction( actionID );
+    Item::startActionInternal( actionID );
     if( actionID == EIAID_FIRST_ACTION )
         shoot( true );
     else if( actionID == EIAID_SECOND_ACTION )

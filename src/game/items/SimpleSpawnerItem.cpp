@@ -42,9 +42,9 @@ SimpleSpawnerItem::SimpleSpawnerItem( ExplorePtr explore, IPlayerPtr owner,
     createPlacingMarkers();
 }
 
-void SimpleSpawnerItem::startAction( uint8_t actionID )
+void SimpleSpawnerItem::startActionInternal( uint8_t actionID )
 {
-    Item::startAction( actionID );
+    Item::startActionInternal( actionID );
     if( actionID == EIAID_FIRST_ACTION )
         spawn( false );
     else if( actionID == EIAID_SECOND_ACTION )

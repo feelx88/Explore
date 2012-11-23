@@ -43,7 +43,7 @@ public:
     virtual void setOwner( IPlayerPtr owner );
     IPlayerPtr getOwner() const;
 
-    virtual void startAction( uint8_t actionID );
+    void startAction( uint8_t actionID );
 
     void setGUIVisible( bool visible );
 
@@ -69,6 +69,8 @@ protected:
     void registerScripts();
     void registerEntities();
     void loadIcon();
+
+    virtual void startActionInternal( uint8_t actionID );
 
     virtual void serializeInternal( NetworkSyncablePacket &packet,
                                     uint8_t actionID );

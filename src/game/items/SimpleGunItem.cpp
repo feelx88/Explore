@@ -66,9 +66,9 @@ SimpleGunItem::~SimpleGunItem()
 {
 }
 
-void SimpleGunItem::startAction( uint8_t actionID )
+void SimpleGunItem::startActionInternal( uint8_t actionID )
 {
-    Item::startAction( actionID );
+    Item::startActionInternal( actionID );
     if( actionID == EIAID_FIRST_ACTION )
         shoot();
     else if( actionID == EIAID_SECOND_ACTION )

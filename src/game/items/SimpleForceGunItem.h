@@ -29,9 +29,8 @@ public:
     SimpleForceGunItem( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
                         const std::string &basePath );
 
-    void startAction( uint8_t actionID );
-
 private:
+    void startActionInternal( uint8_t actionID );
     void shoot( bool forward );
 
     float mRayDistance;
