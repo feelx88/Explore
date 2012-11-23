@@ -65,11 +65,12 @@ void SimpleSpawnerItem::spawn( bool zeroMass )
     if( zeroMass )
         props->put( "Entity.Body.Mass", 0.f );
 
+    props->put( "Entity.Body.Position", mSpawnPoint );
+
     ItemPtr item( ItemFactory::create(
                       mExplore, getOwner(),
                       props, mBasePath ) );
 
-    item->getEntities()->getEntity( 0 )->setPosition( mSpawnPoint );
     mSpawnedItems.push_back( item );
 }
 
