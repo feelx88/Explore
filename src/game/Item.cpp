@@ -223,7 +223,13 @@ void Item::startAction( uint8_t actionID )
 {
     startActionInternal( actionID );
 
-    if( actionID != EAID_UPDATE )
+    if( actionID == EAID_CREATE || actionID == EAID_DESTROY )
+    {
+        //TODO: allow teawing amount of sended packets
+        for( int x = 0; x < 3; ++x )
+            mExplore->getExploreServer()->send( serialize( actionID ) );
+    }
+    else if( actionID != EAID_UPDATE )
         mExplore->getExploreServer()->send( serialize( actionID ) );
 }
 
