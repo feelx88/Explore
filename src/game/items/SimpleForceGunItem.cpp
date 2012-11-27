@@ -19,7 +19,7 @@
 
 
 #include "SimpleForceGunItem.h"
-#include "../IPlayer.h"
+#include "../players/LocalPlayer.h"
 #include "../ItemFactory.h"
 #include <engine/EntityTools.h>
 #include <engine/PathTools.h>
@@ -52,7 +52,8 @@ void SimpleForceGunItem::startActionInternal( uint8_t actionID )
 void SimpleForceGunItem::shoot( bool forward )
 {
     line3df ray;
-    IPlayerPtr owner = getOwner();
+    //TODO:search better way
+    LocalPlayer* owner = static_cast<LocalPlayer*>( getOwner().get() );
     ray.start = *( owner->getEntity()->getPosition() ) + vector3df( 0.f, 1.f, 0.f );
     ray.end = ray.start + owner->rotateToDirection( vector3df( 0.f, 0.f, mRayDistance ) );
     vector3df out, normal;

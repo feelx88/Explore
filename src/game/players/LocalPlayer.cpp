@@ -110,6 +110,11 @@ ItemPtr LocalPlayer::getActiveItem() const
     return mInventory.at( mActiveItem );
 }
 
+EntityPtr LocalPlayer::getEntity() const
+{
+    return mEntity;
+}
+
 void LocalPlayer::switchItem( int index )
 {
     mInventory.at( mActiveItem )->setGUIVisible( false );
@@ -272,4 +277,23 @@ void LocalPlayer::drawCrosshair()
                 vector2di( mCrossX, mCrossY - 10 ),
                 vector2di( mCrossX, mCrossY + 10 ),
                 mCrossColor );
+}
+
+
+vector3df LocalPlayer::rotateToDirection(vector3df dir) const
+{
+    matrix4 m = mEntity->getSceneNode()->getAbsoluteTransformation();
+    m.rotateVect( dir );
+
+    return dir;
+}
+
+vector3df LocalPlayer::getPosition() const
+{
+    return *mEntity->getPosition();
+}
+
+quaternion LocalPlayer::getRotation() const
+{
+    return *mEntity->getRotation();
 }

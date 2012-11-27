@@ -50,6 +50,13 @@ public:
 
     ItemPtr getActiveItem() const;
 
+    EntityPtr getEntity() const;
+
+    irr::core::vector3df rotateToDirection(
+            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
+    irr::core::vector3df getPosition() const;
+    irr::core::quaternion getRotation() const;
+
 private:
     void addItems();
     void createGUI();
@@ -58,6 +65,7 @@ private:
     void drawCrosshair();
 
     ICameraSceneNodePtr mCamera;
+    EntityPtr mEntity;
 
     irr::EKEY_CODE mKeyMapping[EPKM_COUNT];
 

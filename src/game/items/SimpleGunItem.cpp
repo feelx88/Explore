@@ -19,7 +19,7 @@
 
 
 #include "SimpleGunItem.h"
-#include "../IPlayer.h"
+#include "../players/LocalPlayer.h"
 #include "../ItemFactory.h"
 #include <engine/PathTools.h>
 #include <engine/VectorConverter.h>
@@ -80,9 +80,10 @@ void SimpleGunItem::shoot()
     if( mCurBullet >= mBulletCount )
         return;
 
-    EntityPtr e = getOwner()->getEntity();
+    //TODO:search better way
+    EntityPtr e = static_cast<LocalPlayer*>( getOwner().get() )->getEntity();
 
-    vector3df target = getOwner()->rotateToDirection();
+    vector3df target = static_cast<LocalPlayer*>( getOwner().get() )->rotateToDirection();
 
     mBullets.at( mCurBullet )->setPosition(
                 e->getSceneNode()->getAbsolutePosition() + target );

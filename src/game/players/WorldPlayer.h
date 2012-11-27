@@ -38,6 +38,11 @@ public:
     void setLocalPlayer( IPlayerPtr player );
     IPlayerPtr getLocalPlayer() const;
 
+    irr::core::vector3df rotateToDirection( irr::core::vector3df dir ) const;
+    irr::core::vector3df getPosition() const;
+    irr::core::quaternion getRotation() const;
+
+
 private:
     IPlayerPtr mLocalPlayer;
 };

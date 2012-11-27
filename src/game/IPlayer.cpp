@@ -76,12 +76,6 @@ ItemMap &IPlayer::getOwnedItems()
     return mOwnedItems;
 }
 
-
-EntityPtr IPlayer::getEntity() const
-{
-    return mEntity;
-}
-
 IPlayer* IPlayer::getParent() const
 {
     return mParent;
@@ -100,12 +94,4 @@ boost::optional<NetworkSyncablePacket> IPlayer::deserializeInternal(
         NetworkSyncablePacket &/*packet*/ )
 {
     return boost::none;
-}
-
-vector3df IPlayer::rotateToDirection( vector3df dir ) const
-{
-    matrix4 m = mEntity->getSceneNode()->getAbsoluteTransformation();
-    m.rotateVect( dir );
-
-    return dir;
 }

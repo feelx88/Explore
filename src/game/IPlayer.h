@@ -39,14 +39,15 @@ public:
 
     virtual void update() = 0;
 
-    irr::core::vector3df rotateToDirection(
-            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
+    virtual irr::core::vector3df rotateToDirection(
+            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const = 0;
+    virtual irr::core::vector3df getPosition() const = 0;
+    virtual irr::core::quaternion getRotation() const = 0;
 
     virtual void addOwnedItem( ItemPtr item );
     virtual void removeOwnedItem( ItemPtr item );
     ItemMap &getOwnedItems();
 
-    EntityPtr getEntity() const;
     IPlayer *getParent() const;
     void setParent( IPlayerPtr parent );
 
@@ -57,15 +58,12 @@ protected:
     virtual boost::optional<NetworkSyncablePacket> deserializeInternal(
             NetworkSyncablePacket &packet );
 
-
     PropTreePtr mProperties;
 
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     EventReceiverPtr mEventReceiver;
     BulletWorldPtr mBulletWorld;
-
-    EntityPtr mEntity;
 
     std::vector<ItemPtr> mInventory;
     ItemMap mOwnedItems;

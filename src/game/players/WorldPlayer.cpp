@@ -71,3 +71,18 @@ IPlayerPtr WorldPlayer::getLocalPlayer() const
 {
     return mLocalPlayer;
 }
+
+irr::core::vector3df WorldPlayer::rotateToDirection(irr::core::vector3df dir) const
+{
+    return dir;
+}
+
+irr::core::vector3df WorldPlayer::getPosition() const
+{
+    return irr::core::vector3df();
+}
+
+irr::core::quaternion WorldPlayer::getRotation() const
+{
+    return irr::core::quaternion();
+}

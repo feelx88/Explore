@@ -20,7 +20,7 @@
 #include "SimpleSpawnerItem.h"
 #include "../ItemFactory.h"
 #include "../ItemCache.h"
-#include "../IPlayer.h"
+#include "../players/LocalPlayer.h"
 #include <engine/EntityTools.h>
 #include <engine/IrrlichtTools.h>
 
@@ -82,7 +82,8 @@ void SimpleSpawnerItem::update()
     IVideoDriverPtr driver = mDevice->getVideoDriver();
 
     vector3df hitPoint, normal, start, end;
-    IPlayerPtr owner = getOwner();
+    //TODO:search better way
+    LocalPlayer* owner = static_cast<LocalPlayer*>( getOwner().get() );
     start = owner->getEntity()->getSceneNode()->getAbsolutePosition();
     end = owner->rotateToDirection( vector3df( 0.f, 0.f, 5.f ) ) + start;
 
