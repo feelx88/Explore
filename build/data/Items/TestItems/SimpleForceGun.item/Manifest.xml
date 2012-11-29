@@ -1,0 +1,8 @@
+<Item>
+    <Class>SimpleForceGun</Class>
+    <CacheID>de.feelx88.SimpleForceGun</CacheID>
+    <Icon>icon.png</Icon>
+    <RayDistance>100</RayDistance>
+    <ForceMultiplicator>1</ForceMultiplicator>
+    <Useable>true</Useable>
+</Item>

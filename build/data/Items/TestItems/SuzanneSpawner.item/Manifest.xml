@@ -1,0 +1,37 @@
+<Item>
+    <Class>SimpleSpawner</Class>
+    <CacheID>de.feelx88.SuzanneSpawner</CacheID>
+    <CanSpawn>
+        <InternalItem>de.feelx88.SuzanneSpawner.SuzanneItem</InternalItem>
+    </CanSpawn>
+    <Icon>icon.png</Icon>
+
+    <PlacingMarkerUseAlpha>true</PlacingMarkerUseAlpha>
+    <PlacingMarkerColor>128,255,0,0</PlacingMarkerColor>
+    <PlacingMarkerWireframe>false</PlacingMarkerWireframe>
+    <Useable>true</Useable>
+</Item>
+
+<InternalItem>
+    <Item>
+        <Class>Item</Class>
+	<CacheID>de.feelx88.SuzanneSpawner.SuzanneItem</CacheID>
+        <AutoAddEntities>true</AutoAddEntities>
+        <HitPoints>10</HitPoints>
+        <Script Action="DESTROY">log( "AYYYYYEEE!" )</Script>
+    </Item>
+    <Entity Name="Suzanne" ID="0">
+        <Node>
+            <Mesh>suzanne.obj</Mesh>
+        </Node>
+        <Body>
+            <Shape Type="Primitive">
+                <Child>
+                    <Type>Sphere</Type>
+                    <Size>2</Size>
+                </Child>
+            </Shape>
+            <Mass>25</Mass>
+        </Body>
+    </Entity>
+</InternalItem>

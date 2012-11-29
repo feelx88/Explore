@@ -1,0 +1,10 @@
+<Item>
+    <Class>SimpleGun</Class>
+    <CacheID>de.feelx88.SimpleGun</CacheID>
+    <Icon>icon.png</Icon>
+    <EntityFile>SimpleGunEntities.xml</EntityFile>
+    <BulletCount>20</BulletCount>
+    <Acceleration>100</Acceleration>
+    <Destructible>false</Destructible>
+    <Useable>true</Useable>
+</Item>
