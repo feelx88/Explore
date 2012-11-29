@@ -33,7 +33,8 @@ public:
     static ItemCachePtr instance();
 
     void addItem( const std::string &name );
-    void addItem( const std::string &name, PropTreePtr properties );
+    void addItem( const std::string &name,
+                  boost::property_tree::ptree *properties );
     boost::optional<PropTreePtr> getItemProps( const std::string &name ) const;
     boost::optional<PropTreePtr> getItemPropsCopy( const std::string &name );
 

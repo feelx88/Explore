@@ -126,24 +126,7 @@ void SimpleSpawnerItem::loadSpawnableList()
     for( boost::property_tree::ptree::iterator x = spawnables.begin();
          x != spawnables.end(); ++x )
     {
-        if( x->first == "InternalItem" )
-        {
-            std::string name = x->second.data();
-
-            for( boost::property_tree::ptree::iterator y = mProperties->begin();
-                 y != mProperties->end(); ++y )
-            {
-                if( y->first == "InternalItem" && y->second.get( "<xmlattr>.Name", "" ) == name )
-                {
-                    mSpawnableItems.push_back( name );
-
-                    PropTreePtr props( new boost::property_tree::ptree( y->second ) );
-
-                    ItemCache::instance()->addItem( name, props );
-                    _LOG( "Internal item added", name );
-                }
-            }
-        }
+        mSpawnableItems.push_back( x->second.data() );
     }
 }
 

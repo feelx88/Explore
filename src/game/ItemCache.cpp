@@ -34,21 +34,47 @@ ItemCachePtr ItemCache::instance()
 
 void ItemCache::addItem( const std::string &name )
 {
-    _LOG( "Adding Item to cache", name );
+    _LOG( "Loading Items from file", name );
 
     PropTreePtr props( new boost::property_tree::ptree() );
-    boost::property_tree::xml_parser::read_xml(
-                PathTools::getAbsoluteFileNameFromFolder( name, "xml" ), *props );
 
-    mItems.insert( std::make_pair( name, props ) );
+    boost::filesystem::path p( name );
+    p /= "Manifest.xml";
+
+    boost::property_tree::xml_parser::read_xml( p.string(), *props );
+    props->put( "Item.BasePath", name );
+
+    addItem( name, props.get() );
+
+    for( boost::property_tree::ptree::iterator x = props->begin();
+         x != props->end(); ++x )
+    {
+        if( x->first == "InternalItem" )
+        {
+            x->second.put( "Item.BasePaath", name );
+            addItem( name + ".Internal", &x->second );
+        }
+    }
 }
 
-void ItemCache::addItem( const std::string &name , PropTreePtr properties )
+void ItemCache::addItem( const std::string &name,
+                         boost::property_tree::ptree *properties )
 {
-    _LOG( "Adding Item to cache", name );
-
     PropTreePtr props( new boost::property_tree::ptree( *properties ) );
-    mItems.insert( std::make_pair( name, props ) );
+
+    std::string cacheID;
+    try
+    {
+        cacheID = props->get<std::string>( "Item.CacheID" );
+        _LOG( "Adding Item to cache", cacheID );
+    }
+    catch(boost::property_tree::ptree_error )
+    {
+        _LOG( "Error: Item.CacheID not found", name );
+        throw new boost::system::error_code;
+    }
+
+    mItems.insert( std::make_pair( cacheID, props ) );
 }
 
 boost::optional<PropTreePtr> ItemCache::getItemProps( const std::string &name ) const

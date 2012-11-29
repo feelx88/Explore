@@ -53,7 +53,10 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
         boost::property_tree::xml_parser::read_xml( newFileName, *properties );
     }
     else
+    {
         properties.reset( new boost::property_tree::ptree( **cachedProps ) );
+        basePath = properties->get<std::string>( "Item.BasePath", "" );
+    }
 
     std::string className = properties->get( "Item.Class", "Item" );
 

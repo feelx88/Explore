@@ -215,7 +215,7 @@ void Explore::loadConfig()
         }
     }
 
-    boost::filesystem::directory_iterator items(
+    boost::filesystem::recursive_directory_iterator items(
                 readConfigValue<std::string>( "Paths.ItemPath", "data/Items" ) ),
             end;
 
@@ -224,8 +224,8 @@ void Explore::loadConfig()
         boost::filesystem::path p( items->path() );
         if( p.filename().extension() == ".item" )
         {
-            mAvailableItems.push_back( p.filename().string() );
-            _LOG( "Item found", p.filename().string() );
+            mAvailableItems.push_back( p.string() );
+            _LOG( "Item found", p.string() );
         }
     }
 
