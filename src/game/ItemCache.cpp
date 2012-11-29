@@ -51,7 +51,7 @@ void ItemCache::addItem( const std::string &name )
     {
         if( x->first == "InternalItem" )
         {
-            x->second.put( "Item.BasePaath", name );
+            x->second.put( "Item.BasePath", name );
             addItem( name + ".Internal", &x->second );
         }
     }
@@ -68,10 +68,10 @@ void ItemCache::addItem( const std::string &name,
         cacheID = props->get<std::string>( "Item.CacheID" );
         _LOG( "Adding Item to cache", cacheID );
     }
-    catch(boost::property_tree::ptree_error )
+    catch( boost::property_tree::ptree_error &error )
     {
         _LOG( "Error: Item.CacheID not found", name );
-        throw new boost::system::error_code;
+        throw error;
     }
 
     mItems.insert( std::make_pair( cacheID, props ) );
