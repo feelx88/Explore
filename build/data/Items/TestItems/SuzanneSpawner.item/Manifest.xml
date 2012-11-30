@@ -2,7 +2,7 @@
     <Class>SimpleSpawner</Class>
     <CacheID>de.feelx88.SuzanneSpawner</CacheID>
     <CanSpawn>
-        <InternalItem>de.feelx88.SuzanneSpawner.SuzanneItem</InternalItem>
+        <Item>de.feelx88.SuzanneSpawner.SuzanneItem</Item>
     </CanSpawn>
     <Icon>icon.png</Icon>
 
@@ -15,7 +15,7 @@
 <InternalItem>
     <Item>
         <Class>Item</Class>
-	<CacheID>de.feelx88.SuzanneSpawner.SuzanneItem</CacheID>
+        <CacheID>de.feelx88.SuzanneSpawner.SuzanneItem</CacheID>
         <AutoAddEntities>true</AutoAddEntities>
         <HitPoints>10</HitPoints>
         <Script Action="DESTROY">log( "AYYYYYEEE!" )</Script>
