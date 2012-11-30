@@ -100,7 +100,7 @@ protected:
     bool mActivated;
     bool mDestructible;
 
-    std::string mFileName;
+    std::string mCacheID;
 
 private:
     static EntityItemMap sEntityItemMap;

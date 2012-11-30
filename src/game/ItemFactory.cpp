@@ -66,7 +66,6 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
     {
         ItemPtr item( x->second->create( explore, owner, properties, basePath ) );
         owner->addOwnedItem( item );
-        item->mFileName = fileName;
         item->startAction( EAID_CREATE );
         return item;
     }
@@ -88,7 +87,6 @@ ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
     {
         ItemPtr item( x->second->create( explore, owner, props, basePath ) );
         owner->addOwnedItem( item );
-        item->mFileName = props->get( "Item.Name", "INTERNAL" );
         item->startAction( EAID_CREATE );
         return item;
     }

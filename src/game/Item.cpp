@@ -49,6 +49,8 @@ Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
     setTypeID( ENTI_ITEM );
     loadIcon();
 
+    mCacheID = mProperties->get<std::string>( "Item.CacheID" );
+
     mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties, mBasePath ) );
 
     registerScripts();
@@ -129,7 +131,7 @@ void Item::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
 {
     if( actionID == EAID_CREATE )
     {
-        packet.writeString( mFileName );
+        packet.writeString( mCacheID );
         packet.writeUInt32( mOwner.lock()->getUID() );
 
         serializeEntities( packet );
@@ -279,7 +281,7 @@ bool Item::getActivationState() const
 
 std::string Item::getFileName() const
 {
-    return mFileName;
+    return mCacheID;
 }
 
 Item *Item::getItemFromEntity( Entity *entity )
