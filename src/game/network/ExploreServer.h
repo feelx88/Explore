@@ -29,6 +29,17 @@
 class ExploreServer : public NetworkSyncable
 {
 public:
+    enum E_SERVER_ACTIONID
+    {
+        ESAID_ACK = 0,
+        ESAID_NAK,
+        ESAID_REQUEST_SERVERINFO,
+        ESAID_REQUEST_CONNECTION,
+        ESAID_ACCEPT_CONNECTION,
+        ESAID_REQUEST_IS_STILL_ALIVE,
+        ESAID_REQUEST_ITEM_INFO
+    };
+
     struct HostInfo
     {
         std::string hostName;

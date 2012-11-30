@@ -22,16 +22,6 @@
 #include <iostream>
 #include <ctime>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <luabind/luabind.hpp>
-
-void logWrapper( const std::string &str )
-{
-    _LOG( str );
-}
-
-LUABINDER_REGISTER_MODULE_START( LoggerSingletonBinder )
-    def( "log", logWrapper )
-LUABINDER_REGISTER_MODULE_END( LoggerSingletonBinder )
 
 LoggerSingleton *LoggerSingleton::sLogger = LoggerSingleton::sLogger;
 

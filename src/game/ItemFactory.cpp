@@ -23,18 +23,8 @@
 #include "ExploreGame.h"
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
-#include <luabind/adopt_policy.hpp>
 
 ItemCreatorMapPtr ItemFactory::sCreators( ItemFactory::sCreators );
-
-LUABINDER_REGISTER_MODULE_START( ItemFactoryBinder )
-    class_<ItemFactory>( "ItemFactory" )
-        .scope
-        [
-            def( "create",
-                 (ItemPtr(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
-        ]
-LUABINDER_REGISTER_MODULE_END( ItemFactoryBinder )
 
 ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
                              std::string fileName )

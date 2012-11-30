@@ -17,34 +17,15 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VISUALPLAYER_H
-#define VISUALPLAYER_H
+#include <engine/LuaBinder.h>
+#include "../Explore.h"
 
-#include "../IPlayer.h"
-
-class VisualPlayer;
-typedef boost::shared_ptr<VisualPlayer> VisualPlayerPtr;
-
-class VisualPlayer : public IPlayer
-{
-public:
-    VisualPlayer( ExplorePtr explore, IPlayerPtr parent );
-
-    EntityPtr getEntity() const;
-
-    irr::core::vector3df rotateToDirection(
-            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
-    irr::core::vector3df getPosition() const;
-    irr::core::quaternion getRotation() const;
-
-    ItemPtr getActiveItem() const;
-
-protected:
-
-    std::vector<ItemPtr> mInventory;
-    int mActiveItem;
-
-    EntityPtr mEntity;
-};
-
-#endif // VISUALPLAYER_H
+LUABINDER_REGISTER_MODULE_START( ExploreBinder )
+    class_<Explore>( "Explore" )
+        .def( "readConfigValue", &Explore::readConfigValue<std::string> )
+        .def( "getExploreServer", &Explore::getExploreServer )
+        .scope
+        [
+            def( "getKeyCode", &Explore::getKeyCode )
+        ]
+LUABINDER_REGISTER_MODULE_END( ExploreBinder )

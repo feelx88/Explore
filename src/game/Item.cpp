@@ -30,10 +30,6 @@ using namespace core;
 EntityItemMap Item::sEntityItemMap;
 int Item::sRegisterDummy( ItemFactory::registerItem<Item>( "Item" ) );
 
-LUABINDER_REGISTER_MODULE_START( ItemBinder )
-    class_<Item>( "Item" )
-LUABINDER_REGISTER_MODULE_END( ItemBinder )
-
 Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
             const std::string &basePath )
     : NetworkSyncable(),

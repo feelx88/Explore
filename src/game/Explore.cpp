@@ -27,7 +27,6 @@
 #include <engine/IrrlichtTools.h>
 #include <engine/PathTools.h>
 #include <engine/LuaTools.h>
-#include <engine/LuaBinder.h>
 #include <engine/EventReceiver.h>
 
 #include "ExploreMenu.h"
@@ -39,16 +38,6 @@ using namespace irr;
 using namespace core;
 
 PropTreePtr Explore::sKeyCodes( new boost::property_tree::ptree() );
-
-LUABINDER_REGISTER_MODULE_START( ExploreBinder )
-    class_<Explore>( "Explore" )
-        .def( "readConfigValue", &Explore::readConfigValue<std::string> )
-        .def( "getExploreServer", &Explore::getExploreServer )
-        .scope
-        [
-            def( "getKeyCode", &Explore::getKeyCode )
-        ]
-LUABINDER_REGISTER_MODULE_END( ExploreBinder )
 
 struct ScriptConsoleKeyCallback : public EventReceiver::KeyCallback
 {

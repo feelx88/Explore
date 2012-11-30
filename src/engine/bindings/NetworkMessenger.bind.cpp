@@ -17,34 +17,17 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef VISUALPLAYER_H
-#define VISUALPLAYER_H
+#include "../LuaBinder.h"
+#include "../NetworkMessenger.h"
 
-#include "../IPlayer.h"
-
-class VisualPlayer;
-typedef boost::shared_ptr<VisualPlayer> VisualPlayerPtr;
-
-class VisualPlayer : public IPlayer
-{
-public:
-    VisualPlayer( ExplorePtr explore, IPlayerPtr parent );
-
-    EntityPtr getEntity() const;
-
-    irr::core::vector3df rotateToDirection(
-            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
-    irr::core::vector3df getPosition() const;
-    irr::core::quaternion getRotation() const;
-
-    ItemPtr getActiveItem() const;
-
-protected:
-
-    std::vector<ItemPtr> mInventory;
-    int mActiveItem;
-
-    EntityPtr mEntity;
-};
-
-#endif // VISUALPLAYER_H
+LUABINDER_REGISTER_MODULE_START( NetworkMessengerBinder )
+    class_<NetworkMessenger>( "NetworkMessenger" )
+        .def( "send", &NetworkMessenger::send )
+        .def( "sendTo",
+              (void(NetworkMessenger::*)(const NetworkSyncablePacket&,
+                                         const std::string&,
+                                         const int&)) &NetworkMessenger::sendTo )
+        .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
+        .def( "nextPacket", &NetworkMessenger::nextPacket )
+        .def( "bind", &NetworkMessenger::bind )
+LUABINDER_REGISTER_MODULE_END( NetworkMessengerBinder )

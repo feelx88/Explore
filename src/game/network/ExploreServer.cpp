@@ -29,17 +29,6 @@
 using namespace boost::asio::ip;
 using namespace boost::chrono;
 
-enum E_SERVER_ACTIONID
-{
-    ESAID_ACK = 0,
-    ESAID_NAK,
-    ESAID_REQUEST_SERVERINFO,
-    ESAID_REQUEST_CONNECTION,
-    ESAID_ACCEPT_CONNECTION,
-    ESAID_REQUEST_IS_STILL_ALIVE,
-    ESAID_REQUEST_ITEM_INFO
-};
-
 enum E_STATUS_BITS
 {
     ESB_SERVER = 0,
@@ -48,38 +37,6 @@ enum E_STATUS_BITS
     ESB_CONNECTED,
     ESB_COUNT
 };
-
-LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
-    class_<ExploreServer>( "ExploreServer" )
-        .def( "setServerMode", &ExploreServer::setServerMode )
-        .def( "requestServerInfo", &ExploreServer::requestServerInfo )
-        .def( "hasServerInfo", &ExploreServer::hasServerInfo )
-        .def( "nextServerInfo", &ExploreServer::nextServerInfo )
-        .def( "requestConnection", &ExploreServer::requestConnection )
-        .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
-        .def( "setSelfInfo", &ExploreServer::setSelfInfo )
-        .def( "serialize", &ExploreServer::serialize )
-        .def( "send", &ExploreServer::send )
-        .def( "setUpdateInterval", &ExploreServer::setUpdateInterval )
-        .def( "updateInterval", &ExploreServer::updateInterval )
-        .def( "setClientTimeout", &ExploreServer::setClientTimeout )
-        .def( "clientTimeout", &ExploreServer::clientTimeout )
-        .enum_( "E_ACTIONID" )
-        [
-            value( "EAID_ACK", ESAID_ACK ),
-            value( "EAID_NAK", ESAID_NAK ),
-            value( "EAID_REQUEST_SERVERINFO", ESAID_REQUEST_SERVERINFO ),
-            value( "EAID_REQUEST_CONNECTION", ESAID_REQUEST_CONNECTION ),
-            value( "EAID_REQUEST_IS_STILL_ALIVE", ESAID_REQUEST_IS_STILL_ALIVE )
-        ]
-        .scope
-        [
-            class_<ExploreServer::HostInfo>( "HostInfo" )
-                .def( constructor<>() )
-                .def_readwrite( "hostName",
-                                &ExploreServer::HostInfo::hostName )
-        ]
-LUABINDER_REGISTER_MODULE_END( ExploreServerBinder )
 
 ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
                               NetworkMessengerPtr messenger )

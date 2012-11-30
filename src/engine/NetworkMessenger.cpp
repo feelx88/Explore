@@ -22,17 +22,6 @@
 #include "NetworkSyncable.h"
 
 using namespace boost::asio;
-LUABINDER_REGISTER_MODULE_START( NetworkMessengerBinder )
-    class_<NetworkMessenger>( "NetworkMessenger" )
-        .def( "send", &NetworkMessenger::send )
-        .def( "sendTo",
-              (void(NetworkMessenger::*)(const NetworkSyncablePacket&,
-                                         const std::string&,
-                                         const int&)) &NetworkMessenger::sendTo )
-        .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
-        .def( "nextPacket", &NetworkMessenger::nextPacket )
-        .def( "bind", &NetworkMessenger::bind )
-LUABINDER_REGISTER_MODULE_END( NetworkMessengerBinder )
 
 NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properties )
     : mIOService( ioService ),

@@ -31,11 +31,6 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-LUABINDER_REGISTER_MODULE_START( IPlayerBinder )
-    class_<IPlayer>( "IPlayer" )
-        .def( "removeOwnedItem", &IPlayer::removeOwnedItem )
-LUABINDER_REGISTER_MODULE_END( IPlayerBinder )
-
 IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
     : NetworkSyncable(),
       mExplore( explore ),

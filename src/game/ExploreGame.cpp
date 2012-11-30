@@ -38,11 +38,6 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-LUABINDER_REGISTER_MODULE_START( ExploreGameBinder )
-    class_<ExploreGame>( "ExploreGame" )
-        .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw )
-LUABINDER_REGISTER_MODULE_END( ExploreGameBinder )
-
 ExploreGame::ExploreGame( ExplorePtr explore )
     : mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
