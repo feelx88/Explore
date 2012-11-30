@@ -21,12 +21,12 @@ add_library( Engine ${ENGINE_LIBRARY_TYPE} ${Engine_SRCS} )
 add_executable(Explore ${Explore_SRCS})
 
 #Target for including asset files in qt creator tree
-file( GLOB assets
+file( GLOB_RECURSE assets
     ../build/config.ini
     ../build/keycodes.ini
     ../build/log.txt
     ../build/init.lua
-    ../build/data/*/*/*
+    ../build/data/*
     ../.gitignore
     ../README
 )
