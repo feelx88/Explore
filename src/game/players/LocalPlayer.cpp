@@ -25,10 +25,13 @@
 #include <engine/LoggerSingleton.h>
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/VectorConverter.h>
+#include <engine/PathTools.h>
 
 #include "../ItemFactory.h"
 #include "../items/SimpleGunItem.h"
 #include "../items/SimpleForceGunItem.h"
+
+#include <boost/property_tree/xml_parser.hpp>
 
 using namespace irr;
 using namespace core;
@@ -37,11 +40,15 @@ using namespace scene;
 using namespace gui;
 
 LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayerPtr parent )
-    : IPlayer( explore, parent ),
-      mActiveItem( -1 ),
-      mNumItems( 0 ),
+    : VisualPlayer( explore, parent ),
       mJumped( false )
 {
+    mProperties.reset( new boost::property_tree::ptree() );
+    boost::property_tree::xml_parser::read_xml(
+                PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ),
+                *mProperties );
+
+    //TODO:load per node
     mEntity.reset( new Entity( mDevice, mBulletWorld, mProperties ) );
     mCamera = static_cast<ICameraSceneNodePtr>( mEntity->getSceneNode() );
     mEntity->getRigidBody()->setSleepingThresholds( 0.f, 0.f ); //TODO:add to entity
@@ -82,37 +89,23 @@ void LocalPlayer::addOwnedItem( ItemPtr item )
     if( !item->getProperties()->get<bool>( "Item.Useable", false ) )
         return;
 
+    int numItems = mInventory.size();
     mInventory.push_back( item );
 
     IGUIButton *img = mDevice->getGUIEnvironment()->addButton(
-                recti( mNumItems * 32 + 1, 1, ( mNumItems + 1 ) * 32 + 1, 33 ), mItemWin );
-    img->setImage( mInventory.at( mNumItems )->getIcon() );
+                recti( numItems * 32 + 1, 1, ( numItems + 1 ) * 32 + 1, 33 ), mItemWin );
+    img->setImage( mInventory.at( numItems )->getIcon() );
     img->setUseAlphaChannel( true );
 
     img->setDrawBorder( false );
 
-    mItemIcons[mNumItems] = img;
-
-    mNumItems++;
+    mItemIcons[numItems] = img;
 
     if( mActiveItem < 0 )
     {
         mActiveItem = 0;
         switchItem( 0 );
     }
-}
-
-ItemPtr LocalPlayer::getActiveItem() const
-{
-    if( mActiveItem < 0 )
-        return ItemPtr();
-
-    return mInventory.at( mActiveItem );
-}
-
-EntityPtr LocalPlayer::getEntity() const
-{
-    return mEntity;
 }
 
 void LocalPlayer::switchItem( int index )
@@ -222,7 +215,7 @@ void LocalPlayer::processControls()
         }
     }
 
-    for( int x = 0; x < mNumItems; ++x )
+    for( size_t x = 0; x < mInventory.size(); ++x )
     {
         if( mItemIcons[x]->isPressed() )
             switchItem( x );
@@ -277,23 +270,4 @@ void LocalPlayer::drawCrosshair()
                 vector2di( mCrossX, mCrossY - 10 ),
                 vector2di( mCrossX, mCrossY + 10 ),
                 mCrossColor );
-}
-
-
-vector3df LocalPlayer::rotateToDirection(vector3df dir) const
-{
-    matrix4 m = mEntity->getSceneNode()->getAbsoluteTransformation();
-    m.rotateVect( dir );
-
-    return dir;
-}
-
-vector3df LocalPlayer::getPosition() const
-{
-    return *mEntity->getPosition();
-}
-
-quaternion LocalPlayer::getRotation() const
-{
-    return *mEntity->getRotation();
 }

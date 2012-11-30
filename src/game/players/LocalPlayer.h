@@ -20,9 +20,9 @@
 #ifndef LOCALPLAYER_H
 #define LOCALPLAYER_H
 
-#include "../IPlayer.h"
+#include "VisualPlayer.h"
 
-class LocalPlayer : public IPlayer
+class LocalPlayer : public VisualPlayer
 {
 public:
     enum E_PLAYER_KEY_MAPPINGS
@@ -46,18 +46,9 @@ public:
 
     void addOwnedItem( ItemPtr item );
 
+private:
     void switchItem( int index );
 
-    ItemPtr getActiveItem() const;
-
-    EntityPtr getEntity() const;
-
-    irr::core::vector3df rotateToDirection(
-            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const;
-    irr::core::vector3df getPosition() const;
-    irr::core::quaternion getRotation() const;
-
-private:
     void addItems();
     void createGUI();
     void setKeyMappings();
@@ -65,11 +56,8 @@ private:
     void drawCrosshair();
 
     ICameraSceneNodePtr mCamera;
-    EntityPtr mEntity;
 
     irr::EKEY_CODE mKeyMapping[EPKM_COUNT];
-
-    int mActiveItem, mNumItems;
 
     int mCrossX, mCrossY;
     irr::video::SColor mCrossColor;

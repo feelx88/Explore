@@ -60,6 +60,7 @@ Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
       mSceneNode( 0 ),
       mChildNode( 0 )
 {
+    //TODO: change from Entity/Entity.xml to Entity/Manifest.xml
     std::string fileName =
             PathTools::getAbsoluteFileNameFromFolder( propFileName, "xml" );
     mBasePath = PathTools::getBasePathFromFile( fileName );

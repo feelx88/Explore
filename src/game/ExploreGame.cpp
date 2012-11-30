@@ -79,10 +79,13 @@ E_GAME_STATE ExploreGame::run()
 
     mWorldPlayer->setLocalPlayer( static_cast<IPlayerPtr>( p ) );
 
-    ItemFactory::create( mExplore, p, "de.feelx88.SimpleForceGun" );
-    ItemFactory::create( mExplore, p, "de.feelx88.SimpleBlockSpawner" );
-    ItemFactory::create( mExplore, p, "de.feelx88.SimpleGun" );
-    ItemFactory::create( mExplore, p, "de.feelx88.SuzanneSpawner" );
+    if( mExplore->getExploreServer()->serverMode() )
+    {
+        ItemFactory::create( mExplore, p, "de.feelx88.SimpleForceGun" );
+        ItemFactory::create( mExplore, p, "de.feelx88.SimpleBlockSpawner" );
+        ItemFactory::create( mExplore, p, "de.feelx88.SimpleGun" );
+        ItemFactory::create( mExplore, p, "de.feelx88.SuzanneSpawner" );
+    }
 
     luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayerPtr)mWorldPlayer;
     luabind::globals( mLua.get() )["Explore"]["LocalPlayer"] = (IPlayerPtr)p;

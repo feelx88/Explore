@@ -65,7 +65,6 @@ protected:
     EventReceiverPtr mEventReceiver;
     BulletWorldPtr mBulletWorld;
 
-    std::vector<ItemPtr> mInventory;
     ItemMap mOwnedItems;
 
     IPlayer* mParent;

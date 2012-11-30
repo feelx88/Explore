@@ -45,10 +45,6 @@ IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
       mParent( parent.get() )
 {
     setTypeID( ENTI_PLAYER );
-    mProperties.reset( new boost::property_tree::ptree() );
-    boost::property_tree::xml_parser::read_xml(
-                PathTools::getAbsoluteFileNameFromFolder( "Player", "xml" ),
-                *mProperties );
 
     if( mParent )
         mParent->mChildren.push_back( this );
