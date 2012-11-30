@@ -69,6 +69,8 @@ public:
     void setClientTimeout( int timeout );
     int clientTimeout() const;
 
+    uint32_t clientID() const;
+
     void disconnect();
 
     void update();

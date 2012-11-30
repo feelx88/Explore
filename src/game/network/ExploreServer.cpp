@@ -184,6 +184,11 @@ int ExploreServer::clientTimeout() const
     return mClientTimeout;
 }
 
+uint32_t ExploreServer::clientID() const
+{
+    return mClientID;
+}
+
 void ExploreServer::disconnect()
 {
     mStatusBits[ESB_CONNECTED] = false;
