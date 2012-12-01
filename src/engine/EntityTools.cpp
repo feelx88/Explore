@@ -86,7 +86,7 @@ boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
     outPoint = VectorConverter::irr( callback.m_hitPointWorld );
     outNormal = VectorConverter::irr( callback.m_hitNormalWorld );
 
-    //TODO: do not cast const away
+    //FIXME: do not cast const away
     btRigidBody *body = static_cast<btRigidBody*>(
                 const_cast<btCollisionObject*>( callback.m_collisionObject ) );
 

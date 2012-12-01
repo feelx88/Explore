@@ -269,7 +269,7 @@ void Entity::internalCreateCollisionShape()
     else if( type == "Compound" )
     {
         //Compound
-        //TODO:Compound shape
+        //FIXME:Compound shape
     }
     else if( type =="Mesh" )
     {

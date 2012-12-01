@@ -5,7 +5,6 @@
         <Item>de.feelx88.SuzanneSpawner.SuzanneItem</Item>
     </CanSpawn>
     <Icon>icon.png</Icon>
-
     <PlacingMarkerUseAlpha>true</PlacingMarkerUseAlpha>
     <PlacingMarkerColor>128,255,0,0</PlacingMarkerColor>
     <PlacingMarkerWireframe>false</PlacingMarkerWireframe>
@@ -19,19 +18,19 @@
         <AutoAddEntities>true</AutoAddEntities>
         <HitPoints>10</HitPoints>
         <Script Action="DESTROY">log( "AYYYYYEEE!" )</Script>
+        <Entity Name="Suzanne" ID="0">
+            <Node>
+                <Mesh>suzanne.obj</Mesh>
+            </Node>
+            <Body>
+                <Shape Type="Primitive">
+                    <Child>
+                        <Type>Sphere</Type>
+                        <Size>2</Size>
+                    </Child>
+                </Shape>
+                <Mass>25</Mass>
+            </Body>
+        </Entity>
     </Item>
-    <Entity Name="Suzanne" ID="0">
-        <Node>
-            <Mesh>suzanne.obj</Mesh>
-        </Node>
-        <Body>
-            <Shape Type="Primitive">
-                <Child>
-                    <Type>Sphere</Type>
-                    <Size>2</Size>
-                </Child>
-            </Shape>
-            <Mass>25</Mass>
-        </Body>
-    </Entity>
 </InternalItem>

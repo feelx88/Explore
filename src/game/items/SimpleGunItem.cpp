@@ -80,7 +80,7 @@ void SimpleGunItem::shoot()
     if( mCurBullet >= mBulletCount )
         return;
 
-    //TODO:search better way
+    //FIXME:search better way
     EntityPtr e = static_cast<LocalPlayer*>( getOwner().get() )->getEntity();
 
     vector3df target = static_cast<LocalPlayer*>( getOwner().get() )->rotateToDirection();

@@ -47,7 +47,12 @@ Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
 
     mCacheID = mProperties->get<std::string>( "Item.CacheID" );
 
-    mEntities.reset( new EntityContainer( mDevice, mBulletWorld, mProperties, mBasePath ) );
+    //TODO: Should work because Entities copy their PropTreePtr and mProperties
+    //lives until the destructor gets called, but maybe search for a more
+    //elegant way
+    mEntities.reset( new EntityContainer( mDevice, mBulletWorld,
+                                          PropTreePtr( &( mProperties->get_child( "Item" ) ) ),
+                                          mBasePath ) );
 
     registerScripts();
 
@@ -223,7 +228,7 @@ void Item::startAction( uint8_t actionID )
 
     if( actionID == EAID_CREATE || actionID == EAID_DESTROY )
     {
-        //TODO: allow teawing amount of sended packets
+        //FIXME: allow tweaking amount of sended packets
         for( int x = 0; x < 3; ++x )
             mExplore->getExploreServer()->send( serialize( actionID ) );
     }

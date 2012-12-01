@@ -30,7 +30,8 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-typedef boost::shared_ptr<boost::property_tree::ptree> PropTreePtr;
+typedef boost::property_tree::ptree PropTree;
+typedef boost::shared_ptr<PropTree> PropTreePtr;
 
 #include <string>
 #include <vector>

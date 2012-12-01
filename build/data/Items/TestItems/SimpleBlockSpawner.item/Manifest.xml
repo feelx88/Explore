@@ -14,23 +14,23 @@
         <AutoAddEntities>true</AutoAddEntities>
         <HitPoints>2.5</HitPoints>
         <CacheID>de.feelx88.SimpleBlockSpawner.TestCubeItem</CacheID>
+        <Entity Name="Crate" ID="0">
+            <Node>
+                <Mesh Type="Primitive">Box</Mesh>
+                <Scale>1.5,1.5,1.5</Scale>
+                <Textures>
+                    <File>crate.jpg</File>
+                </Textures>
+            </Node>
+            <Body>
+                <Shape Type="Primitive">
+                    <Child>
+                        <Type>Box</Type>
+                        <Size>1.5,1.5,1.5</Size>
+                    </Child>
+                </Shape>
+                <Mass>15</Mass>
+            </Body>
+        </Entity>
     </Item>
-    <Entity Name="Crate" ID="0">
-        <Node>
-            <Mesh Type="Primitive">Box</Mesh>
-            <Scale>1.5,1.5,1.5</Scale>
-            <Textures>
-                <File>crate.jpg</File>
-            </Textures>
-        </Node>
-        <Body>
-            <Shape Type="Primitive">
-                <Child>
-                    <Type>Box</Type>
-                    <Size>1.5,1.5,1.5</Size>
-                </Child>
-            </Shape>
-            <Mass>15</Mass>
-        </Body>
-    </Entity>
 </InternalItem>

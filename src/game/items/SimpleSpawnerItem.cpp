@@ -63,9 +63,9 @@ void SimpleSpawnerItem::spawn( bool zeroMass )
                 mSpawnableItems.at( mCurItem ) );
 
     if( zeroMass )
-        props->put( "Entity.Body.Mass", 0.f );
+        props->put( "Item.Entity.Body.Mass", 0.f );
 
-    props->put( "Entity.Body.Position", mSpawnPoint );
+    props->put( "Item.Entity.Body.Position", mSpawnPoint );
 
     ItemPtr item( ItemFactory::create(
                       mExplore, getOwner(),
@@ -82,7 +82,7 @@ void SimpleSpawnerItem::update()
     IVideoDriverPtr driver = mDevice->getVideoDriver();
 
     vector3df hitPoint, normal, start, end;
-    //TODO:search better way
+    //FIXME:search better way
     LocalPlayer* owner = static_cast<LocalPlayer*>( getOwner().get() );
     start = owner->getEntity()->getSceneNode()->getAbsolutePosition();
     end = owner->rotateToDirection( vector3df( 0.f, 0.f, 5.f ) ) + start;
@@ -135,7 +135,9 @@ void SimpleSpawnerItem::createPlacingMarkers()
     for( std::vector<std::string>::iterator x = mSpawnableItems.begin();
          x != mSpawnableItems.end(); ++x )
     {
-        PropTreePtr props = *ItemCache::instance()->getItemPropsCopy( *x );
+        PropTreePtr cachedProps = *( ItemCache::instance()->getItemProps( *x ) );
+        PropTreePtr props( new PropTree( cachedProps->get_child( "Item" ) ) );
+
         props->get_child( "Entity" ).erase( "Body" );
         props->put<bool>( "Entity.Node.Material.Visible", false );
         mPlacingMarkers.push_back( EntityPtr( new Entity(

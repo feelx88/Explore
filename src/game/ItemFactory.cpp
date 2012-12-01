@@ -97,7 +97,8 @@ ItemPtr ItemFactory::create( ExplorePtr explore, NetworkSyncablePacket &packet )
 
     std::string fileName = packet.readString();
     /*uint32_t ownerID =*/ packet.readUInt32();
-    IPlayerPtr owner = explore->getExploreGame()->getWorldPlayer(); //TODO: attach right IPlayer
+    //BUG: attach right IPlayer
+    IPlayerPtr owner = explore->getExploreGame()->getWorldPlayer();
 
     ItemPtr item = create( explore, owner, fileName );
     item->setUID( packet.getUID() );
