@@ -40,7 +40,7 @@ NodeEntityMap Entity::sNodeEntityMap;
 
 Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
                 const PropTreePtr &properties, std::string basePath )
-    : mProperties( properties ),
+    : mProperties( PropTreePtr( new PropTree( *properties ) ) ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
       mBulletWorld( world ),
@@ -48,7 +48,8 @@ Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
       mChildNode( 0 )
 {
     mBasePath = PathTools::getAbsolutePath( basePath );
-    create();
+    if( !mProperties->empty() )
+        create();
 }
 
 Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
