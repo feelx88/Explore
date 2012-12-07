@@ -29,6 +29,7 @@ class VisualPlayer : public IPlayer
 {
 public:
     VisualPlayer( ExplorePtr explore, IPlayerPtr parent );
+    virtual ~VisualPlayer();
 
     EntityPtr getEntity() const;
 
@@ -39,12 +40,23 @@ public:
 
     ItemPtr getActiveItem() const;
 
+    void setClientID( uint32_t clientID );
+    uint32_t clientID() const;
+
+    void update();
+
 protected:
+
+    void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
+    boost::optional<NetworkSyncablePacket> deserializeInternal(
+            NetworkSyncablePacket &packet );
 
     std::vector<ItemPtr> mInventory;
     int mActiveItem;
 
     EntityPtr mEntity;
+
+    uint32_t mClientID;
 };
 
 #endif // VISUALPLAYER_H

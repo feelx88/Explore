@@ -25,6 +25,7 @@
 #include <iostream>
 #include <boost/foreach.hpp>
 #include "../Explore.h"
+#include "../players/LocalPlayer.h"
 
 using namespace boost::asio::ip;
 using namespace boost::chrono;
@@ -154,24 +155,43 @@ void ExploreServer::disconnect()
 void ExploreServer::update()
 {
     //Create new items and distribute them if this is a server
+    //TODO: Maybe refactor to WorldPlayer or somewhere else?
     while( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
     {
-        NetworkSyncablePacket p = mMessenger->nextPacket();
+        NetworkSyncablePacket packet = mMessenger->nextPacket();
 
-        if( p.getTypeID() == ENTI_ITEM )
+        if( packet.getTypeID() == ENTI_ITEM )
         {
-            if( p.getActionID() == EAID_CREATE )
-                ItemFactory::create( mExplore, p );
+            if( packet.getActionID() == EAID_CREATE )
+                ItemFactory::create( mExplore, packet );
             else
             {
-                NetworkSyncablePacket packet = serialize( ESAID_REQUEST_ITEM_INFO );
-                packet.writeUInt32( p.getUID() );
-                send( packet );
+                NetworkSyncablePacket p = serialize( ESAID_REQUEST_ITEM_INFO );
+                p.writeUInt32( packet.getUID() );
+                send( p );
             }
+        }
+        else if( packet.getTypeID() == ENTI_PLAYER )
+        {
+            uint32_t clientID = packet.readUInt32();
+            VisualPlayerPtr player;
+
+            WorldPlayerPtr world =
+                    mExplore->getExploreGame()->getWorldPlayer();
+
+            if( clientID == mClientID )
+            {
+                player.reset( new LocalPlayer( mExplore, world ) );
+                world->setLocalPlayer( player );
+            }
+            else
+                player.reset( new VisualPlayer( mExplore, world ) );
+            player->setClientID( clientID );
+            player->deserialize( packet );
         }
 
         if( mStatusBits[ESB_SERVER] )
-            send( p );
+            send( packet );
     }
     if( mStatusBits[ESB_SERVER] )
     {

@@ -77,6 +77,21 @@ void IPlayer::setParent( IPlayerPtr parent )
     mParent = parent.get();
 }
 
+void IPlayer::serializeAll(const uint8_t actionID, std::list<NetworkSyncablePacket> &list)
+{
+    typedef std::map<Item*,ItemPtr> itemMap_t;
+
+    foreach_( itemMap_t::value_type &x, mOwnedItems )
+    {
+        list.push_back( x.second->serialize( actionID ) );
+    }
+
+    foreach_( IPlayerVector::value_type &x, mChildren )
+    {
+        x->serializeAll( actionID, list );
+    }
+}
+
 void IPlayer::serializeInternal( NetworkSyncablePacket &/*packet*/, uint8_t /*actionID*/ )
 {
 }

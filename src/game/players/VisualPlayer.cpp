@@ -28,6 +28,10 @@ VisualPlayer::VisualPlayer( ExplorePtr explore, IPlayerPtr parent )
 {
 }
 
+VisualPlayer::~VisualPlayer()
+{
+}
+
 EntityPtr VisualPlayer::getEntity() const
 {
     return mEntity;
@@ -57,4 +61,58 @@ ItemPtr VisualPlayer::getActiveItem() const
         return ItemPtr();
 
     return mInventory.at( mActiveItem );
+}
+
+void VisualPlayer::setClientID( uint32_t clientID )
+{
+    mClientID = clientID;
+}
+
+uint32_t VisualPlayer::clientID() const
+{
+    return mClientID;
+}
+
+void VisualPlayer::update()
+{
+}
+
+void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
+                                      uint8_t actionID )
+{
+    if( actionID == EAID_CREATE )
+    {
+        packet.writeUInt32( mClientID );
+
+        vector3df position = *mEntity->getPosition();
+        vector3df rotation = *mEntity->getRotation();
+
+        packet.writeFloat( position.X );
+        packet.writeFloat( position.Y );
+        packet.writeFloat( position.Z );
+
+        packet.writeFloat( rotation.X );
+        packet.writeFloat( rotation.Y );
+        packet.writeFloat( rotation.Z );
+    }
+}
+
+boost::optional<NetworkSyncablePacket> VisualPlayer::deserializeInternal(
+        NetworkSyncablePacket &packet )
+{
+    if( packet.getActionID() == EAID_CREATE )
+    {
+        //uint32_t [clientID] already read
+        vector3df position( packet.readFloat(),
+                            packet.readFloat(),
+                            packet.readFloat() );
+        vector3df rotation( packet.readFloat(),
+                             packet.readFloat(),
+                             packet.readFloat() );
+
+        mEntity->setPosition( position );
+        mEntity->setRotation( rotation );
+    }
+
+    return boost::none;
 }

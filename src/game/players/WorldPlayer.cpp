@@ -26,27 +26,6 @@ WorldPlayer::WorldPlayer( ExplorePtr explore )
 {
 }
 
-void WorldPlayer::serializeAll( const uint8_t actionID,
-                                std::list<NetworkSyncablePacket> &list )
-{
-    typedef std::map<Item*,ItemPtr> itemMap_t;
-
-    foreach_( itemMap_t::value_type &x, mOwnedItems )
-    {
-        list.push_back( x.second->serialize( actionID ) );
-    }
-
-    if( !mLocalPlayer )
-        return;
-
-    list.push_back( mLocalPlayer->serialize( actionID ) );
-
-    foreach_( itemMap_t::value_type &x, mLocalPlayer->getOwnedItems() )
-    {
-        list.push_back( x.second->serialize( actionID ) );
-    }
-}
-
 void WorldPlayer::update()
 {
     for( ItemMap::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
