@@ -28,6 +28,13 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
+struct NullDeleter
+{
+    void operator()( void const * ) const
+    {
+    }
+};
+
 #include <boost/property_tree/ptree.hpp>
 
 typedef boost::property_tree::ptree PropTree;
