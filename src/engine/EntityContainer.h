@@ -35,10 +35,10 @@ typedef boost::shared_ptr<EntityContainer> EntityContainerPtr;
 class EntityContainer
 {
 public:
-    EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
-                    const std::string &propFileName = "" );
-    EntityContainer(IrrlichtDevicePtr device, BulletWorldPtr world,
-                    PropTreePtr properties, const std::string &basePath = "" );
+    EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world,
+                     const std::string &propFileName = "" );
+    EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world,
+                     PropTreePtr properties, const std::string &basePath = "" );
 
     virtual ~EntityContainer();
 

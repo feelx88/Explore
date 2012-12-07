@@ -45,7 +45,7 @@ EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world
                                   PropTreePtr properties, const std::string &basePath )
     : mDevice( device ),
       mBulletWorld( world ),
-      mProperties( properties )
+      mProperties( PropTreePtr( new PropTree( *properties ) ) )
 {
     mBasePath = PathTools::getAbsolutePath( basePath );
     create();
