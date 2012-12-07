@@ -50,8 +50,9 @@ Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
     //TODO: Should work because Entities copy their PropTreePtr and mProperties
     //lives until the destructor gets called, but maybe search for a more
     //elegant way
+    PropTreePtr child( &mProperties->get_child( "Item" ), NullDeleter() );
     mEntities.reset( new EntityContainer( mDevice, mBulletWorld,
-                                          PropTreePtr( &( mProperties->get_child( "Item" ) ) ),
+                                          child,
                                           mBasePath ) );
 
     registerScripts();
