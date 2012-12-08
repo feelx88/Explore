@@ -39,6 +39,12 @@ enum E_STATUS_BITS
     ESB_COUNT
 };
 
+enum E_CLIENT_STATUS_BITS
+{
+    ECSB_INITIALIZED = 0,
+    ECSB_COUNT
+};
+
 ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
                               NetworkMessengerPtr messenger )
     : NetworkSyncable( 1, 0 ),
@@ -201,7 +207,8 @@ void ExploreServer::update()
         typedef std::map<uint32_t, ClientInfo> map_t;
         foreach_( map_t::value_type &x, mClientIDMap )
         {
-            if( x.second.initialized && x.second.lastActiveTime + then <= now )
+            if( x.second.statusBits[ECSB_INITIALIZED]
+                    && x.second.lastActiveTime + then <= now )
             {
                 std::string name = x.second.host.hostName;
                 _LOG( "Timeout; No response from", name );
@@ -209,7 +216,7 @@ void ExploreServer::update()
                 mClientIDMap.erase( x.second.id );
                 break;
             }
-            else if( !x.second.initialized )
+            else if( !x.second.statusBits[ECSB_INITIALIZED] )
             {
                 std::list<NetworkSyncablePacket> newList;
                 mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
@@ -218,7 +225,7 @@ void ExploreServer::update()
                 foreach_( NetworkSyncablePacket &packet, newList )
                     mMessenger->sendTo( packet, x.second.endpoint );
 
-                x.second.initialized = true;
+                x.second.statusBits[ECSB_INITIALIZED] = true;
                 //TODO:send more infos to be able to show a status bar
             }
         }
@@ -426,4 +433,9 @@ uint32_t ExploreServer::nextClientID()
 
     std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.end()--;
     return x->first + 1;
+}
+
+ExploreServer::ClientInfo::ClientInfo()
+    : statusBits( ECSB_COUNT )
+{
 }

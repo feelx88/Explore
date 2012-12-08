@@ -49,11 +49,14 @@ public:
 
     struct ClientInfo
     {
+        ClientInfo();
+
         uint32_t id;
         HostInfo host;
         boost::asio::ip::udp::endpoint endpoint;
         boost::chrono::system_clock::time_point lastActiveTime;
         bool initialized;
+        boost::dynamic_bitset<> statusBits;
     };
 
     ExploreServer( ExplorePtr explore, const HostInfo &info,
