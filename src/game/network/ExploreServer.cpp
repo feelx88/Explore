@@ -42,6 +42,8 @@ enum E_STATUS_BITS
 enum E_CLIENT_STATUS_BITS
 {
     ECSB_INITIALIZED = 0,
+    ECSB_PLAYERS_CREATED,
+    ECSB_ITEMS_CREATED,
     ECSB_COUNT
 };
 
@@ -51,10 +53,9 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
       mExplore( explore ),
       mMessenger( messenger ),
       mStatusBits( ESB_COUNT ),
-      mSelfInfo( info ),
-      mClientID( 0 ),
       mUpdateTimer( *mExplore->getIOService().get() )
 {
+    mSelfInfo.host = info;
     setUpdateInterval( 200 );
     update();
 }
@@ -66,12 +67,12 @@ NetworkMessengerPtr ExploreServer::getNetworkMessenger() const
 
 void ExploreServer::setSelfInfo( const ExploreServer::HostInfo &info )
 {
-    mSelfInfo = info;
+    mSelfInfo.host = info;
 }
 
 ExploreServer::HostInfo ExploreServer::selfInfo() const
 {
-    return mSelfInfo;
+    return mSelfInfo.host;
 }
 
 void ExploreServer::setServerMode( bool server )
@@ -150,7 +151,7 @@ int ExploreServer::clientTimeout() const
 
 uint32_t ExploreServer::clientID() const
 {
-    return mClientID;
+    return mSelfInfo.id;
 }
 
 void ExploreServer::disconnect()
@@ -185,7 +186,7 @@ void ExploreServer::update()
             WorldPlayerPtr world =
                     mExplore->getExploreGame()->getWorldPlayer();
 
-            if( clientID == mClientID )
+            if( clientID == mSelfInfo.id )
             {
                 player.reset( new LocalPlayer( mExplore, world ) );
                 world->setLocalPlayer( player );
@@ -256,7 +257,7 @@ void ExploreServer::send( const NetworkSyncablePacket &packet )
         typedef std::map<uint32_t, ClientInfo> map_t;
         foreach_( map_t::value_type &x, mClientIDMap )
         {
-            if( x.second.initialized )
+            if( x.second.statusBits[ECSB_INITIALIZED] )
                 mMessenger->sendTo( packet, x.second.endpoint );
         }
     }
@@ -298,15 +299,14 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             host.hostName = packet.readString();
             host.passwordHash = packet.readString();
 
-            if( mSelfInfo.serverConnectedPlayers < mSelfInfo.serverMaxPlayers &&
-                    host.passwordHash == mSelfInfo.passwordHash )
+            if( mSelfInfo.host.serverConnectedPlayers < mSelfInfo.host.serverMaxPlayers &&
+                    host.passwordHash == mSelfInfo.host.passwordHash )
             {
                 ClientInfo info;
                 info.endpoint = packet.getEndpoint();
                 info.id = nextClientID();
                 info.host = host;
                 info.lastActiveTime = system_clock::now();
-                info.initialized = false;
                 mClientIDMap.insert( std::make_pair( info.id, info ) );
 
                 _LOG( "Client accepted!" );
@@ -362,8 +362,8 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             mMessenger->setRemoteAddress( endpoint.address().to_string(),
                                           endpoint.port() );
 
-            mClientID = packet.readUInt32();
-            _LOG( "New ClientID", mClientID );
+            mSelfInfo.id = packet.readUInt32();
+            _LOG( "New ClientID", mSelfInfo.id );
         }
         break;
     }
@@ -397,15 +397,15 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
     {
     case ESAID_REQUEST_SERVERINFO:
     {
-        packet.writeString( mSelfInfo.hostName );
-        packet.writeUInt8( mSelfInfo.serverMaxPlayers );
-        packet.writeUInt8( mSelfInfo.serverConnectedPlayers );
+        packet.writeString( mSelfInfo.host.hostName );
+        packet.writeUInt8( mSelfInfo.host.serverMaxPlayers );
+        packet.writeUInt8( mSelfInfo.host.serverConnectedPlayers );
         break;
     }
     case ESAID_REQUEST_CONNECTION:
     {
-        packet.writeString( mSelfInfo.hostName );
-        packet.writeString( mSelfInfo.passwordHash );
+        packet.writeString( mSelfInfo.host.hostName );
+        packet.writeString( mSelfInfo.host.passwordHash );
         break;
     }
     case ESAID_ACCEPT_CONNECTION:
@@ -416,7 +416,7 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
     case ESAID_ACK:
     {
         if( !mStatusBits[ESB_SERVER] ) //Alive ACK
-            packet.writeUInt32( mClientID );
+            packet.writeUInt32( mSelfInfo.id );
         break;
     }
     default:
@@ -436,6 +436,7 @@ uint32_t ExploreServer::nextClientID()
 }
 
 ExploreServer::ClientInfo::ClientInfo()
-    : statusBits( ECSB_COUNT )
+    : id( 0 ),
+      statusBits( ECSB_COUNT )
 {
 }

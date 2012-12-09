@@ -55,7 +55,6 @@ public:
         HostInfo host;
         boost::asio::ip::udp::endpoint endpoint;
         boost::chrono::system_clock::time_point lastActiveTime;
-        bool initialized;
         boost::dynamic_bitset<> statusBits;
     };
 
@@ -104,9 +103,7 @@ protected:
     boost::dynamic_bitset<> mStatusBits;
 
     std::queue<HostInfo> mServerInfoQueue;
-    HostInfo mSelfInfo;
-
-    uint32_t mClientID;
+    ClientInfo mSelfInfo;
 
     std::map<uint32_t, ClientInfo> mClientIDMap;
 
