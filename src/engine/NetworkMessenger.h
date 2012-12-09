@@ -42,7 +42,8 @@ public:
 
     bool hasPacketsInQueue() const;
     NetworkSyncablePacket nextPacket( bool pop = true );
-    void pop();
+    void reQueuePacket();
+    void popPacket();
 
     void setRemoteAddress( const std::string &address, const int &port );
     void bind( int port );

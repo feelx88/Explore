@@ -82,7 +82,14 @@ NetworkSyncablePacket NetworkMessenger::nextPacket( bool pop )
     return packet;
 }
 
-void NetworkMessenger::pop()
+void NetworkMessenger::reQueuePacket()
+{
+    NetworkSyncablePacket &packet = mPacketQueue.front();
+    mPacketQueue.pop();
+    mPacketQueue.push( packet );
+}
+
+void NetworkMessenger::popPacket()
 {
     mPacketQueue.pop();
 }
