@@ -74,11 +74,17 @@ bool NetworkMessenger::hasPacketsInQueue() const
     return status;
 }
 
-NetworkSyncablePacket NetworkMessenger::nextPacket()
+NetworkSyncablePacket NetworkMessenger::nextPacket( bool pop )
 {
     NetworkSyncablePacket packet = mPacketQueue.front();
-    mPacketQueue.pop();
+    if( pop )
+        mPacketQueue.pop();
     return packet;
+}
+
+void NetworkMessenger::pop()
+{
+    mPacketQueue.pop();
 }
 
 void NetworkMessenger::setRemoteAddress( const std::string &address, const int &port )
