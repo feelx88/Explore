@@ -306,10 +306,10 @@ void Explore::initBullet()
 void Explore::initLua()
 {
     mLua = LuaTools::createLuaVM();
-    luabind::open( mLua.get() );
-    LuaBinder::registerAll( mLua );
+    //luabind::open( mLua.get() );
+    //LuaBinder::registerAll( mLua );
 
-    luabind::globals( mLua.get() )["Explore"]["Instance"] = this;
+    //luabind::globals( mLua.get() )["Explore"]["Instance"] = this;
 
     LuaTools::execFile( mLua, "init.lua" );
 }

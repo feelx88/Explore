@@ -20,12 +20,14 @@
 #include <engine/LuaBinder.h>
 #include "../Explore.h"
 
-LUABINDER_REGISTER_MODULE_START( ExploreBinder )
+//LUABINDER_REGISTER_MODULE_START( ExploreBinder )
+BOOST_PYTHON_MODULE( Explore )
+{
+    using namespace boost::python;
     class_<Explore>( "Explore" )
         .def( "readConfigValue", &Explore::readConfigValue<std::string> )
         .def( "getExploreServer", &Explore::getExploreServer )
-        .scope
-        [
-            def( "getKeyCode", &Explore::getKeyCode )
-        ]
-LUABINDER_REGISTER_MODULE_END( ExploreBinder )
+        .def( "getKeyCode", &Explore::getKeyCode )
+            .staticmethod( "getKeyCode" );
+}
+//LUABINDER_REGISTER_MODULE_END( ExploreBinder )

@@ -23,6 +23,7 @@
 
 #include "EngineTypedefs.h"
 #include <lualib.h>
+#include <boost/python.hpp>
 
 class LuaTools
 {

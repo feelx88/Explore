@@ -25,6 +25,10 @@ void logWrapper( const std::string &str )
     _LOG( str );
 }
 
-LUABINDER_REGISTER_MODULE_START( LoggerSingletonBinder )
-    def( "log", logWrapper )
-LUABINDER_REGISTER_MODULE_END( LoggerSingletonBinder )
+//LUABINDER_REGISTER_MODULE_START( LoggerSingletonBinder )
+BOOST_PYTHON_MODULE( Logger )
+{
+    using namespace boost::python;
+    def( "log", logWrapper );
+}
+//LUABINDER_REGISTER_MODULE_END( LoggerSingletonBinder )

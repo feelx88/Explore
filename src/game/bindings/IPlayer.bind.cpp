@@ -20,7 +20,11 @@
 #include <engine/LuaBinder.h>
 #include "../IPlayer.h"
 
-LUABINDER_REGISTER_MODULE_START( IPlayerBinder )
+//LUABINDER_REGISTER_MODULE_START( IPlayerBinder )
+BOOST_PYTHON_MODULE( IPlayer )
+{
+    using namespace boost::python;
     class_<IPlayer>( "IPlayer" )
-        .def( "removeOwnedItem", &IPlayer::removeOwnedItem )
-LUABINDER_REGISTER_MODULE_END( IPlayerBinder )
+        .def( "removeOwnedItem", &IPlayer::removeOwnedItem );
+}
+//LUABINDER_REGISTER_MODULE_END( IPlayerBinder )

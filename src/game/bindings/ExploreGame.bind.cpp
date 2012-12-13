@@ -20,7 +20,11 @@
 #include <engine/LuaBinder.h>
 #include "../ExploreGame.h"
 
-LUABINDER_REGISTER_MODULE_START( ExploreGameBinder )
+//LUABINDER_REGISTER_MODULE_START( ExploreGameBinder )
+BOOST_PYTHON_MODULE( ExploreGame )
+{
+    using namespace boost::python;
     class_<ExploreGame>( "ExploreGame" )
-        .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw )
-LUABINDER_REGISTER_MODULE_END( ExploreGameBinder )
+        .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw );
+}
+//LUABINDER_REGISTER_MODULE_END( ExploreGameBinder )

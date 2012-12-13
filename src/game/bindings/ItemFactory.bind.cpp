@@ -20,11 +20,15 @@
 #include <engine/LuaBinder.h>
 #include "../ItemFactory.h"
 
-LUABINDER_REGISTER_MODULE_START( ItemFactoryBinder )
+//LUABINDER_REGISTER_MODULE_START( ItemFactoryBinder )
+BOOST_PYTHON_MODULE( ItemFactory )
+{
+    using namespace boost::python;
     class_<ItemFactory>( "ItemFactory" )
         .scope
         [
             def( "create",
                  (ItemPtr(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
-        ]
-LUABINDER_REGISTER_MODULE_END( ItemFactoryBinder )
+        ];
+}
+//LUABINDER_REGISTER_MODULE_END( ItemFactoryBinder )

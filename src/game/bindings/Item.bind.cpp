@@ -20,6 +20,10 @@
 #include <engine/LuaBinder.h>
 #include "../Item.h"
 
-LUABINDER_REGISTER_MODULE_START( ItemBinder )
-    class_<Item>( "Item" )
-LUABINDER_REGISTER_MODULE_END( ItemBinder )
+//LUABINDER_REGISTER_MODULE_START( ItemBinder )
+BOOST_PYTHON_MODULE( Item )
+{
+    using namespace boost::python;
+    class_<Item>( "Item" );
+}
+//LUABINDER_REGISTER_MODULE_END( ItemBinder )

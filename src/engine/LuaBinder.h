@@ -3,7 +3,7 @@
 
 #include "EngineTypedefs.h"
 #include "LuaTools.h"
-#include <luabind/luabind.hpp>
+/*#include <luabind/luabind.hpp>
 
 class LuaBinder;
 typedef boost::shared_ptr<LuaBinder> LuaBinderPtr;
@@ -36,5 +36,5 @@ protected:
 };\
 int NAME::regDummy = LuaBinder::registerBinder( new NAME );
 
-
+*/
 #endif // LUABINDER_H

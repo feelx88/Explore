@@ -37,22 +37,25 @@ add_custom_target( Assets SOURCES ${assets} )
 set( IRRLICHT_LIBRARIES Irrlicht )
 #find_package( OpenAL REQUIRED )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
-find_package( Lua51 REQUIRED )
-find_package( Boost COMPONENTS system filesystem REQUIRED )
+#find_package( Lua51 REQUIRED )
+find_package( PythonLibs REQUIRED )
+find_package( Boost COMPONENTS system filesystem python REQUIRED )
 find_package( Boost COMPONENTS chrono )
 find_package( Boost COMPONENTS foreach )
 #find_package( luabind REQUIRED )
-set( LUABIND_LIBRARIES luabind )
+#set( LUABIND_LIBRARIES luabind )
 
-include_directories( ${BULLET_INCLUDE_DIR} )
+include_directories( ${BULLET_INCLUDE_DIR}
+                       ${PYTHON_INCLUDE_DIR} )
 
 target_link_libraries( Engine
                         ${IRRLICHT_LIBRARIES}
                         ${OPENAL_LIBRARIES}
                         ${BULLET_LIBRARIES}
-                        ${LUA_LIBRARIES}
-                        ${Boost_LIBRARIES}
-                        ${LUABIND_LIBRARIES} )
+                        #${LUA_LIBRARIES}
+                        ${PYTHON_LIBRARIES}
+                        ${Boost_LIBRARIES} )
+                        #${LUABIND_LIBRARIES} )
 target_link_libraries( Explore Engine )
 
 set_target_properties( Engine Explore PROPERTIES

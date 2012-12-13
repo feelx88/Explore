@@ -20,7 +20,10 @@
 #include <engine/LuaBinder.h>
 #include "../network/ExploreServer.h"
 
-LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
+//LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
+BOOST_PYTHON_MODULE( ExploreServer )
+{
+    using namespace boost::python;
     class_<ExploreServer>( "ExploreServer" )
         .def( "setServerMode", &ExploreServer::setServerMode )
         .def( "requestServerInfo", &ExploreServer::requestServerInfo )
@@ -52,5 +55,6 @@ LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
                 .def( constructor<>() )
                 .def_readwrite( "hostName",
                                 &ExploreServer::HostInfo::hostName )
-        ]
-LUABINDER_REGISTER_MODULE_END( ExploreServerBinder )
+        ];
+}
+//LUABINDER_REGISTER_MODULE_END( ExploreServerBinder )

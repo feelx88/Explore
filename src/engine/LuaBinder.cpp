@@ -1,6 +1,6 @@
 #include "LuaBinder.h"
 
-boost::shared_ptr<std::vector<LuaBinderPtr> > LuaBinder::sBinders( LuaBinder::sBinders );
+/*boost::shared_ptr<std::vector<LuaBinderPtr> > LuaBinder::sBinders( LuaBinder::sBinders );
 
 void LuaBinder::registerAll( LuaStatePtr state )
 {
@@ -16,4 +16,4 @@ int LuaBinder::registerBinder( LuaBinder *binder )
 
     sBinders->push_back( LuaBinderPtr( binder ) );
     return 0;
-}
+}*/
