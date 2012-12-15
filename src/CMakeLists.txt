@@ -62,7 +62,7 @@ target_link_libraries( Engine
                         ${Boost_LIBRARIES} )
 target_link_libraries( Explore Engine )
 target_link_libraries( ExploreBind Explore )
-target_link_libraries( Explore.bin Explore Engine ExploreBind )
+target_link_libraries( Explore.bin ExploreBind )
 
 set_target_properties( Engine Explore ExploreBind Explore.bin PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ../build
