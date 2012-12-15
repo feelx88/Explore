@@ -17,10 +17,11 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <engine/LuaBinder.h>
-#include "../ExploreGame.h"
+#include <engine/PythonBinder.h>
+#include "../game/Item.h"
 
-LUABINDER_REGISTER_MODULE_START( ExploreGameBinder )
-    class_<ExploreGame>( "ExploreGame" )
-        .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw )
-LUABINDER_REGISTER_MODULE_END( ExploreGameBinder )
+PYTHONBINDER_REGISTER_MODULE( Item )
+{
+    using namespace boost::python;
+    class_<Item>( "Item", no_init );
+}

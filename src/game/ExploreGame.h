@@ -47,8 +47,6 @@ private:
 
     BulletWorldPtr mBulletWorld;
 
-    LuaStatePtr mLua;
-
     WorldPlayerPtr mWorldPlayer;
 
     bool mBulletDebugDraw;

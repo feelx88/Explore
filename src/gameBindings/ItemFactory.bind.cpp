@@ -17,10 +17,14 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <engine/LuaBinder.h>
-#include "../IPlayer.h"
+#include <engine/PythonBinder.h>
+#include "../game/ItemFactory.h"
 
-LUABINDER_REGISTER_MODULE_START( IPlayerBinder )
-    class_<IPlayer>( "IPlayer" )
-        .def( "removeOwnedItem", &IPlayer::removeOwnedItem )
-LUABINDER_REGISTER_MODULE_END( IPlayerBinder )
+PYTHONBINDER_REGISTER_MODULE( ItemFactory )
+{
+    using namespace boost::python;
+    class_<ItemFactory>( "ItemFactory", no_init )
+        .def( "create",
+                 (ItemPtr(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
+            .staticmethod( "create" );
+}

@@ -17,17 +17,14 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../LuaBinder.h"
-#include "../NetworkMessenger.h"
+#include "../engine/PythonBinder.h"
+#include "../engine/LoggerSingleton.h"
 
-LUABINDER_REGISTER_MODULE_START( NetworkMessengerBinder )
-    class_<NetworkMessenger>( "NetworkMessenger" )
-        .def( "send", &NetworkMessenger::send )
-        .def( "sendTo",
-              (void(NetworkMessenger::*)(const NetworkSyncablePacket&,
-                                         const std::string&,
-                                         const int&)) &NetworkMessenger::sendTo )
-        .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
-        .def( "nextPacket", &NetworkMessenger::nextPacket )
-        .def( "bind", &NetworkMessenger::bind )
-LUABINDER_REGISTER_MODULE_END( NetworkMessengerBinder )
+PYTHONBINDER_REGISTER_MODULE( LoggerSingleton )
+{
+    using namespace boost::python;
+    class_<LoggerSingleton, boost::noncopyable>( "LoggerSingleton", no_init )
+        .def( "instance", &LoggerSingleton::instance,
+              return_value_policy<reference_existing_object>() ).staticmethod( "instance" )
+        .def( "log", (void(LoggerSingleton::*)(const std::string&))&LoggerSingleton::log );
+}

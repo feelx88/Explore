@@ -27,6 +27,8 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/shared_array.hpp>
+#include <boost/scoped_array.hpp>
 
 struct NullDeleter
 {
@@ -104,26 +106,6 @@ private:
 typedef boost::shared_ptr<btRigidBody> RigidBodyPtr;
 typedef boost::shared_ptr<btCollisionShape> CollisionShapePtr;
 typedef boost::shared_ptr<btMotionState> MotionStatePtr;
-
-extern "C"
-{
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
-}
-
-namespace specialDeleters
-{
-struct luaStateDeleter
-{
-    void operator()( lua_State *state )
-    {
-        lua_close( state );
-    }
-};
-}
-
-typedef boost::shared_ptr<lua_State> LuaStatePtr;
 
 #include <boost/asio.hpp>
 

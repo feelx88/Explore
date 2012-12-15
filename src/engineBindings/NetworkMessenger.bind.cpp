@@ -17,25 +17,19 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "../engine/PythonBinder.h"
+#include "../engine/NetworkMessenger.h"
 
-#ifndef LUASCRIPT_H
-#define LUASCRIPT_H
-
-#include "EngineTypedefs.h"
-
-class LuaScript;
-typedef boost::shared_ptr<LuaScript> LuaScriptPtr;
-
-class LuaScript
+PYTHONBINDER_REGISTER_MODULE( NetworkMessenger )
 {
-public:
-    LuaScript(LuaStatePtr lua, const std::string &script, bool isFile = true );
-
-    void exec();
-
-private:
-    LuaStatePtr mLuaState;
-    std::string mScript;
-};
-
-#endif // LUASCRIPT_H
+    using namespace boost::python;
+    class_<NetworkMessenger>( "NetworkMessenger", no_init )
+        .def( "send", &NetworkMessenger::send )
+        .def( "sendTo",
+              (void(NetworkMessenger::*)(const NetworkSyncablePacket&,
+                                         const std::string&,
+                                         const int&)) &NetworkMessenger::sendTo )
+        .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
+        .def( "nextPacket", &NetworkMessenger::nextPacket )
+        .def( "bind", &NetworkMessenger::bind );
+}

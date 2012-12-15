@@ -17,11 +17,13 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <engine/LuaBinder.h>
-#include "../network/ExploreServer.h"
+#include <engine/PythonBinder.h>
+#include "../game/network/ExploreServer.h"
 
-LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
-    class_<ExploreServer>( "ExploreServer" )
+PYTHONBINDER_REGISTER_MODULE( ExploreServer )
+{
+    using namespace boost::python;
+    class_<ExploreServer, boost::noncopyable>( "ExploreServer", no_init )
         .def( "setServerMode", &ExploreServer::setServerMode )
         .def( "requestServerInfo", &ExploreServer::requestServerInfo )
         .def( "hasServerInfo", &ExploreServer::hasServerInfo )
@@ -34,23 +36,18 @@ LUABINDER_REGISTER_MODULE_START( ExploreServerBinder )
         .def( "setUpdateInterval", &ExploreServer::setUpdateInterval )
         .def( "updateInterval", &ExploreServer::updateInterval )
         .def( "setClientTimeout", &ExploreServer::setClientTimeout )
-        .def( "clientTimeout", &ExploreServer::clientTimeout )
-        .enum_( "E_ACTIONID" )
-        [
-            value( "ESAID_ACK", ExploreServer::ESAID_ACK ),
-            value( "ESAID_NAK", ExploreServer::ESAID_NAK ),
-            value( "ESAID_REQUEST_SERVERINFO",
-                   ExploreServer::ESAID_REQUEST_SERVERINFO ),
-            value( "ESAID_REQUEST_CONNECTION",
-                   ExploreServer::ESAID_REQUEST_CONNECTION ),
-            value( "ESAID_REQUEST_IS_STILL_ALIVE",
+        .def( "clientTimeout", &ExploreServer::clientTimeout );
+        enum_<ExploreServer::E_SERVER_ACTIONID>( "E_ACTIONID" )
+            .value( "ESAID_ACK", ExploreServer::ESAID_ACK )
+            .value( "ESAID_NAK", ExploreServer::ESAID_NAK )
+            .value( "ESAID_REQUEST_SERVERINFO",
+                   ExploreServer::ESAID_REQUEST_SERVERINFO )
+            .value( "ESAID_REQUEST_CONNECTION",
+                   ExploreServer::ESAID_REQUEST_CONNECTION )
+            .value( "ESAID_REQUEST_IS_STILL_ALIVE",
                    ExploreServer::ESAID_REQUEST_IS_STILL_ALIVE )
-        ]
-        .scope
-        [
-            class_<ExploreServer::HostInfo>( "HostInfo" )
-                .def( constructor<>() )
-                .def_readwrite( "hostName",
-                                &ExploreServer::HostInfo::hostName )
-        ]
-LUABINDER_REGISTER_MODULE_END( ExploreServerBinder )
+            .export_values();
+        class_<ExploreServer::HostInfo>( "HostInfo", init<>() )
+            .def_readwrite( "hostName",
+                            &ExploreServer::HostInfo::hostName );
+}

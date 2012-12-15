@@ -17,33 +17,18 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef PYTHONTOOLS_H
+#define PYTHONTOOLS_H
 
-#include "LuaScript.h"
-#include "LuaTools.h"
-#include "PathTools.h"
-#include <fstream>
+#include <Python.h>
+#include <boost/python.hpp>
 
-LuaScript::LuaScript( LuaStatePtr lua, const std::string &script, bool isFile )
-    : mLuaState( lua ),
-      mScript( "" )
+class PythonTools
 {
-    if( isFile )
-    {
-        std::string fileName = PathTools::getAbsolutePath( script );
-        std::ifstream file( fileName.c_str() );
+public:
+    static void initPython();
+    static void execString(const std::string &script , bool useMainNamespace = true );
+    static std::string pythonErrorDescription();
+};
 
-        while( file.good() )
-        {
-            std::string tmp;
-            file >> tmp;
-            mScript += tmp + "\n";
-        }
-    }
-    else
-        mScript = script;
-}
-
-void LuaScript::exec()
-{
-    LuaTools::execString( mLuaState, mScript );
-}
+#endif // PYTHONTOOLS_H

@@ -26,11 +26,9 @@ using namespace core;
 using namespace video;
 using namespace gui;
 
-ScriptConsole::ScriptConsole(IrrlichtDevicePtr device, LuaStatePtr luaState,
-                             PropTreePtr properties )
+ScriptConsole::ScriptConsole( IrrlichtDevicePtr device, PropTreePtr properties )
     : mDevice( device ),
       mGUI( mDevice->getGUIEnvironment() ),
-      mLuaState( luaState ),
       mProperties( properties ),
       mListIndex( 0 )
 {

@@ -20,7 +20,7 @@
 
 #include "EventReceiver.h"
 #include "LoggerSingleton.h"
-#include "LuaTools.h"
+#include "PythonTools.h"
 
 using namespace irr;
 
@@ -300,7 +300,7 @@ void EventReceiver::sendScriptConsoleCommand()
 {
     std::string script(
                 irr::core::stringc( mScriptConsole->mInputBox->getText() ).c_str() );
-    LuaTools::execString( mScriptConsole->mLuaState, script );
+    PythonTools::execString( script );
 
     mScriptConsole->mHistory.push_back( script );
 

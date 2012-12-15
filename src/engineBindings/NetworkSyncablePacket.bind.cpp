@@ -17,13 +17,14 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../LuaBinder.h"
-#include "../NetworkSyncablePacket.h"
+#include "../engine/PythonBinder.h"
+#include "../engine/NetworkSyncablePacket.h"
 
-LUABINDER_REGISTER_MODULE_START( NetworkSyncablePacketBinder )
-    class_<NetworkSyncablePacket>( "NetworkSyncablePacket" )
-        .def( constructor<int, int, int, std::string>() )
-        .def( constructor<std::string>() )
+PYTHONBINDER_REGISTER_MODULE( NetworkSyncablePacket )
+{
+    using namespace boost::python;
+    class_<NetworkSyncablePacket>( "NetworkSyncablePacket", init<int, int, int, std::string>() )
+        .def( init<std::string>() )
         .def( "serialize", &NetworkSyncablePacket::serialize )
         .def( "getUID", &NetworkSyncablePacket::getUID )
         .def( "getTypeID", &NetworkSyncablePacket::getTypeID )
@@ -49,5 +50,5 @@ LUABINDER_REGISTER_MODULE_START( NetworkSyncablePacketBinder )
         .def( "readFloat", &NetworkSyncablePacket::readFloat )
         .def( "writeFloat", &NetworkSyncablePacket::writeFloat )
         .def( "readBool", &NetworkSyncablePacket::readBool )
-        .def( "writeBool", &NetworkSyncablePacket::writeBool )
-LUABINDER_REGISTER_MODULE_END( NetworkSyncablePacketBinder )
+        .def( "writeBool", &NetworkSyncablePacket::writeBool );
+}

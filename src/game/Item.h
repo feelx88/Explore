@@ -22,11 +22,11 @@
 #define ITEM_H
 
 #include <engine/EntityContainer.h>
-#include <engine/LuaScript.h>
 #include "Explore.h"
 #include "IPlayer.h"
+#include <engine/PythonScript.h>
 
-typedef boost::unordered::unordered_map<uint8_t, LuaScriptPtr> ScriptMap;
+typedef boost::unordered::unordered_map<uint8_t, PythonScriptPtr> ScriptMap;
 typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
 
 class Item : public NetworkSyncable
@@ -83,7 +83,6 @@ protected:
     ExplorePtr mExplore;
     IrrlichtDevicePtr mDevice;
     BulletWorldPtr mBulletWorld;
-    LuaStatePtr mLua;
 
     PropTreePtr mProperties;
     std::string mBasePath;

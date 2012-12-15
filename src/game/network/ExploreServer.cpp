@@ -21,7 +21,7 @@
 #include "../ExploreGame.h"
 #include "../ItemFactory.h"
 #include <engine/LoggerSingleton.h>
-#include <engine/LuaBinder.h>
+#include <engine/PythonTools.h>
 #include <iostream>
 #include <boost/foreach.hpp>
 #include "../Explore.h"

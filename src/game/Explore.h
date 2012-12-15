@@ -117,7 +117,6 @@ public:
     IrrlichtDevicePtr getIrrlichtDevice() const;
     EventReceiverPtr getEventReceiver() const;
     BulletWorldPtr getBulletWorld() const;
-    LuaStatePtr getLuaVM() const;
     ScriptConsolePtr getScriptConsole() const;
     IOServicePtr getIOService() const;
 
@@ -136,7 +135,7 @@ private:
 
     void initIrrlicht();
     void initBullet();
-    void initLua();
+    void initPython();
     void initScriptConsole();
     void initMenu();
     void initGame();
@@ -151,8 +150,6 @@ private:
     DispatcherPtr mDispatcher;
     BroadphasePtr mBroadphase;
     ConstraintSolverPtr mConstraintSolver;
-
-    LuaStatePtr mLua;
 
     PropTreePtr mConfig;
 

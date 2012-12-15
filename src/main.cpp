@@ -19,6 +19,7 @@
 
 
 #include "game/Explore.h"
+#include <Python.h>
 
 int main( int argc, char** argv )
 {
