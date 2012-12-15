@@ -26,7 +26,6 @@
 #include <boost/lexical_cast.hpp>
 
 #include "ScriptConsole.h"
-#include "LuaBinder.h"
 
 #define _LOG LoggerSingleton::instance().log
 

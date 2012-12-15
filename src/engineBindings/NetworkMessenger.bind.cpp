@@ -17,14 +17,19 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <engine/LuaBinder.h>
-#include "../ExploreGame.h"
+#include "../engine/PythonBinder.h"
+#include "../engine/NetworkMessenger.h"
 
-//LUABINDER_REGISTER_MODULE_START( ExploreGameBinder )
-BOOST_PYTHON_MODULE( ExploreGame )
+PYTHONBINDER_REGISTER_MODULE( NetworkMessenger )
 {
     using namespace boost::python;
-    class_<ExploreGame>( "ExploreGame" )
-        .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw );
+    class_<NetworkMessenger>( "NetworkMessenger", no_init )
+        .def( "send", &NetworkMessenger::send )
+        .def( "sendTo",
+              (void(NetworkMessenger::*)(const NetworkSyncablePacket&,
+                                         const std::string&,
+                                         const int&)) &NetworkMessenger::sendTo )
+        .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
+        .def( "nextPacket", &NetworkMessenger::nextPacket )
+        .def( "bind", &NetworkMessenger::bind );
 }
-//LUABINDER_REGISTER_MODULE_END( ExploreGameBinder )

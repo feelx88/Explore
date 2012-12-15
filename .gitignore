@@ -6,6 +6,7 @@ build/Explore
 *.so
 *.dll*
 *.pdb
+*.bin
 CMakeFiles
 CMakeCache.txt
 CMakeLists.txt.*

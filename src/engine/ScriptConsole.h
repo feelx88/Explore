@@ -31,8 +31,7 @@ public:
     friend class EventReceiver;
     friend class LoggerSingleton;
 
-    ScriptConsole( IrrlichtDevicePtr device, LuaStatePtr luaState,
-                   PropTreePtr properties );
+    ScriptConsole( IrrlichtDevicePtr device, PropTreePtr properties );
 
     virtual ~ScriptConsole();
 
@@ -42,8 +41,6 @@ public:
 private:
     IrrlichtDevicePtr mDevice;
     IGUIEnvironmentPtr mGUI;
-
-    LuaStatePtr mLuaState;
 
     PropTreePtr mProperties;
 

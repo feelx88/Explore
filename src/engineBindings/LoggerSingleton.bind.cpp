@@ -17,18 +17,14 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <engine/LuaBinder.h>
-#include "../ItemFactory.h"
+#include "../engine/PythonBinder.h"
+#include "../engine/LoggerSingleton.h"
 
-//LUABINDER_REGISTER_MODULE_START( ItemFactoryBinder )
-BOOST_PYTHON_MODULE( ItemFactory )
+PYTHONBINDER_REGISTER_MODULE( LoggerSingleton )
 {
     using namespace boost::python;
-    class_<ItemFactory>( "ItemFactory" )
-        .scope
-        [
-            def( "create",
-                 (ItemPtr(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
-        ];
+    class_<LoggerSingleton, boost::noncopyable>( "LoggerSingleton", no_init )
+        .def( "instance", &LoggerSingleton::instance,
+              return_value_policy<reference_existing_object>() ).staticmethod( "instance" )
+        .def( "log", (void(LoggerSingleton::*)(const std::string&))&LoggerSingleton::log );
 }
-//LUABINDER_REGISTER_MODULE_END( ItemFactoryBinder )

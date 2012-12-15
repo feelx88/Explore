@@ -28,7 +28,6 @@
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/Entity.h>
 #include <engine/EntityContainer.h>
-#include <engine/LuaScript.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include "ItemFactory.h"
 
@@ -46,7 +45,6 @@ ExploreGame::ExploreGame( ExplorePtr explore )
       mGUI( mDevice->getGUIEnvironment() ),
       mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
-      mLua( explore->getLuaVM() ),
       mBulletDebugDraw( false )
 {
 }
@@ -82,10 +80,6 @@ E_GAME_STATE ExploreGame::run()
         ItemFactory::create( mExplore, p, "de.feelx88.SuzanneSpawner" );
     }
 
-    //luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = (IPlayerPtr)mWorldPlayer;
-    //luabind::globals( mLua.get() )["Explore"]["LocalPlayer"] = (IPlayerPtr)p;
-    //luabind::globals( mLua.get() )["Explore"]["Game"] = this;
-
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
     btClock clock;
@@ -119,12 +113,6 @@ E_GAME_STATE ExploreGame::run()
     }
 
     mEventReceiver->lockMouse( false );
-    //luabind::globals( mLua.get() )["Explore"]["WorldPlayer"] = luabind::nil;
-    //luabind::globals( mLua.get() )["Explore"]["LocalPlayer"] = luabind::nil;
-    //luabind::globals( mLua.get() )["Explore"]["Game"] = luabind::nil;
-
-    //start lua garbage collection to clear smart pointers
-    //lua_gc( mLua.get(), LUA_GCCOLLECT, 0 );
 
     mExplore->getExploreServer()->setServerMode( false );
     mExplore->getExploreServer()->disconnect();

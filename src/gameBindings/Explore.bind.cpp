@@ -17,17 +17,24 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <engine/LuaBinder.h>
-#include "../Explore.h"
+#include <engine/PythonBinder.h>
+#include "../game/Explore.h"
+#include "../game/ExploreGame.h"
 
-//LUABINDER_REGISTER_MODULE_START( ExploreBinder )
-BOOST_PYTHON_MODULE( Explore )
+PYTHONBINDER_REGISTER_MODULE( Explore )
 {
     using namespace boost::python;
-    class_<Explore>( "Explore" )
+    class_<Explore, boost::noncopyable>( "Explore", init<>() )
         .def( "readConfigValue", &Explore::readConfigValue<std::string> )
+        .def( "getExploreGame", &Explore::getExploreGame )
         .def( "getExploreServer", &Explore::getExploreServer )
         .def( "getKeyCode", &Explore::getKeyCode )
-            .staticmethod( "getKeyCode" );
+            .staticmethod( "getKeyCode" )
+        .def( "run", &Explore::run )
+        .def( "setGameState", &Explore::setGameState );
 }
-//LUABINDER_REGISTER_MODULE_END( ExploreBinder )
+
+BOOST_PYTHON_MODULE( ExploreBind )
+{
+    PythonBinder::registerAll();
+}

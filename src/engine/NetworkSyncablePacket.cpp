@@ -18,7 +18,6 @@
 */
 
 #include "NetworkSyncablePacket.h"
-#include "LuaBinder.h"
 #include "LoggerSingleton.h"
 #include <sstream>
 #include <cmath>

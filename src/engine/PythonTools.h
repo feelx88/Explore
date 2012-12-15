@@ -17,25 +17,18 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef PYTHONTOOLS_H
+#define PYTHONTOOLS_H
 
-#ifndef LUASCRIPT_H
-#define LUASCRIPT_H
+#include <Python.h>
+#include <boost/python.hpp>
 
-#include "EngineTypedefs.h"
-
-class LuaScript;
-typedef boost::shared_ptr<LuaScript> LuaScriptPtr;
-
-class LuaScript
+class PythonTools
 {
 public:
-    LuaScript(LuaStatePtr lua, const std::string &script, bool isFile = true );
-
-    void exec();
-
-private:
-    LuaStatePtr mLuaState;
-    std::string mScript;
+    static void initPython();
+    static void execString(const std::string &script , bool useMainNamespace = true );
+    static std::string pythonErrorDescription();
 };
 
-#endif // LUASCRIPT_H
+#endif // PYTHONTOOLS_H

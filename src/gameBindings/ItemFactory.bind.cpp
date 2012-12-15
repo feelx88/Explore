@@ -17,20 +17,14 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <engine/PythonBinder.h>
+#include "../game/ItemFactory.h"
 
-#ifndef LUATOOLS_H
-#define LUATOOLS_H
-
-#include "EngineTypedefs.h"
-#include <lualib.h>
-#include <boost/python.hpp>
-
-class LuaTools
+PYTHONBINDER_REGISTER_MODULE( ItemFactory )
 {
-public:
-    static LuaStatePtr createLuaVM();
-    static void execString( LuaStatePtr lua, const std::string &script );
-    static void execFile( LuaStatePtr lua, const std::string &fileName );
-};
-
-#endif // LUATOOLS_H
+    using namespace boost::python;
+    class_<ItemFactory>( "ItemFactory", no_init )
+        .def( "create",
+                 (ItemPtr(*)(ExplorePtr, IPlayerPtr, std::string))&ItemFactory::create )
+            .staticmethod( "create" );
+}

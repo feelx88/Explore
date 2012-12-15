@@ -43,7 +43,13 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
 
 NetworkMessenger::~NetworkMessenger()
 {
-    mSocket->shutdown( ip::udp::socket::shutdown_both );
+    try
+    {
+        mSocket->shutdown( ip::udp::socket::shutdown_both );
+    }
+    catch( std::exception& )
+    {
+    }
     mSocket->close();
 }
 

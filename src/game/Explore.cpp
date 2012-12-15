@@ -26,7 +26,7 @@
 
 #include <engine/IrrlichtTools.h>
 #include <engine/PathTools.h>
-#include <engine/LuaTools.h>
+#include <engine/PythonBinder.h>
 #include <engine/EventReceiver.h>
 
 #include "ExploreMenu.h"
@@ -74,14 +74,14 @@ Explore::Explore()
     loadConfig();
     initIrrlicht();
     initBullet();
-    initLua();
+    initPython();
     initScriptConsole();
     initMenu();
     initGame();
     initServer();
 
-    //Run init script
-    LuaTools::execString( mLua, "Explore.init()" );
+    //Import init script
+    PythonTools::execString( "from init import *" );
 }
 
 Explore::~Explore()
@@ -138,11 +138,6 @@ EventReceiverPtr Explore::getEventReceiver() const
 BulletWorldPtr Explore::getBulletWorld() const
 {
     return mBulletWorld;
-}
-
-LuaStatePtr Explore::getLuaVM() const
-{
-    return mLua;
 }
 
 ScriptConsolePtr Explore::getScriptConsole() const
@@ -303,20 +298,18 @@ void Explore::initBullet()
     mBulletWorld->setDebugDrawer( mBulletDebugDrawer.get() );
 }
 
-void Explore::initLua()
+void Explore::initPython()
 {
-    mLua = LuaTools::createLuaVM();
-    //luabind::open( mLua.get() );
-    //LuaBinder::registerAll( mLua );
+    PythonTools::initPython();
 
-    //luabind::globals( mLua.get() )["Explore"]["Instance"] = this;
-
-    LuaTools::execFile( mLua, "init.lua" );
+    boost::python::api::object main( boost::python::import( "ExploreBind" ) );
+    boost::python::api::object globals = main.attr( "Explore" );
+    globals.attr( "Instance" ) = boost::python::ptr( this );
 }
 
 void Explore::initScriptConsole()
 {
-    mScriptConsole.reset( new ScriptConsole( mDevice, mLua, mConfig ) );
+    mScriptConsole.reset( new ScriptConsole( mDevice, mConfig ) );
     mEventReceiver->setScriptConsole( mScriptConsole );
     mScriptConsole->setVisible( false );
 

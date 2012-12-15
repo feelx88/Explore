@@ -17,14 +17,37 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <engine/LuaBinder.h>
-#include "../IPlayer.h"
+#include <engine/PythonBinder.h>
+#include "../game/IPlayer.h"
 
-//LUABINDER_REGISTER_MODULE_START( IPlayerBinder )
-BOOST_PYTHON_MODULE( IPlayer )
+class IPlayerWrapper : public IPlayer, boost::python::wrapper<IPlayer>
+{
+public:
+    virtual void update()
+    {
+        this->get_override( "update" )();
+    }
+
+    virtual irr::core::vector3df rotateToDirection(
+            irr::core::vector3df dir = irr::core::vector3df( 0.f, 0.f, 1.f ) ) const
+    {
+        return this->get_override( "rotateToDirection" )( dir );
+    }
+
+    virtual irr::core::vector3df getPosition() const
+    {
+        return this->get_override( "getPosition" )();
+    }
+
+    virtual irr::core::quaternion getRotation() const
+    {
+        return this->get_override( "getRotation" )();
+    }
+};
+
+PYTHONBINDER_REGISTER_MODULE( IPlayer )
 {
     using namespace boost::python;
-    class_<IPlayer>( "IPlayer" )
+    class_<IPlayer, boost::noncopyable>( "IPlayer", no_init )
         .def( "removeOwnedItem", &IPlayer::removeOwnedItem );
 }
-//LUABINDER_REGISTER_MODULE_END( IPlayerBinder )

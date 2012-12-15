@@ -36,7 +36,6 @@ Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
       mExplore( explore ),
       mDevice( explore->getIrrlichtDevice() ),
       mBulletWorld( explore->getBulletWorld() ),
-      mLua( explore->getLuaVM() ),
       mProperties( PropTreePtr( new boost::property_tree::ptree( *properties ) ) ),
       mBasePath( basePath ),
       mOwner( owner ),
@@ -311,8 +310,7 @@ void Item::registerScripts()
         {
             uint8_t actionID =
                     x->second.get<uint8_t>( "<xmlattr>.Action", EIAID_FIRST_ACTION );
-            LuaScriptPtr script( new LuaScript(
-                                     mLua, x->second.data(),
+            PythonScriptPtr script( new PythonScript( x->second.data(),
                                      x->second.get( "<xmlattr>.File", false ) ) );
             mScripts.insert( std::make_pair( actionID, script ) );
 

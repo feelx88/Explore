@@ -17,11 +17,10 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../LuaBinder.h"
-#include "../NetworkSyncablePacket.h"
+#include "../engine/PythonBinder.h"
+#include "../engine/NetworkSyncablePacket.h"
 
-//LUABINDER_REGISTER_MODULE_START( NetworkSyncablePacketBinder )
-BOOST_PYTHON_MODULE( NetworkSyncablePacket )
+PYTHONBINDER_REGISTER_MODULE( NetworkSyncablePacket )
 {
     using namespace boost::python;
     class_<NetworkSyncablePacket>( "NetworkSyncablePacket", init<int, int, int, std::string>() )
@@ -53,4 +52,3 @@ BOOST_PYTHON_MODULE( NetworkSyncablePacket )
         .def( "readBool", &NetworkSyncablePacket::readBool )
         .def( "writeBool", &NetworkSyncablePacket::writeBool );
 }
-//LUABINDER_REGISTER_MODULE_END( NetworkSyncablePacketBinder )
