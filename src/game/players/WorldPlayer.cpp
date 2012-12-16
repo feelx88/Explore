@@ -28,27 +28,24 @@ WorldPlayer::WorldPlayer( ExplorePtr explore )
 
 void WorldPlayer::update()
 {
-    for( ItemMap::iterator x = mOwnedItems.begin(); x != mOwnedItems.end(); ++x )
-    {
-        x->second->startAction( EAID_UPDATE );
-    }
+    foreach_( ItemMap::value_type &x, mOwnedItems )
+        x.second->startAction( EAID_UPDATE );
 
-    for( std::vector<IPlayer*>::iterator x = mChildren.begin();
-         x != mChildren.end(); ++x )
-        ( *x )->update();
+    foreach_( IPlayerPtr& x, mChildren )
+        x->update();
 
     //TODO: If Networkmessenger->hasPacketsInQueue => foreach packet
     //=> if typeid==item => request item data => create item
 }
 
-void WorldPlayer::setLocalPlayer(IPlayerPtr player)
+void WorldPlayer::setLocalPlayer( IPlayerPtr player )
 {
     mLocalPlayer = player;
 }
 
 IPlayerPtr WorldPlayer::getLocalPlayer() const
 {
-    return mLocalPlayer;
+    return mLocalPlayer.lock();
 }
 
 irr::core::vector3df WorldPlayer::rotateToDirection(irr::core::vector3df dir) const

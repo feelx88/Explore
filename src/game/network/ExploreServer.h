@@ -37,7 +37,14 @@ public:
         ESAID_REQUEST_CONNECTION,
         ESAID_ACCEPT_CONNECTION,
         ESAID_REQUEST_IS_STILL_ALIVE,
-        ESAID_REQUEST_ITEM_INFO
+        ESAID_REQUEST_ITEM_INFO,
+        ESAID_CONNECTIONINFO
+    };
+
+    struct InitializationInfo
+    {
+        size_t curPlayers, totalPlayers;
+        size_t curItems, totalItems;
     };
 
     struct HostInfo
@@ -56,6 +63,7 @@ public:
         boost::asio::ip::udp::endpoint endpoint;
         boost::chrono::system_clock::time_point lastActiveTime;
         boost::dynamic_bitset<> statusBits;
+        InitializationInfo initializationInfo;
     };
 
     ExploreServer( ExplorePtr explore, const HostInfo &info,
@@ -78,6 +86,7 @@ public:
     void requestConnection( const std::string &ip, const int &port );
     bool isConnecting() const;
     bool hasConnection() const;
+    bool isInitialized() const;
 
     void setClientTimeout( int timeout );
     int clientTimeout() const;

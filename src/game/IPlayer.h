@@ -29,10 +29,9 @@ typedef boost::shared_ptr<IPlayer> IPlayerPtr;
 typedef boost::weak_ptr<IPlayer> IPlayerWeakPtr;
 
 typedef boost::unordered::unordered_map<Item*,ItemPtr> ItemMap;
-typedef std::vector<IPlayer*> IPlayerVector;
+typedef std::vector<IPlayerPtr> IPlayerVector;
 
-class IPlayer : public boost::enable_shared_from_this<IPlayer>,
-        public NetworkSyncable
+class IPlayer : public NetworkSyncable
 {
 public:
     IPlayer( ExplorePtr explore, IPlayerPtr parent );
@@ -49,11 +48,13 @@ public:
     virtual void removeOwnedItem( ItemPtr item );
     ItemMap &getOwnedItems();
 
-    IPlayer *getParent() const;
+    IPlayerPtr getParent() const;
     void setParent( IPlayerPtr parent );
+    boost::optional<IPlayerPtr> getChild( uint32_t uid );
 
     virtual void serializeAll( const uint8_t actionID,
-                               std::list<NetworkSyncablePacket> &list );
+                               std::list<NetworkSyncablePacket> &playerList,
+                               std::list<NetworkSyncablePacket> &itemList );
 
 protected:
 
@@ -61,6 +62,8 @@ protected:
                                     uint8_t actionID );
     virtual boost::optional<NetworkSyncablePacket> deserializeInternal(
             NetworkSyncablePacket &packet );
+
+    void addChild( IPlayer* child );
 
     PropTreePtr mProperties;
 
@@ -71,7 +74,7 @@ protected:
 
     ItemMap mOwnedItems;
 
-    IPlayer* mParent;
+    IPlayerWeakPtr mParent;
     IPlayerVector mChildren;
 };
 

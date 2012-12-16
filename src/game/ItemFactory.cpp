@@ -96,11 +96,21 @@ ItemPtr ItemFactory::create( ExplorePtr explore, NetworkSyncablePacket &packet )
     }
 
     std::string fileName = packet.readString();
-    /*uint32_t ownerID =*/ packet.readUInt32();
-    //BUG: attach right IPlayer
-    IPlayerPtr owner = explore->getExploreGame()->getWorldPlayer();
+    uint32_t ownerID = packet.readUInt32();
 
-    ItemPtr item = create( explore, owner, fileName );
+    WorldPlayerPtr world = explore->getExploreGame()->getWorldPlayer();
+
+    boost::optional<IPlayerPtr> owner;
+
+    if( world->getUID() == ownerID )
+        owner = world;
+    else
+        owner = world->getChild( ownerID );
+
+    if( !owner )
+        owner = world; //TODO: Maybe throw/request player or something?
+
+    ItemPtr item = create( explore, *owner, fileName );
     item->setUID( packet.getUID() );
     item->deserialize( packet );
 

@@ -39,9 +39,8 @@ public:
     irr::core::vector3df getPosition() const;
     irr::core::quaternion getRotation() const;
 
-
 private:
-    IPlayerPtr mLocalPlayer;
+    IPlayerWeakPtr mLocalPlayer;
 };
 
 #endif // WORLDPLAYER_H

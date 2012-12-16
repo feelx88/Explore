@@ -42,6 +42,7 @@ enum E_STATUS_BITS
 enum E_CLIENT_STATUS_BITS
 {
     ECSB_INITIALIZED = 0,
+    ECSB_PACKETS_SENDED,
     ECSB_PLAYERS_CREATED,
     ECSB_ITEMS_CREATED,
     ECSB_COUNT
@@ -139,6 +140,11 @@ bool ExploreServer::hasConnection() const
     return mStatusBits[ESB_CONNECTED];
 }
 
+bool ExploreServer::isInitialized() const
+{
+    return mSelfInfo.statusBits[ECSB_INITIALIZED];
+}
+
 void ExploreServer::setClientTimeout(int timeout)
 {
     mClientTimeout = timeout;
@@ -165,10 +171,16 @@ void ExploreServer::update()
     //TODO: Maybe refactor to WorldPlayer or somewhere else?
     while( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
     {
-        NetworkSyncablePacket packet = mMessenger->nextPacket();
+        NetworkSyncablePacket packet = mMessenger->nextPacket( false );
 
-        if( packet.getTypeID() == ENTI_ITEM )
+        if( !mSelfInfo.statusBits[ECSB_PLAYERS_CREATED]
+                && packet.getTypeID() == ENTI_ITEM )
         {
+            mMessenger->reQueuePacket();
+        }
+        else if( packet.getTypeID() == ENTI_ITEM )
+        {
+            mMessenger->popPacket();
             if( packet.getActionID() == EAID_CREATE )
                 ItemFactory::create( mExplore, packet );
             else
@@ -177,9 +189,22 @@ void ExploreServer::update()
                 p.writeUInt32( packet.getUID() );
                 send( p );
             }
+
+            mSelfInfo.initializationInfo.curItems++;
+
+            //TODO: Only for debugging
+            std::stringstream info;
+            info << "Item " << mSelfInfo.initializationInfo.curItems << "/"
+                 << mSelfInfo.initializationInfo.totalItems << " received.";
+            _LOG( info.str() );
+
+            if( mSelfInfo.initializationInfo.curItems >=
+                    mSelfInfo.initializationInfo.totalItems )
+                mSelfInfo.statusBits[ECSB_ITEMS_CREATED] = true;
         }
         else if( packet.getTypeID() == ENTI_PLAYER )
         {
+            mMessenger->popPacket();
             uint32_t clientID = packet.readUInt32();
             VisualPlayerPtr player;
 
@@ -195,11 +220,29 @@ void ExploreServer::update()
                 player.reset( new VisualPlayer( mExplore, world ) );
             player->setClientID( clientID );
             player->deserialize( packet );
+
+            mSelfInfo.initializationInfo.curPlayers++;
+
+            //TODO: Only for debugging
+            std::stringstream info;
+            info << "Player " << mSelfInfo.initializationInfo.curPlayers << "/"
+                 << mSelfInfo.initializationInfo.totalPlayers << " received.";
+            _LOG( info.str() );
+
+            if( mSelfInfo.initializationInfo.curPlayers >=
+                    mSelfInfo.initializationInfo.totalPlayers )
+                mSelfInfo.statusBits[ECSB_PLAYERS_CREATED] = true;
         }
 
         if( mStatusBits[ESB_SERVER] )
             send( packet );
     }
+
+    //If every status bit is set except for ECSB_INITIALIZED, set it to true.
+    if( mSelfInfo.statusBits.count() == ECSB_COUNT - 1
+            && !mSelfInfo.statusBits[ECSB_INITIALIZED] )
+        mSelfInfo.statusBits[ECSB_INITIALIZED] = true;
+
     if( mStatusBits[ESB_SERVER] )
     {
         system_clock::time_point now = system_clock::now();
@@ -217,17 +260,27 @@ void ExploreServer::update()
                 mClientIDMap.erase( x.second.id );
                 break;
             }
-            else if( !x.second.statusBits[ECSB_INITIALIZED] )
+            else if( !x.second.statusBits[ECSB_PACKETS_SENDED] )
             {
-                std::list<NetworkSyncablePacket> newList;
-                mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                            EAID_CREATE, newList );
+                //Send info packet
+                NetworkSyncablePacket infoPacket =
+                        serialize( ESAID_CONNECTIONINFO );
 
-                foreach_( NetworkSyncablePacket &packet, newList )
+                std::list<NetworkSyncablePacket> playerList, itemList;
+                mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
+                            EAID_CREATE, playerList, itemList );
+
+                infoPacket.writeUInt8( playerList.size() );
+                infoPacket.writeUInt32( itemList.size() );
+                mMessenger->sendTo( infoPacket, x.second.endpoint );
+
+                foreach_( NetworkSyncablePacket &packet, playerList )
                     mMessenger->sendTo( packet, x.second.endpoint );
 
-                x.second.statusBits[ECSB_INITIALIZED] = true;
-                //TODO:send more infos to be able to show a status bar
+                foreach_( NetworkSyncablePacket &packet, itemList )
+                    mMessenger->sendTo( packet, x.second.endpoint );
+
+                x.second.statusBits[ECSB_PACKETS_SENDED] = true;
             }
         }
 
@@ -235,11 +288,13 @@ void ExploreServer::update()
 
         if( mExplore->getExploreGame()->getWorldPlayer() )
         {//TODO:this does not look neat
-            std::list<NetworkSyncablePacket> syncableList;
+            std::list<NetworkSyncablePacket> playerList, itemList;
             mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                        EAID_UPDATE, syncableList );
+                        EAID_UPDATE, playerList, itemList );
 
-            foreach_( NetworkSyncablePacket &packet, syncableList )
+            foreach_( NetworkSyncablePacket &packet, playerList )
+                send( packet );
+            foreach_( NetworkSyncablePacket &packet, itemList )
                 send( packet );
         }
     }
@@ -381,6 +436,14 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         if( syncable )
             return syncable->serialize( EAID_CREATE );
 
+        break;
+    }
+    case ESAID_CONNECTIONINFO:
+    {
+        mSelfInfo.initializationInfo.totalPlayers = packet.readUInt8();
+        mSelfInfo.initializationInfo.totalItems = packet.readUInt32();
+        mSelfInfo.initializationInfo.curPlayers = 0;
+        mSelfInfo.initializationInfo.curItems = 0;
         break;
     }
     default:

@@ -51,6 +51,20 @@ ExploreGame::ExploreGame( ExplorePtr explore )
 
 E_GAME_STATE ExploreGame::run()
 {
+    //FIXME: Change to a better bahviour.
+    if( !mExplore->getExploreServer()->serverMode() )
+    {
+        while( !mExplore->getExploreServer()->isInitialized() )
+        {
+            mVideoDriver->beginScene( true, true, SColor( 255, 255, 0, 255 ) );
+            mSceneManager->drawAll();
+            mGUI->drawAll();
+
+            mVideoDriver->endScene();
+            mExplore->getIOService()->poll();
+        }
+    }
+
     bool running = true;
 
     mEventReceiver->lockMouse( true );
@@ -67,18 +81,24 @@ E_GAME_STATE ExploreGame::run()
 
     mWorldPlayer.reset( new WorldPlayer( mExplore ) );
 
-    boost::shared_ptr<LocalPlayer> p( new LocalPlayer( mExplore, mWorldPlayer ) );
-    p->getEntity()->setPosition( spawnPos );
-
-    mWorldPlayer->setLocalPlayer( static_cast<IPlayerPtr>( p ) );
+    VisualPlayerPtr p;
 
     if( mExplore->getExploreServer()->serverMode() )
     {
+        p.reset( new LocalPlayer( mExplore, mWorldPlayer ),
+                 specialDeleters::NullDeleter() );
+        mWorldPlayer->setLocalPlayer( p );
+
+        p = boost::static_pointer_cast<VisualPlayer>(
+                    mWorldPlayer->getLocalPlayer() );
+
         ItemFactory::create( mExplore, p, "de.feelx88.SimpleForceGun" );
         ItemFactory::create( mExplore, p, "de.feelx88.SimpleBlockSpawner" );
         ItemFactory::create( mExplore, p, "de.feelx88.SimpleGun" );
         ItemFactory::create( mExplore, p, "de.feelx88.SuzanneSpawner" );
     }
+
+    p->getEntity()->setPosition( spawnPos );
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 

@@ -49,7 +49,8 @@ Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
     //TODO: Should work because Entities copy their PropTreePtr and mProperties
     //lives until the destructor gets called, but maybe search for a more
     //elegant way
-    PropTreePtr child( &mProperties->get_child( "Item" ), NullDeleter() );
+    PropTreePtr child( &mProperties->get_child( "Item" ),
+                       specialDeleters::NullDeleter() );
     mEntities.reset( new EntityContainer( mDevice, mBulletWorld,
                                           child,
                                           mBasePath ) );
@@ -314,7 +315,7 @@ void Item::registerScripts()
                                      x->second.get( "<xmlattr>.File", false ) ) );
             mScripts.insert( std::make_pair( actionID, script ) );
 
-            _LOG( "Added script for action", actionID );
+            _LOG( "Added script for action", (int)actionID );
         }
     }
 }

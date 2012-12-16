@@ -107,45 +107,4 @@ private:
     static int sRegisterDummy;
 };
 
-/*static inline std::ostream &operator<<( std::ostream &stream,
-                          const uint8_t &in )
-{
-    if( in == EIAID_FIRST_ACTION )
-        stream << "FIRST";
-    else if( in == EIAID_SECOND_ACTION )
-        stream << "SECOND";
-    else if( in == EIAID_USE_ACTION )
-        stream << "USE";
-    else if( in == EAID_UPDATE )
-        stream << "UPDATE";
-    else if( in == EAID_DESTROY )
-        stream << "DESTROY";
-    else
-        stream << "UNDEFINED";
-
-    return stream;
-}
-
-static inline std::istream &operator>>( std::istream &stream,
-                          uint8_t &out )
-{
-    std::string action;
-    stream >> action;
-
-    if( action == "FIRST" )
-        out = EIAID_FIRST_ACTION;
-    else if( action == "SECOND" )
-        out = EIAID_SECOND_ACTION;
-    else if( action == "USE" )
-        out = EIAID_USE_ACTION;
-    else if( action == "UPDATE" )
-        out = EAID_UPDATE;
-    else if( action == "DESTROY" )
-        out = EAID_DESTROY;
-    else
-        out = EAID_COUNT;
-
-    return stream;
-}*/
-
 #endif // ITEM_H

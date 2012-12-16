@@ -37,12 +37,12 @@ IPlayer::IPlayer( ExplorePtr explore, IPlayerPtr parent )
       mDevice( explore->getIrrlichtDevice() ),
       mEventReceiver( explore->getEventReceiver() ),
       mBulletWorld( explore->getBulletWorld() ),
-      mParent( parent.get() )
+      mParent( parent )
 {
     setTypeID( ENTI_PLAYER );
 
-    if( mParent )
-        mParent->mChildren.push_back( this );
+    if( parent )
+        parent->addChild( this );
 }
 
 IPlayer::~IPlayer()
@@ -67,28 +67,42 @@ ItemMap &IPlayer::getOwnedItems()
     return mOwnedItems;
 }
 
-IPlayer* IPlayer::getParent() const
+IPlayerPtr IPlayer::getParent() const
 {
-    return mParent;
+    return mParent.lock();
 }
 
 void IPlayer::setParent( IPlayerPtr parent )
 {
-    mParent = parent.get();
+    mParent = parent;
 }
 
-void IPlayer::serializeAll(const uint8_t actionID, std::list<NetworkSyncablePacket> &list)
+boost::optional<IPlayerPtr> IPlayer::getChild( uint32_t uid )
+{
+    foreach_( IPlayerVector::value_type &x, mChildren )
+    {
+        if( x->getUID() == uid )
+            return x;
+    }
+    return boost::none;
+}
+
+void IPlayer::serializeAll( const uint8_t actionID,
+                            std::list<NetworkSyncablePacket> &playerList,
+                            std::list<NetworkSyncablePacket> &itemList )
 {
     typedef std::map<Item*,ItemPtr> itemMap_t;
 
     foreach_( itemMap_t::value_type &x, mOwnedItems )
     {
-        list.push_back( x.second->serialize( actionID ) );
+        itemList.push_back( x.second->serialize( actionID ) );
     }
+
+    playerList.push_back( serialize( actionID ) );
 
     foreach_( IPlayerVector::value_type &x, mChildren )
     {
-        x->serializeAll( actionID, list );
+        x->serializeAll( actionID, playerList, itemList );
     }
 }
 
@@ -100,4 +114,9 @@ boost::optional<NetworkSyncablePacket> IPlayer::deserializeInternal(
         NetworkSyncablePacket &/*packet*/ )
 {
     return boost::none;
+}
+
+void IPlayer::addChild( IPlayer *child )
+{
+    mChildren.push_back( IPlayerPtr( child ) );
 }
