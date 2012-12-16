@@ -30,12 +30,15 @@
 #include <boost/shared_array.hpp>
 #include <boost/scoped_array.hpp>
 
+namespace specialDeleters
+{
 struct NullDeleter
 {
     void operator()( void const * ) const
     {
     }
 };
+}
 
 #include <boost/property_tree/ptree.hpp>
 
