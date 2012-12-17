@@ -30,6 +30,8 @@ typedef boost::shared_ptr<PythonBinder> PythonBinderPtr;
 class PythonBinder
 {
 public:
+    PythonBinder( int prio = 0 );
+    friend bool compareBinders( const PythonBinderPtr&, const PythonBinderPtr& );
     static void registerAll();
 
 protected:
@@ -38,21 +40,23 @@ protected:
     static int registerBinder( PythonBinder *binder );
 
     static boost::shared_ptr<std::vector<PythonBinderPtr> > sBinders;
+    int priority;
 };
 
-#define PYTHONBINDER_REGISTER_MODULE( NAME )\
-void NAME ## reg();\
+#define PYTHONBINDER_REGISTER_MODULE( NAME ) PYTHONBINDER_REGISTER_MODULE_PRIORITY( NAME, 0 )
+
+#define PYTHONBINDER_REGISTER_MODULE_PRIORITY( NAME, PRIO )\
 class NAME ## Binder : public PythonBinder\
 {\
     public:\
-    void reg()\
-    {\
-        NAME ## reg();\
-    }\
+    NAME ## Binder()\
+    : PythonBinder( PRIO )\
+    {}\
+    void reg();\
     private:\
     static int regDummy;\
 };\
 int NAME ## Binder::regDummy = PythonBinder::registerBinder( new NAME ## Binder );\
-void NAME ## reg()
+void NAME ## Binder::reg()
 
 #endif // PYTHONBINDER_H

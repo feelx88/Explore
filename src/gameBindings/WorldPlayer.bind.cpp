@@ -18,12 +18,10 @@
 */
 
 #include <engine/PythonBinder.h>
-#include "../game/ExploreGame.h"
+#include "../game/players/WorldPlayer.h"
 
-PYTHONBINDER_REGISTER_MODULE( ExploreGame )
+PYTHONBINDER_REGISTER_MODULE_PRIORITY( WorldPlayer, 1 )
 {
     using namespace boost::python;
-    class_<ExploreGame, ExploreGamePtr>( "ExploreGame", no_init )
-        .def( "setBulletDebugDraw", &ExploreGame::setBulletDebugDraw )
-        .def( "getWorldPlayer", &ExploreGame::getWorldPlayer );
+    class_<WorldPlayer, bases<IPlayer>, WorldPlayerPtr>( "WorldPlayer", no_init );
 }

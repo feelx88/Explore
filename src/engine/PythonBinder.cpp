@@ -18,16 +18,26 @@
 */
 
 #include "PythonBinder.h"
+#include <typeinfo>
 
 boost::shared_ptr<std::vector<PythonBinderPtr> > PythonBinder::sBinders(
         PythonBinder::sBinders );
 
+bool compareBinders( const PythonBinderPtr &a, const PythonBinderPtr &b )
+{
+    return a->priority < b->priority;
+}
+
+PythonBinder::PythonBinder( int prio )
+    : priority( prio )
+{
+}
+
 void PythonBinder::registerAll()
 {
-    foreach_( PythonBinderPtr &binder, *PythonBinder::sBinders )
-    {
+    std::sort( sBinders->begin(), sBinders->end(), compareBinders );
+    foreach_( PythonBinderPtr &binder, *sBinders )
         binder->reg();
-    }
 }
 
 int PythonBinder::registerBinder( PythonBinder *binder )

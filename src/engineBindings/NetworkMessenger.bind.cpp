@@ -23,7 +23,7 @@
 PYTHONBINDER_REGISTER_MODULE( NetworkMessenger )
 {
     using namespace boost::python;
-    class_<NetworkMessenger>( "NetworkMessenger", no_init )
+    class_<NetworkMessenger, NetworkMessengerPtr>( "NetworkMessenger", no_init )
         .def( "send", &NetworkMessenger::send )
         .def( "sendTo",
               (void(NetworkMessenger::*)(const NetworkSyncablePacket&,

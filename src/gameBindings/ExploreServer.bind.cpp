@@ -23,7 +23,7 @@
 PYTHONBINDER_REGISTER_MODULE( ExploreServer )
 {
     using namespace boost::python;
-    class_<ExploreServer, boost::noncopyable>( "ExploreServer", no_init )
+    class_<ExploreServer, boost::shared_ptr<ExploreServer>, boost::noncopyable>( "ExploreServer", no_init )
         .def( "setServerMode", &ExploreServer::setServerMode )
         .def( "requestServerInfo", &ExploreServer::requestServerInfo )
         .def( "hasServerInfo", &ExploreServer::hasServerInfo )

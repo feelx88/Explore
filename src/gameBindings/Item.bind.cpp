@@ -23,5 +23,5 @@
 PYTHONBINDER_REGISTER_MODULE( Item )
 {
     using namespace boost::python;
-    class_<Item>( "Item", no_init );
+    class_<Item, ItemPtr>( "Item", no_init );
 }
