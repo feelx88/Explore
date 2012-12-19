@@ -44,6 +44,7 @@ add_custom_target( Assets SOURCES ${assets} )
 
 #find_package( Irrlicht REQUIRED )
 set( IRRLICHT_LIBRARIES Irrlicht )
+set( IRRLICHT_INCLUDE_DIR CACHE PATH "Irrlicht Include directory" )
 #find_package( OpenAL REQUIRED )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
 find_package( PythonLibs REQUIRED )
@@ -52,7 +53,9 @@ find_package( Boost COMPONENTS chrono )
 find_package( Boost COMPONENTS foreach )
 
 include_directories( ${BULLET_INCLUDE_DIR}
-                       ${PYTHON_INCLUDE_DIR} )
+                       ${PYTHON_INCLUDE_DIR}
+			${Boost_INCLUDE_DIR}
+			${IRRLICHT_INCLUDE_DIR} )
 
 target_link_libraries( Engine
                         ${IRRLICHT_LIBRARIES}
