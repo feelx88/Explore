@@ -43,7 +43,7 @@ file( GLOB_RECURSE assets
 add_custom_target( Assets SOURCES ${assets} )
 
 #find_package( Irrlicht REQUIRED )
-set( IRRLICHT_LIBRARIES Irrlicht )
+set( IRRLICHT_LIBRARIES Irrlicht CACHE FILEPATH "Irrlicht library" )
 set( IRRLICHT_INCLUDE_DIR CACHE PATH "Irrlicht Include directory" )
 #find_package( OpenAL REQUIRED )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
