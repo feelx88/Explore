@@ -18,7 +18,6 @@
 */
 
 #include "PythonBinder.h"
-#include <typeinfo>
 
 boost::shared_ptr<std::vector<PythonBinderPtr> > PythonBinder::sBinders(
         PythonBinder::sBinders );
