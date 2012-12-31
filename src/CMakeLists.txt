@@ -73,3 +73,7 @@ set_target_properties( Engine Explore ExploreBind Explore.bin PROPERTIES
 
 set_target_properties( ExploreBind PROPERTIES
     PREFIX "" )
+
+if( WIN32 )
+	set_target_properties( ExploreBind PROPERTIES SUFFIX .pyd )
+endif()
