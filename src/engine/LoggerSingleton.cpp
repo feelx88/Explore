@@ -53,17 +53,17 @@ LoggerSingleton::~LoggerSingleton()
 
 void LoggerSingleton::message( const std::string &message )
 {
-    for( StreamList::iterator x = mStreams.begin(); x != mStreams.end(); ++x  )
+    foreach_( std::ostream *x, mStreams )
     {
-        *( *x ) << message;
+        *x << message;
     }
 }
 
 void LoggerSingleton::newLine()
 {
-    for( StreamList::iterator x = mStreams.begin(); x != mStreams.end(); ++x  )
+    foreach_( std::ostream *x, mStreams )
     {
-        *( *x ) << std::endl;
+        *x << std::endl;
     }
 }
 
