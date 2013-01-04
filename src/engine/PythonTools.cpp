@@ -52,7 +52,7 @@ std::string PythonTools::pythonErrorDescription()
     std::string error;
     if( PyErr_Occurred() )
     {
-        PyObject *type, *value, *traceback;
+        PyObject *type = 0, *value = 0, *traceback = 0;
         PyErr_Fetch( &type, &value, &traceback );
         if( value )
             error = PyString_AsString( value );
