@@ -20,18 +20,21 @@
 #ifndef NETWORKSYNCABLEPACKET_H
 #define NETWORKSYNCABLEPACKET_H
 
+#include "EngineTypedefs.h"
 #include <string>
 #include <sstream>
 #include <stdint.h>
 #include <boost/asio.hpp>
 
-class NetworkSyncablePacket
+class APIEXPORT NetworkSyncablePacket
 {
 public:
     NetworkSyncablePacket( const std::string &data );
     NetworkSyncablePacket( uint32_t uid, uint8_t typeID, uint8_t actionID,
                            const std::string &body );
     NetworkSyncablePacket( const NetworkSyncablePacket &other );
+
+    NetworkSyncablePacket& operator=( const NetworkSyncablePacket &other );
 
     uint32_t getUID() const;
     uint8_t getTypeID() const;

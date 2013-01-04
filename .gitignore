@@ -6,8 +6,12 @@ build/Explore
 *.so
 *.dll*
 *.pdb
+*.lib
+*.exp
+*.manifest
 *.bin
 *.pyc
+*.pyd
 CMakeFiles
 CMakeCache.txt
 CMakeLists.txt.*

@@ -44,7 +44,7 @@ typedef boost::shared_ptr<ExploreServer> ExploreServerPtr;
 
 class EventReceiver;
 
-class BulletIrrlichtDebugDrawer : public btIDebugDraw
+class APIEXPORT BulletIrrlichtDebugDrawer : public btIDebugDraw
 {
 public:
     irr::video::IVideoDriver *driver;
@@ -87,7 +87,7 @@ public:
 };
 
 
-class Explore
+class APIEXPORT Explore
 {
 public:
 
@@ -135,7 +135,6 @@ private:
 
     void initIrrlicht();
     void initBullet();
-    void initPython();
     void initScriptConsole();
     void initMenu();
     void initGame();

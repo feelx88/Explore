@@ -20,6 +20,7 @@
 #ifndef NETWORKSYNCABLE_H
 #define NETWORKSYNCABLE_H
 
+#include "EngineTypedefs.h"
 #include "NetworkSyncablePacket.h"
 
 #include <boost/optional.hpp>
@@ -27,7 +28,7 @@
 #include <map>
 #include <stdint.h>
 
-class NetworkSyncable
+class APIEXPORT NetworkSyncable
 {
 public:
     struct UIDAlreadyUsedException

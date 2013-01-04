@@ -25,7 +25,7 @@
 #include "ScriptConsole.h"
 #include <boost/unordered_map.hpp>
 
-class EventReceiver : public irr::IEventReceiver
+class APIEXPORT EventReceiver : public irr::IEventReceiver
 {
 public:
     struct GUICallback

@@ -20,10 +20,11 @@
 #ifndef PYTHONTOOLS_H
 #define PYTHONTOOLS_H
 
+#include "EngineTypedefs.h"
 #include <Python.h>
 #include <boost/python.hpp>
 
-class PythonTools
+class APIEXPORT PythonTools
 {
 public:
     static void initPython();

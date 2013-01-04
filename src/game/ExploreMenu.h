@@ -25,7 +25,7 @@
 #include <engine/EngineTypedefs.h>
 #include "GameState.h"
 
-class ExploreMenu
+class APIEXPORT ExploreMenu
 {
 public:
     ExploreMenu( ExplorePtr explore );

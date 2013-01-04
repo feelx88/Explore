@@ -17,16 +17,13 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#include "game/Explore.h"
-#include <Python.h>
+#include <engine/PythonTools.h>
 
 int main( int argc, char** argv )
 {
-    Explore game;
-
-    if( argc > 1 && std::string( argv[1] ) == "-game"  )
-        game.setGameState( EGS_GAME );
-    return game.run();
+    PythonTools::initPython();
+    boost::python::api::object main = boost::python::import( "__main__" ).attr( "__dict__" );
+    boost::python::exec_file( "init.py", main, main );
+    return 0;
 }
 

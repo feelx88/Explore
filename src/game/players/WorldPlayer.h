@@ -25,7 +25,7 @@
 class WorldPlayer;
 typedef boost::shared_ptr<WorldPlayer> WorldPlayerPtr;
 
-class WorldPlayer : public IPlayer
+class APIEXPORT WorldPlayer : public IPlayer
 {
 public:
     WorldPlayer( ExplorePtr explore );

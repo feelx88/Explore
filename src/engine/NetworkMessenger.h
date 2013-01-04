@@ -28,7 +28,7 @@
 class NetworkMessenger;
 typedef boost::shared_ptr<NetworkMessenger> NetworkMessengerPtr;
 
-class NetworkMessenger
+class APIEXPORT NetworkMessenger
 {
 public:
     NetworkMessenger( IOServicePtr ioService, PropTreePtr properties );

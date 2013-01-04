@@ -32,7 +32,7 @@ typedef boost::unordered::unordered_map<btRigidBody*, Entity*> BodyEntityMap;
 typedef boost::unordered::unordered_map<irr::scene::ISceneNode*, Entity*> NodeEntityMap;
 typedef boost::unordered::unordered_set<Entity*> EntitySet;
 
-class Entity
+class APIEXPORT Entity
 {
 public:
 

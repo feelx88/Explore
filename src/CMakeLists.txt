@@ -75,5 +75,7 @@ set_target_properties( ExploreBind PROPERTIES
     PREFIX "" )
 
 if( WIN32 )
-	set_target_properties( ExploreBind PROPERTIES SUFFIX .pyd )
+    set_target_properties( Engine PROPERTIES COMPILE_FLAGS -DENGINE_EXPORTS )
+    set_target_properties( Explore PROPERTIES COMPILE_FLAGS -DENGINE_EXPORTS )
+    set_target_properties( ExploreBind PROPERTIES SUFFIX .pyd )
 endif()

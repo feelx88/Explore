@@ -21,6 +21,17 @@
 #ifndef ENGINETYPEDEFS_H
 #define ENGINETYPEDEFS_H
 
+//Windows dll export/import define
+#ifdef _WIN32
+    #ifdef ENGINE_EXPORTS
+    #define APIEXPORT __declspec(dllexport)
+    #else
+    #define APIEXPORT __declspec(dllimport)
+    #endif
+#else //_WIN32
+    #define APIEXPORT
+#endif
+
 #include <boost/foreach.hpp>
 #define foreach_ BOOST_FOREACH
 #define foreach_r_ BOOST_REVERSE_FOREACH

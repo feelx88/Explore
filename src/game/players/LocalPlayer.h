@@ -22,7 +22,7 @@
 
 #include "VisualPlayer.h"
 
-class LocalPlayer : public VisualPlayer
+class APIEXPORT LocalPlayer : public VisualPlayer
 {
 public:
     enum E_PLAYER_KEY_MAPPINGS

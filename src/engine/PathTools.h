@@ -27,7 +27,7 @@
 
 typedef std::vector<boost::filesystem::path> PathVector;
 
-class PathTools
+class APIEXPORT PathTools
 {
 public:
     static std::string getAbsolutePath( const std::string &fileName,

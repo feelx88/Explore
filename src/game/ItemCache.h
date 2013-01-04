@@ -27,7 +27,7 @@ class ItemCache;
 typedef boost::shared_ptr<ItemCache> ItemCachePtr;
 typedef boost::unordered::unordered_map<std::string, PropTreePtr> PropMap;
 
-class ItemCache
+class APIEXPORT ItemCache
 {
 public:
     static ItemCachePtr instance();

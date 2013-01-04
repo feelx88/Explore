@@ -24,7 +24,7 @@
 #include "EngineTypedefs.h"
 #include "Entity.h"
 
-class EntityTools
+class APIEXPORT EntityTools
 {
 public:
     static boost::optional<Entity*> getFirstEntityInRay( IrrlichtDevicePtr device,

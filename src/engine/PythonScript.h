@@ -20,12 +20,13 @@
 #ifndef PYTHONSCRIPT_H
 #define PYTHONSCRIPT_H
 
+#include "EngineTypedefs.h"
 #include "PythonTools.h"
 
 class PythonScript;
 typedef boost::shared_ptr<PythonScript> PythonScriptPtr;
 
-class PythonScript
+class APIEXPORT PythonScript
 {
 public:
     PythonScript( std::string script, bool isFile = true,

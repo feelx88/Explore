@@ -53,7 +53,7 @@ struct ItemCreator : public ItemCreatorBase
     }
 };
 
-class ItemFactory
+class APIEXPORT ItemFactory
 {
 public:
 

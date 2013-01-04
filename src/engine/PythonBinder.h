@@ -27,7 +27,7 @@
 class PythonBinder;
 typedef boost::shared_ptr<PythonBinder> PythonBinderPtr;
 
-class PythonBinder
+class APIEXPORT PythonBinder
 {
 public:
     PythonBinder( int prio = 0 );

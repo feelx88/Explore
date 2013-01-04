@@ -31,7 +31,7 @@ typedef boost::weak_ptr<IPlayer> IPlayerWeakPtr;
 typedef boost::unordered::unordered_map<Item*,ItemPtr> ItemMap;
 typedef std::vector<IPlayerPtr> IPlayerVector;
 
-class IPlayer : public NetworkSyncable
+class APIEXPORT IPlayer : public NetworkSyncable
 {
 public:
     IPlayer( ExplorePtr explore, IPlayerPtr parent );

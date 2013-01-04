@@ -25,7 +25,7 @@
 class VisualPlayer;
 typedef boost::shared_ptr<VisualPlayer> VisualPlayerPtr;
 
-class VisualPlayer : public IPlayer
+class APIEXPORT VisualPlayer : public IPlayer
 {
 public:
     VisualPlayer( ExplorePtr explore, IPlayerPtr parent );

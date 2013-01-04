@@ -74,7 +74,6 @@ Explore::Explore()
     loadConfig();
     initIrrlicht();
     initBullet();
-    initPython();
     initScriptConsole();
     initMenu();
     initGame();
@@ -296,15 +295,6 @@ void Explore::initBullet()
     mBulletDebugDrawer.reset( new BulletIrrlichtDebugDrawer() );
     mBulletDebugDrawer->driver = mDevice->getVideoDriver();
     mBulletWorld->setDebugDrawer( mBulletDebugDrawer.get() );
-}
-
-void Explore::initPython()
-{
-    PythonTools::initPython();
-
-    boost::python::api::object main( boost::python::import( "ExploreBind" ) );
-    boost::python::api::object globals = main.attr( "Explore" );
-    globals.attr( "Instance" ) = boost::python::ptr( this );
 }
 
 void Explore::initScriptConsole()

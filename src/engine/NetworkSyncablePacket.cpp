@@ -64,6 +64,12 @@ NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other
     mBody.write( other.getBody().data(), other.getBodySize() );
 }
 
+NetworkSyncablePacket& NetworkSyncablePacket::operator=( const NetworkSyncablePacket &other )
+{
+    //FIXME:err...?
+    return NetworkSyncablePacket( other );
+}
+
 uint32_t NetworkSyncablePacket::getUID() const
 {
     return mUID;

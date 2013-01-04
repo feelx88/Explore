@@ -24,7 +24,7 @@
 #include "EngineTypedefs.h"
 #include <iostream>
 
-class BulletTools
+class APIEXPORT BulletTools
 {
 public:
     static RigidBodyPtr createRigidBodyptr( BulletWorldPtr world, btRigidBody *body );

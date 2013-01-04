@@ -7,10 +7,15 @@ def LOG( what ):
     else:
         LoggerSingleton.instance().log( str( what ) )
 
-LOG( "== Importing init module ==" )
-server = Explore.Instance.getExploreServer()
-messenger = server.getNetworkMessenger()
+if __name__ == "__main__":
+    LOG( "== Importing init module ==" )
 
-ip = "127.0.0.1"
-port = 6556
-q = exit
+    Explore.Instance = Explore()
+    Explore.Instance.run()
+
+    server = Explore.Instance.getExploreServer()
+    messenger = server.getNetworkMessenger()
+
+    ip = "127.0.0.1"
+    port = 6556
+    q = exit

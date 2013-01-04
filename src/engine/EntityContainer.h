@@ -32,7 +32,7 @@ typedef boost::unordered::unordered_map<std::string,int> IDMap;
 class EntityContainer;
 typedef boost::shared_ptr<EntityContainer> EntityContainerPtr;
 
-class EntityContainer
+class APIEXPORT EntityContainer
 {
 public:
     EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world,

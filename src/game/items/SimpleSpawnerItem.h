@@ -22,7 +22,7 @@
 
 #include "../Item.h"
 
-class SimpleSpawnerItem : public Item
+class APIEXPORT SimpleSpawnerItem : public Item
 {
 public:
     SimpleSpawnerItem( ExplorePtr explore, IPlayerPtr owner,

@@ -23,7 +23,7 @@
 
 #include "EngineTypedefs.h"
 
-class QuaternionConverter
+class APIEXPORT QuaternionConverter
 {
 public:
     static btQuaternion bt( const irr::core::quaternion &irr );

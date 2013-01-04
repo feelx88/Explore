@@ -25,7 +25,7 @@
 #include <string>
 #include <sstream>
 
-class IrrlichtTools
+class APIEXPORT IrrlichtTools
 {
 public:
     static IrrlichtDevicePtr createIrrlichtDevicePtr( irr::IrrlichtDevice *device );

@@ -25,7 +25,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include "EngineTypedefs.h"
 
-class BulletSceneNodeAnimator : public irr::scene::ISceneNodeAnimator
+class APIEXPORT BulletSceneNodeAnimator : public irr::scene::ISceneNodeAnimator
 {
 public:
     BulletSceneNodeAnimator( BulletWorldPtr world, RigidBodyPtr body );

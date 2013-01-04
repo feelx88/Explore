@@ -29,7 +29,7 @@
 
 #define _LOG LoggerSingleton::instance().log
 
-class LoggerSingleton
+class APIEXPORT LoggerSingleton
 {
 public:
     static LoggerSingleton& instance();

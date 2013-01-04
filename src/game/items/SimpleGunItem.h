@@ -23,7 +23,7 @@
 
 #include "../Item.h"
 
-class SimpleGunItem : public Item
+class APIEXPORT SimpleGunItem : public Item
 {
 public:
     SimpleGunItem(ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,

@@ -25,7 +25,7 @@
 class ScriptConsole;
 typedef boost::shared_ptr<ScriptConsole> ScriptConsolePtr;
 
-class ScriptConsole
+class APIEXPORT ScriptConsole
 {
 public:
     friend class EventReceiver;

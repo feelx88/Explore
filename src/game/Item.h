@@ -29,7 +29,7 @@
 typedef boost::unordered::unordered_map<uint8_t, PythonScriptPtr> ScriptMap;
 typedef boost::unordered::unordered_map<Entity*, Item*> EntityItemMap;
 
-class Item : public NetworkSyncable
+class APIEXPORT Item : public NetworkSyncable
 {
 public:
     template <class T>

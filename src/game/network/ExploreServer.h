@@ -26,7 +26,7 @@
 #include <boost/chrono.hpp>
 #include "../GameState.h"
 
-class ExploreServer : public NetworkSyncable
+class APIEXPORT ExploreServer : public NetworkSyncable
 {
 public:
     enum E_SERVER_ACTIONID

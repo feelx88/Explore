@@ -25,7 +25,7 @@
 #include "players/WorldPlayer.h"
 #include <engine/EngineTypedefs.h>
 
-class ExploreGame
+class APIEXPORT ExploreGame
 {
 public:
     ExploreGame( ExplorePtr explore );
