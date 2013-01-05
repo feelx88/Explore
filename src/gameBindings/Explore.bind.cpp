@@ -32,6 +32,13 @@ PYTHONBINDER_REGISTER_MODULE( Explore )
             .staticmethod( "getKeyCode" )
         .def( "run", &Explore::run )
         .def( "setGameState", &Explore::setGameState );
+    enum_<E_GAME_STATE>( "E_GAME_STATE" )
+        .value( "EGS_QUIT", EGS_QUIT )
+        .value( "EGS_MAIN_MENU", EGS_MAIN_MENU )
+        .value( "EGS_CONNECT", EGS_CONNECT )
+        .value( "EGS_LOAD", EGS_LOAD )
+        .value( "EGS_GAME", EGS_GAME )
+        .export_values();
 }
 
 BOOST_PYTHON_MODULE( ExploreBind )
