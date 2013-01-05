@@ -34,7 +34,8 @@ public:
                            const std::string &body );
     NetworkSyncablePacket( const NetworkSyncablePacket &other );
 
-    NetworkSyncablePacket& operator=( const NetworkSyncablePacket &other );
+    void swap( NetworkSyncablePacket &other );
+    NetworkSyncablePacket& operator=( NetworkSyncablePacket other );
 
     uint32_t getUID() const;
     uint8_t getTypeID() const;
@@ -83,5 +84,15 @@ private:
 
     boost::asio::ip::udp::endpoint mEndpoint;
 };
+
+namespace std
+{
+    template <>
+    APIEXPORT inline void swap<NetworkSyncablePacket>( NetworkSyncablePacket &left,
+                                      NetworkSyncablePacket &right )
+    {
+        left.swap( right );
+    }
+}
 
 #endif // NETWORKSYNCABLEPACKET_H

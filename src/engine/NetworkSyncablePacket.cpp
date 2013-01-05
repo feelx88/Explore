@@ -64,10 +64,21 @@ NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other
     mBody.write( other.getBody().data(), other.getBodySize() );
 }
 
-NetworkSyncablePacket& NetworkSyncablePacket::operator=( const NetworkSyncablePacket &other )
+void NetworkSyncablePacket::swap( NetworkSyncablePacket &other )
 {
-    //FIXME:err...?
-    return NetworkSyncablePacket( other );
+    std::swap( mUID, other.mUID );
+    std::swap( mTypeID, other.mTypeID );
+    std::swap( mActionID, other.mActionID );
+    std::swap( mBodySize, other.mBodySize );
+    std::swap( mBody, other.mBody );
+    std::swap( mValid, other.mValid );
+    std::swap( mEndpoint, other.mEndpoint );
+}
+
+NetworkSyncablePacket& NetworkSyncablePacket::operator=( NetworkSyncablePacket other )
+{
+    other.swap( *this );
+    return *this;
 }
 
 uint32_t NetworkSyncablePacket::getUID() const
