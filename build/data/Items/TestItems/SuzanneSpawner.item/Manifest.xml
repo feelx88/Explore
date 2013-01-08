@@ -17,7 +17,7 @@
         <CacheID>de.feelx88.SuzanneSpawner.SuzanneItem</CacheID>
         <AutoAddEntities>true</AutoAddEntities>
         <HitPoints>10</HitPoints>
-        <Script Action="DESTROY">log( "AYYYYYEEE!" )</Script>
+        <Script Action="DESTROY">LOG( "AYYYYYEEE!" )</Script>
         <Entity Name="Suzanne" ID="0">
             <Node>
                 <Mesh>suzanne.obj</Mesh>

@@ -106,6 +106,8 @@ void LocalPlayer::addOwnedItem( ItemPtr item )
         mActiveItem = 0;
         switchItem( 0 );
     }
+    else
+        item->setActivationState( false );
 }
 
 void LocalPlayer::switchItem( int index )
