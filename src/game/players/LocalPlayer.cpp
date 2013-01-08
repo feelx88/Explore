@@ -210,9 +210,12 @@ void LocalPlayer::processControls()
             if( mEventReceiver->mouseClicked( 1 ) )
                 mInventory.at( mActiveItem )->startAction( EIAID_SECOND_ACTION );
 
-            if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] ) )
+            int wheelY = mEventReceiver->mouseWheelY();
+            if( mEventReceiver->keyClicked( mKeyMapping[EPKM_NEXTSLOT] )
+                    || wheelY > 0 )
                 switchItem( mActiveItem + 1 );
-            if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVIOUSSLOT] ) )
+            if( mEventReceiver->keyClicked( mKeyMapping[EPKM_PREVIOUSSLOT] )
+                    || wheelY < 0 )
                 switchItem( mActiveItem - 1 );
         }
     }

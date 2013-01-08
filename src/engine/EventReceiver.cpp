@@ -270,8 +270,9 @@ int EventReceiver::mouseMoveY()
 
 int EventReceiver::mouseWheelY()
 {
-    return mMouseWheelY;
+    int y = mMouseWheelY;
     mMouseWheelY = 0;
+    return y;
 }
 
 void EventReceiver::registerGUICallback( EventReceiver::GUICallback *callback,
