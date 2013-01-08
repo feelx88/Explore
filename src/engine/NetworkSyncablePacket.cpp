@@ -70,9 +70,15 @@ void NetworkSyncablePacket::swap( NetworkSyncablePacket &other )
     std::swap( mTypeID, other.mTypeID );
     std::swap( mActionID, other.mActionID );
     std::swap( mBodySize, other.mBodySize );
-    std::swap( mBody, other.mBody );
     std::swap( mValid, other.mValid );
     std::swap( mEndpoint, other.mEndpoint );
+
+    //bacause std::ios cannot be swapped:
+    std::string thisBody = mBody.str();
+    std::string otherBody = other.mBody.str();
+
+    mBody.str( otherBody );
+    other.mBody.str( thisBody );
 }
 
 NetworkSyncablePacket& NetworkSyncablePacket::operator=( NetworkSyncablePacket other )
