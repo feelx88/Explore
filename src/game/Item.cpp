@@ -60,10 +60,7 @@ Item::Item( ExplorePtr explore, IPlayerPtr owner, PropTreePtr properties,
     if( mProperties->get( "Item.AutoAddEntities", false ) )
         registerEntities();
 
-    if( mProperties->get( "Item.AutoActivation", false ) )
-        setActivationState( true );
-    else
-        setActivationState( false );
+    setActivationState( mProperties->get( "Item.AutoActivation", false ) );
 
     mHitPoints = mProperties->get( "Item.HitPoints", 1.f );
     mDestructible = mProperties->get( "Item.Destructible", true );
