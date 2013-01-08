@@ -56,8 +56,8 @@ public:
 
     int mouseX() const;
     int mouseY() const;
-    int mouseMoveX() const;
-    int mouseMoveY() const;
+    int mouseMoveX();
+    int mouseMoveY();
 
     int mouseWheelY();
 

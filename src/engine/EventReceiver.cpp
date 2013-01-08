@@ -68,9 +68,6 @@ bool EventReceiver::OnEvent( const SEvent &event )
     if( !mDevice )
         return false;
 
-    mMouseMoveX = 0;
-    mMouseMoveY = 0;
-
     if( event.EventType == EET_LOG_TEXT_EVENT )
     {
         _LOG( event.LogEvent.Text );
@@ -137,30 +134,33 @@ bool EventReceiver::OnEvent( const SEvent &event )
         mMousePressed[1] = event.MouseInput.isRightPressed();
         mMousePressed[2] = event.MouseInput.isMiddlePressed();
 
-        if( mMouseLocked &&
-                event.MouseInput.X == mWinWidth / 2 &&
-                event.MouseInput.Y == mWinHeight / 2 )
-        {
-            return false;
-        }
-
-        mMouseMoveX = event.MouseInput.X - mMouseX;
-        mMouseMoveY = event.MouseInput.Y - mMouseY;
+        irr::gui::ICursorControl *cursorControl = mDevice->getCursorControl();
 
         if( mMouseLocked )
         {
-            mMouseX = mWinWidth / 2;
-            mMouseY = mWinHeight / 2;
+            irr::core::vector2df pos = cursorControl->getRelativePosition();
+            if( irr::core::isnotzero( pos.X - 0.5f )
+                    && irr::core::isnotzero( pos.Y - 0.5f ) )
+            {
+                //TODO: implement some sort of sensitivity settings, but maybe
+                //only in LocalPlayer(?)
+                mMouseMoveX = event.MouseInput.X - mMouseX;
+                mMouseMoveY = event.MouseInput.Y - mMouseY;
 
-            mDevice->getCursorControl()->setPosition( mMouseX, mMouseY );
+                cursorControl->setPosition( 0.5f, 0.5f );
+            }
         }
         else
         {
-            mMouseX = event.MouseInput.X;
-            mMouseY = event.MouseInput.Y;
+            mMouseMoveX = event.MouseInput.X - mMouseX;
+            mMouseMoveY = event.MouseInput.Y - mMouseY;
         }
 
+        mMouseX = event.MouseInput.X;
+        mMouseY = event.MouseInput.Y;
+
         mMouseWheelY = event.MouseInput.Wheel;
+        return false;
     }
 
     if( event.EventType == EET_GUI_EVENT )
@@ -254,14 +254,18 @@ int EventReceiver::mouseY() const
     return mMouseY;
 }
 
-int EventReceiver::mouseMoveX() const
+int EventReceiver::mouseMoveX()
 {
-    return mMouseMoveX;
+    int moveX = mMouseMoveX;
+    mMouseMoveX = 0;
+    return moveX;
 }
 
-int EventReceiver::mouseMoveY() const
+int EventReceiver::mouseMoveY()
 {
-    return mMouseMoveY;
+    int moveY = mMouseMoveY;
+    mMouseMoveY = 0;
+    return moveY;
 }
 
 int EventReceiver::mouseWheelY()
