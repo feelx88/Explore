@@ -24,6 +24,7 @@
 WorldPlayer::WorldPlayer( ExplorePtr explore )
     : IPlayer( explore, IPlayerPtr() )
 {
+    setTypeID( ENTI_WORLD );
 }
 
 void WorldPlayer::update()

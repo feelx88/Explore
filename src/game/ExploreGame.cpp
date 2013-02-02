@@ -153,3 +153,10 @@ WorldPlayerPtr ExploreGame::getWorldPlayer()
 {
     return mWorldPlayer;
 }
+
+void ExploreGame::setWorldPlyer(WorldPlayerPtr world)
+{
+    //Ensure that mWorldPlayer cannot be overwritten
+    if( !mWorldPlayer )
+        mWorldPlayer = world;
+}

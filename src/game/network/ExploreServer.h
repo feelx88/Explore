@@ -105,6 +105,8 @@ protected:
 
     uint32_t nextClientID();
 
+    void handleInitPackets();
+
     ExplorePtr mExplore;
 
     NetworkMessengerPtr mMessenger;

@@ -35,6 +35,7 @@ public:
     void setBulletDebugDraw( bool enabled );
 
     WorldPlayerPtr getWorldPlayer();
+    void setWorldPlyer( WorldPlayerPtr world );
 
 private:
     ExplorePtr mExplore;

@@ -35,6 +35,7 @@ enum E_STATUS_BITS
     ESB_SERVER = 0,
     ESB_WAIT_FOR_INFO,
     ESB_WAIT_FOR_CONNECTION,
+    ESB_WAIT_FOR_INITIAL_INFO_PACKET,
     ESB_CONNECTED,
     ESB_COUNT
 };
@@ -59,6 +60,7 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
     mSelfInfo.host = info;
     setUpdateInterval( 200 );
     update();
+    mStatusBits.reset();
 }
 
 NetworkMessengerPtr ExploreServer::getNetworkMessenger() const
@@ -167,76 +169,7 @@ void ExploreServer::disconnect()
 
 void ExploreServer::update()
 {
-    //Create new items and distribute them if this is a server
-    //TODO: Maybe refactor to WorldPlayer or somewhere else?
-    while( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
-    {
-        NetworkSyncablePacket packet = mMessenger->nextPacket( false );
-
-        if( !mSelfInfo.statusBits[ECSB_PLAYERS_CREATED]
-                && packet.getTypeID() == ENTI_ITEM )
-        {
-            mMessenger->reQueuePacket();
-        }
-        else if( packet.getTypeID() == ENTI_ITEM )
-        {
-            mMessenger->popPacket();
-            if( packet.getActionID() == EAID_CREATE )
-                ItemFactory::create( mExplore, packet );
-            else
-            {
-                NetworkSyncablePacket p = serialize( ESAID_REQUEST_ITEM_INFO );
-                p.writeUInt32( packet.getUID() );
-                send( p );
-            }
-
-            mSelfInfo.initializationInfo.curItems++;
-
-            //TODO: Only for debugging
-            std::stringstream info;
-            info << "Item " << mSelfInfo.initializationInfo.curItems << "/"
-                 << mSelfInfo.initializationInfo.totalItems << " received.";
-            _LOG( info.str() );
-
-            if( mSelfInfo.initializationInfo.curItems >=
-                    mSelfInfo.initializationInfo.totalItems )
-                mSelfInfo.statusBits[ECSB_ITEMS_CREATED] = true;
-        }
-        else if( packet.getTypeID() == ENTI_PLAYER )
-        {
-            mMessenger->popPacket();
-            uint32_t clientID = packet.readUInt32();
-            VisualPlayerPtr player;
-
-            WorldPlayerPtr world =
-                    mExplore->getExploreGame()->getWorldPlayer();
-
-            if( clientID == mSelfInfo.id )
-            {
-                player.reset( new LocalPlayer( mExplore, world ) );
-                world->setLocalPlayer( player );
-            }
-            else
-                player.reset( new VisualPlayer( mExplore, world ) );
-            player->setClientID( clientID );
-            player->deserialize( packet );
-
-            mSelfInfo.initializationInfo.curPlayers++;
-
-            //TODO: Only for debugging
-            std::stringstream info;
-            info << "Player " << mSelfInfo.initializationInfo.curPlayers << "/"
-                 << mSelfInfo.initializationInfo.totalPlayers << " received.";
-            _LOG( info.str() );
-
-            if( mSelfInfo.initializationInfo.curPlayers >=
-                    mSelfInfo.initializationInfo.totalPlayers )
-                mSelfInfo.statusBits[ECSB_PLAYERS_CREATED] = true;
-        }
-
-        if( mStatusBits[ESB_SERVER] )
-            send( packet );
-    }
+    handleInitPackets();
 
     //If every status bit is set except for ECSB_INITIALIZED, set it to true.
     if( mSelfInfo.statusBits.count() == ECSB_COUNT - 1
@@ -320,6 +253,7 @@ void ExploreServer::send( const NetworkSyncablePacket &packet )
         mMessenger->send( packet );
 }
 
+//TODO:Tidy up a bit
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
@@ -412,6 +346,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             _LOG( "Connection accepted!" );
             mStatusBits[ESB_CONNECTED] = true;
             mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
+            mStatusBits[ESB_WAIT_FOR_INITIAL_INFO_PACKET] = true;
 
             boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
             mMessenger->setRemoteAddress( endpoint.address().to_string(),
@@ -496,6 +431,91 @@ uint32_t ExploreServer::nextClientID()
 
     std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.end()--;
     return x->first + 1;
+}
+
+void ExploreServer::handleInitPackets()
+{
+    //Create new items and distribute them if this is a server
+    while( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
+    {
+        NetworkSyncablePacket packet = mMessenger->nextPacket( false );
+
+        if( !mSelfInfo.statusBits[ECSB_PLAYERS_CREATED]
+                && packet.getTypeID() == ENTI_ITEM )
+        {
+            mMessenger->reQueuePacket();
+        }
+        else if( packet.getTypeID() == ENTI_ITEM )
+        {
+            mMessenger->popPacket();
+            if( packet.getActionID() == EAID_CREATE )
+                ItemFactory::create( mExplore, packet );
+            else
+            {
+                NetworkSyncablePacket p = serialize( ESAID_REQUEST_ITEM_INFO );
+                p.writeUInt32( packet.getUID() );
+                send( p );
+            }
+
+            mSelfInfo.initializationInfo.curItems++;
+
+            //TODO: Only for debugging
+            std::stringstream info;
+            info << "Item " << mSelfInfo.initializationInfo.curItems << "/"
+                 << mSelfInfo.initializationInfo.totalItems << " received.";
+            _LOG( info.str() );
+
+            if( mSelfInfo.initializationInfo.curItems >=
+                    mSelfInfo.initializationInfo.totalItems )
+                mSelfInfo.statusBits[ECSB_ITEMS_CREATED] = true;
+        }
+        else if( packet.getTypeID() == ENTI_PLAYER )
+        {
+            WorldPlayerPtr world =
+                    mExplore->getExploreGame()->getWorldPlayer();
+
+            if( !world )
+                mMessenger->reQueuePacket();
+            else
+            {
+                mMessenger->popPacket();
+                uint32_t clientID = packet.readUInt32();
+                VisualPlayerPtr player;
+
+                if( clientID == mSelfInfo.id )
+                {
+                    player.reset( new LocalPlayer( mExplore, world ) );
+                    world->setLocalPlayer( player );
+                }
+                else
+                    player.reset( new VisualPlayer( mExplore, world ) );
+                player->setClientID( clientID );
+                player->deserialize( packet );
+
+                mSelfInfo.initializationInfo.curPlayers++;
+
+                //TODO: Only for debugging
+                std::stringstream info;
+                info << "Player " << mSelfInfo.initializationInfo.curPlayers << "/"
+                     << mSelfInfo.initializationInfo.totalPlayers << " received.";
+                _LOG( info.str() );
+
+                if( mSelfInfo.initializationInfo.curPlayers >=
+                        mSelfInfo.initializationInfo.totalPlayers )
+                    mSelfInfo.statusBits[ECSB_PLAYERS_CREATED] = true;
+            }
+        }
+        else if( packet.getTypeID() == ENTI_WORLD )
+        {
+            mMessenger->popPacket();
+            WorldPlayerPtr world( new WorldPlayer( mExplore ) );
+            mExplore->getExploreGame()->setWorldPlyer( world );
+        }
+
+        //If we are a server, distribute the new whatever to all clients
+        if( mStatusBits[ESB_SERVER] )
+            send( packet );
+    }
 }
 
 ExploreServer::ClientInfo::ClientInfo()
