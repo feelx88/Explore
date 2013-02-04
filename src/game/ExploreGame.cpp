@@ -54,7 +54,7 @@ E_GAME_STATE ExploreGame::run()
     //FIXME: Change to a better bahviour.
     if( !mExplore->getExploreServer()->serverMode() )
     {
-        while( !mExplore->getExploreServer()->isInitialized() )
+        while( !mExplore->getExploreServer()->isInitialized() && mDevice->run() )
         {
             mVideoDriver->beginScene( true, true, SColor( 255, 255, 0, 255 ) );
             mSceneManager->drawAll();

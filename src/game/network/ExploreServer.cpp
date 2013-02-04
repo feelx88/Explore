@@ -35,7 +35,6 @@ enum E_STATUS_BITS
     ESB_SERVER = 0,
     ESB_WAIT_FOR_INFO,
     ESB_WAIT_FOR_CONNECTION,
-    ESB_WAIT_FOR_INITIAL_INFO_PACKET,
     ESB_CONNECTED,
     ESB_COUNT
 };
@@ -46,6 +45,7 @@ enum E_CLIENT_STATUS_BITS
     ECSB_PACKETS_SENDED,
     ECSB_PLAYERS_CREATED,
     ECSB_ITEMS_CREATED,
+    ECSB_WAIT_FOR_INITIAL_INFO_PACKET,
     ECSB_COUNT
 };
 
@@ -184,6 +184,7 @@ void ExploreServer::update()
         typedef std::map<uint32_t, ClientInfo> map_t;
         foreach_( map_t::value_type &x, mClientIDMap )
         {
+            //If client is inactive to long, kick him
             if( x.second.statusBits[ECSB_INITIALIZED]
                     && x.second.lastActiveTime + then <= now )
             {
@@ -215,9 +216,11 @@ void ExploreServer::update()
 
                 x.second.statusBits[ECSB_PACKETS_SENDED] = true;
             }
-        }
 
-        send( serialize( ESAID_REQUEST_IS_STILL_ALIVE ) );
+            //Send request alive packet
+            mMessenger->sendTo( serialize( ESAID_REQUEST_IS_STILL_ALIVE ),
+                                x.second.endpoint );
+        }
 
         if( mExplore->getExploreGame()->getWorldPlayer() )
         {//TODO:this does not look neat
@@ -346,7 +349,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             _LOG( "Connection accepted!" );
             mStatusBits[ESB_CONNECTED] = true;
             mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
-            mStatusBits[ESB_WAIT_FOR_INITIAL_INFO_PACKET] = true;
+            mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] = true;
 
             boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
             mMessenger->setRemoteAddress( endpoint.address().to_string(),
@@ -379,6 +382,11 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         mSelfInfo.initializationInfo.totalItems = packet.readUInt32();
         mSelfInfo.initializationInfo.curPlayers = 0;
         mSelfInfo.initializationInfo.curItems = 0;
+        mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] = false;
+
+        _LOG( "Info Packet received" );
+        _LOG( "Num players", mSelfInfo.initializationInfo.totalPlayers );
+        _LOG( "Num items", mSelfInfo.initializationInfo.totalItems );
         break;
     }
     default:
@@ -435,8 +443,11 @@ uint32_t ExploreServer::nextClientID()
 
 void ExploreServer::handleInitPackets()
 {
+    if( mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] )
+        return;
+
     //Create new items and distribute them if this is a server
-    while( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
+    if( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
     {
         NetworkSyncablePacket packet = mMessenger->nextPacket( false );
 
@@ -467,7 +478,10 @@ void ExploreServer::handleInitPackets()
 
             if( mSelfInfo.initializationInfo.curItems >=
                     mSelfInfo.initializationInfo.totalItems )
+            {
                 mSelfInfo.statusBits[ECSB_ITEMS_CREATED] = true;
+                mSelfInfo.statusBits[ECSB_INITIALIZED] = true;
+            }
         }
         else if( packet.getTypeID() == ENTI_PLAYER )
         {
@@ -510,6 +524,7 @@ void ExploreServer::handleInitPackets()
             mMessenger->popPacket();
             WorldPlayerPtr world( new WorldPlayer( mExplore ) );
             mExplore->getExploreGame()->setWorldPlyer( world );
+            mSelfInfo.initializationInfo.curPlayers++;
         }
 
         //If we are a server, distribute the new whatever to all clients
