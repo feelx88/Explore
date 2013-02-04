@@ -305,6 +305,11 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 _LOG( "New client's ID", info.id );
                 _LOG( "New client's name", info.host.hostName );
 
+                //FIXME:does this really belong here?
+                WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
+                VisualPlayerPtr p( new VisualPlayer( mExplore, world ) );
+                p->setClientID( info.id );
+
                 return serialize( ESAID_ACCEPT_CONNECTION );
             }
             else

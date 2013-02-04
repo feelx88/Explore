@@ -79,7 +79,8 @@ E_GAME_STATE ExploreGame::run()
     vector3df spawnPos =
             level->getProperties()->get( "Spawn.Position", vector3df() );
 
-    mWorldPlayer.reset( new WorldPlayer( mExplore ) );
+    if( !mWorldPlayer )
+        mWorldPlayer.reset( new WorldPlayer( mExplore ) );
 
     VisualPlayerPtr p;
 
@@ -89,14 +90,14 @@ E_GAME_STATE ExploreGame::run()
                  specialDeleters::NullDeleter() );
         mWorldPlayer->setLocalPlayer( p );
 
-        p = boost::static_pointer_cast<VisualPlayer>(
-                    mWorldPlayer->getLocalPlayer() );
-
         ItemFactory::create( mExplore, p, "de.feelx88.SimpleForceGun" );
         ItemFactory::create( mExplore, p, "de.feelx88.SimpleBlockSpawner" );
         ItemFactory::create( mExplore, p, "de.feelx88.SimpleGun" );
         ItemFactory::create( mExplore, p, "de.feelx88.SuzanneSpawner" );
     }
+
+    p = boost::static_pointer_cast<VisualPlayer>(
+                mWorldPlayer->getLocalPlayer() );
 
     p->getEntity()->setPosition( spawnPos );
 
