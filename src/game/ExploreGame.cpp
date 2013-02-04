@@ -63,6 +63,9 @@ E_GAME_STATE ExploreGame::run()
             mVideoDriver->endScene();
             mExplore->getIOService()->poll();
         }
+
+        if( !mExplore->getExploreServer()->isInitialized() )
+            return EGS_QUIT;
     }
 
     bool running = true;
