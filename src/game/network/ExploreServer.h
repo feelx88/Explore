@@ -98,6 +98,7 @@ public:
     void update();
 
     void send( const NetworkSyncablePacket &packet );
+    void checkedSend( const NetworkSyncablePacket &packet );
 
 protected:
     boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );

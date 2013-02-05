@@ -35,6 +35,7 @@ NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
     stream.read( reinterpret_cast<char*>( &mUID ), sizeof( uint32_t ) );
     stream.read( reinterpret_cast<char*>( &mActionID ), sizeof( uint8_t ) );
     stream.read( reinterpret_cast<char*>( &mTypeID ), sizeof( uint8_t ) );
+    stream.read( &mPingbackMode, 1 );
     stream.read( reinterpret_cast<char*>( &mBodySize ), sizeof( uint32_t ) );
 
     char *tmp = new char[mBodySize];
@@ -50,7 +51,8 @@ NetworkSyncablePacket::NetworkSyncablePacket( uint32_t uid, uint8_t typeID,
     : mUID( uid ),
       mTypeID( typeID ),
       mActionID( actionID ),
-      mBodySize( body.length() )
+      mBodySize( body.length() ),
+      mPingbackMode( '0' )
 {
     mBody.write( body.data(), mBodySize );
 }
@@ -59,7 +61,8 @@ NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other
     : mUID( other.getUID() ),
       mTypeID( other.getTypeID() ),
       mActionID( other.getActionID() ),
-      mBodySize( other.getBodySize() )
+      mBodySize( other.getBodySize() ),
+      mPingbackMode( other.mPingbackMode )
 {
     mBody.write( other.getBody().data(), other.getBodySize() );
 }
@@ -72,6 +75,7 @@ void NetworkSyncablePacket::swap( NetworkSyncablePacket &other )
     std::swap( mBodySize, other.mBodySize );
     std::swap( mValid, other.mValid );
     std::swap( mEndpoint, other.mEndpoint );
+    std::swap( mPingbackMode, other.mPingbackMode );
 
     //bacause std::ios cannot be swapped:
     std::string thisBody = mBody.str();
@@ -115,6 +119,18 @@ std::string NetworkSyncablePacket::getBody() const
 bool NetworkSyncablePacket::isValid()
 {
     return mValid;
+}
+
+void NetworkSyncablePacket::setPingbackMode(
+        NetworkSyncablePacketPingbackMode mode )
+{
+    mPingbackMode = pingbackModeToChar( mode );
+}
+
+NetworkSyncablePacket::NetworkSyncablePacketPingbackMode
+    NetworkSyncablePacket::getPingbackMode() const
+{
+    return charToPingbackMode( mPingbackMode );
 }
 
 boost::asio::ip::udp::endpoint NetworkSyncablePacket::getEndpoint()
@@ -311,9 +327,46 @@ std::string NetworkSyncablePacket::serialize() const
     stream.write( reinterpret_cast<const char*>( &mUID ), sizeof( uint32_t ) );
     stream.write( reinterpret_cast<const char*>( &mActionID ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &mTypeID ), sizeof( uint8_t ) );
+    stream.write( &mPingbackMode, 1 );
     stream.write( reinterpret_cast<const char*>( &size ), sizeof( uint32_t ) );
 
     stream.write( body.data(), size );
 
     return stream.str();
+}
+
+char NetworkSyncablePacket::pingbackModeToChar(
+        NetworkSyncablePacket::NetworkSyncablePacketPingbackMode mode ) const
+{
+    switch( mode )
+    {
+    case ENSPPM_NONE:
+        return '0';
+        break;
+    case ENSPPM_REQUEST_PINGBACK:
+        return '1';
+        break;
+    case ENSPPM_PINGBACK:
+        return '2';
+        break;
+    }
+    return '0';
+}
+
+NetworkSyncablePacket::NetworkSyncablePacketPingbackMode
+    NetworkSyncablePacket::charToPingbackMode( char mode ) const
+{
+    switch( mode )
+    {
+    case '0':
+        return ENSPPM_NONE;
+        break;
+    case '1':
+        return ENSPPM_REQUEST_PINGBACK;
+        break;
+    case '2':
+        return ENSPPM_PINGBACK;
+        break;
+    }
+    return ENSPPM_NONE;
 }

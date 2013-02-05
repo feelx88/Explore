@@ -24,9 +24,11 @@
 #include "NetworkSyncablePacket.h"
 #include "NetworkSyncable.h"
 #include <queue>
+#include <boost/unordered_map.hpp>
 
 class NetworkMessenger;
 typedef boost::shared_ptr<NetworkMessenger> NetworkMessengerPtr;
+typedef boost::asio::ip::udp::endpoint UDPEndpoint;
 
 class APIEXPORT NetworkMessenger
 {
@@ -36,9 +38,18 @@ public:
 
     void send( const NetworkSyncablePacket &packet );
     void sendTo( const NetworkSyncablePacket &packet,
-                 const boost::asio::ip::udp::endpoint &endpoint );
+                 const UDPEndpoint &endpoint );
     void sendTo( const NetworkSyncablePacket &packet, const std::string &ip,
                  const int &port );
+
+    void checkedSend( NetworkSyncablePacket &packet );
+    void checkedSendTo( NetworkSyncablePacket &packet,
+                 const UDPEndpoint &endpoint );
+    void checkedSendTo( NetworkSyncablePacket &packet, const std::string &ip,
+                 const int &port );
+
+    void setCheckedSendTimeout( int timeoutMS );
+    int checkedSendTimeout() const;
 
     bool hasPacketsInQueue() const;
     NetworkSyncablePacket nextPacket( bool pop = true );
@@ -54,6 +65,8 @@ private:
     void receiveHandler( const boost::system::error_code &error, size_t );
     void sendHandler( const boost::system::error_code &error, size_t );
 
+    void checkedSendHandler();
+
     IOServicePtr mIOService;
     PropTreePtr mProperties;
 
@@ -64,7 +77,12 @@ private:
 
     std::vector<unsigned char> mReceiveBuffer;
     std::queue<NetworkSyncablePacket> mPacketQueue;
-    boost::asio::ip::udp::endpoint mRemoteEndpoint;
+    UDPEndpoint mRemoteEndpoint;
+
+    boost::asio::deadline_timer mCheckedSendTimer;
+    int mCheckedSendTimerTimeout;
+    boost::unordered::unordered_multimap<uint32_t,
+        std::pair<NetworkSyncablePacket, UDPEndpoint> > mCheckedSendPackets;
 };
 
 #endif //NETWORKMESSENGER_H

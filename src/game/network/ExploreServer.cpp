@@ -206,13 +206,13 @@ void ExploreServer::update()
 
                 infoPacket.writeUInt8( playerList.size() );
                 infoPacket.writeUInt32( itemList.size() );
-                mMessenger->sendTo( infoPacket, x.second.endpoint );
+                mMessenger->checkedSendTo( infoPacket, x.second.endpoint );
 
                 foreach_( NetworkSyncablePacket &packet, playerList )
-                    mMessenger->sendTo( packet, x.second.endpoint );
+                    mMessenger->checkedSendTo( packet, x.second.endpoint );
 
                 foreach_( NetworkSyncablePacket &packet, itemList )
-                    mMessenger->sendTo( packet, x.second.endpoint );
+                    mMessenger->checkedSendTo( packet, x.second.endpoint );
 
                 x.second.statusBits[ECSB_PACKETS_SENDED] = true;
             }
@@ -254,6 +254,13 @@ void ExploreServer::send( const NetworkSyncablePacket &packet )
     }
     else
         mMessenger->send( packet );
+}
+
+void ExploreServer::checkedSend( const NetworkSyncablePacket &packet )
+{
+    NetworkSyncablePacket copy( packet );
+    copy.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+    send( copy );
 }
 
 //TODO:Tidy up a bit
@@ -310,7 +317,12 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
                 VisualPlayerPtr p( new VisualPlayer( mExplore, world ) );
                 p->setClientID( info.id );
 
-                return serialize( ESAID_ACCEPT_CONNECTION );
+                //FIXME:add possibility to serialize with argument for checkedSend
+                //Reply has to be check sended
+                NetworkSyncablePacket reply = serialize( ESAID_ACCEPT_CONNECTION );
+                reply.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+
+                return reply;
             }
             else
             {

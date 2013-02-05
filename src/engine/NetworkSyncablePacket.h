@@ -26,9 +26,35 @@
 #include <stdint.h>
 #include <boost/asio.hpp>
 
+/*
+ * General packet structure: [Version 2]
+ *
+ *--------------------------*
+ *  UID: uint32_t           *
+ *--------------------------*
+ *  ActionID: uint8_t       *
+ *--------------------------*
+ *  TypeID: uint8_t         *
+ *--------------------------*
+ *  Pingback mode: 1 byte   *
+ *--------------------------*
+ *  Body size: uint32_t     *
+ *--------------------------*
+ *  Body                    *
+ *--------------------------*
+ *
+ */
+
 class APIEXPORT NetworkSyncablePacket
 {
 public:
+    enum NetworkSyncablePacketPingbackMode
+    {
+        ENSPPM_NONE = 0,
+        ENSPPM_REQUEST_PINGBACK,
+        ENSPPM_PINGBACK
+    };
+
     NetworkSyncablePacket( const std::string &data );
     NetworkSyncablePacket( uint32_t uid, uint8_t typeID, uint8_t actionID,
                            const std::string &body );
@@ -44,6 +70,9 @@ public:
     std::string getBody() const;
 
     bool isValid();
+
+    void setPingbackMode( NetworkSyncablePacketPingbackMode mode );
+    NetworkSyncablePacketPingbackMode getPingbackMode() const;
 
     boost::asio::ip::udp::endpoint getEndpoint();
     void setEndpoint( const boost::asio::ip::udp::endpoint &endpoint );
@@ -75,12 +104,16 @@ public:
     std::string serialize() const;
 
 private:
+    inline char pingbackModeToChar( NetworkSyncablePacketPingbackMode mode ) const;
+    inline NetworkSyncablePacketPingbackMode charToPingbackMode( char mode ) const;
+
     uint32_t mUID;
     uint8_t mTypeID, mActionID;
     uint32_t mBodySize;
     std::stringstream mBody;
 
     bool mValid;
+    char mPingbackMode;
 
     boost::asio::ip::udp::endpoint mEndpoint;
 };

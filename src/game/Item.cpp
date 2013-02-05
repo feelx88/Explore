@@ -228,9 +228,7 @@ void Item::startAction( uint8_t actionID )
 
     if( actionID == EAID_CREATE || actionID == EAID_DESTROY )
     {
-        //FIXME: allow tweaking amount of sended packets
-        for( int x = 0; x < 3; ++x )
-            mExplore->getExploreServer()->send( serialize( actionID ) );
+        mExplore->getExploreServer()->checkedSend( serialize( actionID ) );
     }
     else if( actionID != EAID_UPDATE )
         mExplore->getExploreServer()->send( serialize( actionID ) );

@@ -25,7 +25,8 @@ using namespace boost::asio;
 
 NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properties )
     : mIOService( ioService ),
-      mProperties( properties )
+      mProperties( properties ),
+      mCheckedSendTimer( *ioService.get() )
 {
     mServerIP = mProperties->get( "Server.IP", "127.0.0.1" );
     mPort = mProperties->get( "Server.Port", 6556 );
@@ -39,6 +40,7 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
                 ip::address::from_string( mServerIP ), mPort );
 
     receive();
+    checkedSendHandler();
 }
 
 NetworkMessenger::~NetworkMessenger()
@@ -59,10 +61,16 @@ void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 }
 
 void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
-                               const ip::udp::endpoint &endpoint )
+                               const UDPEndpoint &endpoint )
 {
-    mSocket->async_send_to( buffer( packet.serialize() ), endpoint, boost::bind(
-                                &NetworkMessenger::sendHandler, this, _1, _2 ) );
+    if( packet.getPingbackMode() != NetworkSyncablePacket::ENSPPM_NONE )
+    {
+        NetworkSyncablePacket copy( packet );
+        checkedSendTo( copy, endpoint );
+    }
+    else
+        mSocket->async_send_to( buffer( packet.serialize() ), endpoint, boost::bind(
+                                    &NetworkMessenger::sendHandler, this, _1, _2 ) );
 }
 
 void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
@@ -72,6 +80,38 @@ void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
             ip::udp::endpoint( ip::address::from_string( ip ), port );
 
     sendTo( packet, endpoint );
+}
+
+void NetworkMessenger::checkedSend( NetworkSyncablePacket &packet )
+{
+    checkedSendTo( packet, mRemoteEndpoint );
+}
+
+void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
+                                      const UDPEndpoint &endpoint )
+{
+    if( packet.getPingbackMode() == NetworkSyncablePacket::ENSPPM_NONE )
+        packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+    mCheckedSendPackets.insert( std::make_pair( packet.getUID(), std::make_pair( packet, endpoint ) ) );
+    sendTo( packet, endpoint );
+}
+
+void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
+                                      const std::string &ip, const int &port )
+{
+    ip::udp::endpoint endpoint =
+            ip::udp::endpoint( ip::address::from_string( ip ), port );
+    checkedSendTo( packet, endpoint );
+}
+
+void NetworkMessenger::setCheckedSendTimeout(int timeoutMS)
+{
+    mCheckedSendTimerTimeout = timeoutMS;
+}
+
+int NetworkMessenger::checkedSendTimeout() const
+{
+    return mCheckedSendTimerTimeout;
 }
 
 bool NetworkMessenger::hasPacketsInQueue() const
@@ -155,20 +195,49 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
 
     NetworkSyncablePacket packet( std::string( mReceiveBuffer.begin(),
                                                mReceiveBuffer.end() ) );
-    packet.setEndpoint( mRemoteEndpoint );
 
-    NetworkSyncable *syncable = NetworkSyncable::getObject( packet.getUID() );
-
-    if( syncable )
+    if( packet.getPingbackMode() ==
+             NetworkSyncablePacket::ENSPPM_PINGBACK )
     {
-        boost::optional<NetworkSyncablePacket> replyPacket =
-                syncable->deserialize( packet );
+        //Only pingback received, delete from map and return
+        typedef boost::unordered::unordered_multimap<uint32_t,
+                std::pair<NetworkSyncablePacket, UDPEndpoint> > map_t;
+        std::pair<map_t::iterator, map_t::iterator> found =
+                mCheckedSendPackets.equal_range( packet.getUID() );
 
-        if( replyPacket )
-            send( *replyPacket );
+        for( map_t::iterator x = found.first; x != found.second; ++x )
+        {
+            NetworkSyncablePacket &p = x->second.first;
+            if( p.getActionID() == packet.getActionID()
+                    && p.getTypeID() == packet.getTypeID() )
+                mCheckedSendPackets.erase( x );
+        }
     }
     else
-        mPacketQueue.push( packet );
+    {
+        if( packet.getPingbackMode() ==
+                NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK )
+        {
+            //pingback requested, send it back
+            packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_PINGBACK );
+            checkedSendTo( packet, mRemoteEndpoint );
+        }
+
+        packet.setEndpoint( mRemoteEndpoint );
+
+        NetworkSyncable *syncable = NetworkSyncable::getObject( packet.getUID() );
+
+        if( syncable )
+        {
+            boost::optional<NetworkSyncablePacket> replyPacket =
+                    syncable->deserialize( packet );
+
+            if( replyPacket )
+                send( *replyPacket );
+        }
+        else
+            mPacketQueue.push( packet );
+    }
 
     receive();
 }
@@ -180,4 +249,17 @@ void NetworkMessenger::sendHandler( const boost::system::error_code &error, size
         _LOG( error.message() );
         return;
     }
+}
+
+void NetworkMessenger::checkedSendHandler()
+{
+    typedef boost::unordered::unordered_multimap<uint32_t,
+            std::pair<NetworkSyncablePacket, UDPEndpoint> > map_t;
+    foreach_( map_t::value_type &pair, mCheckedSendPackets )
+            sendTo( pair.second.first, pair.second.second );
+
+    mCheckedSendTimer.expires_from_now(
+                boost::posix_time::milliseconds( mCheckedSendTimerTimeout ) );
+    mCheckedSendTimer.async_wait(
+                boost::bind( &NetworkMessenger::checkedSendHandler, this ) );
 }
