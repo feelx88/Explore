@@ -454,7 +454,8 @@ uint32_t ExploreServer::nextClientID()
     if( mClientIDMap.empty() )
         return 1;
 
-    std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.end()--;
+    std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.end();
+    x--;
     return x->first + 1;
 }
 

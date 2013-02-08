@@ -26,7 +26,8 @@ using namespace boost::asio;
 NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properties )
     : mIOService( ioService ),
       mProperties( properties ),
-      mCheckedSendTimer( *ioService.get() )
+      mCheckedSendTimer( *ioService.get() ),
+      mCheckedSendTimerTimeout( 1000 )
 {
     mServerIP = mProperties->get( "Server.IP", "127.0.0.1" );
     mPort = mProperties->get( "Server.Port", 6556 );
