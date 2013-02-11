@@ -87,6 +87,17 @@ boost::optional<IPlayerPtr> IPlayer::getChild( uint32_t uid )
     return boost::none;
 }
 
+void IPlayer::destroyChild( uint32_t uid )
+{
+    for( IPlayerVector::iterator x = mChildren.begin(); x != mChildren.end(); ++x )
+    {
+        if( ( *x )->getUID() == uid )
+        {
+            mChildren.erase( x );
+        }
+    }
+}
+
 void IPlayer::serializeAll( const uint8_t actionID,
                             std::list<NetworkSyncablePacket> &playerList,
                             std::list<NetworkSyncablePacket> &itemList )

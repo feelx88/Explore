@@ -51,6 +51,7 @@ public:
     IPlayerPtr getParent() const;
     void setParent( IPlayerPtr parent );
     boost::optional<IPlayerPtr> getChild( uint32_t uid );
+    void destroyChild( uint32_t uid );
 
     virtual void serializeAll( const uint8_t actionID,
                                std::list<NetworkSyncablePacket> &playerList,
