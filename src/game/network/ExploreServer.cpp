@@ -172,9 +172,11 @@ void ExploreServer::update()
     handleInitPackets();
 
     //If every status bit is set except for ECSB_INITIALIZED, set it to true.
-    if( mSelfInfo.statusBits.count() == ECSB_COUNT - 1
-            && !mSelfInfo.statusBits[ECSB_INITIALIZED] )
-        mSelfInfo.statusBits[ECSB_INITIALIZED] = true;
+    if( !mSelfInfo.statusBits[ECSB_INITIALIZED] )
+    {
+        if( mSelfInfo.statusBits[ECSB_ITEMS_CREATED] )
+            mSelfInfo.statusBits[ECSB_INITIALIZED] = true;
+    }
 
     if( mStatusBits[ESB_SERVER] )
     {
