@@ -64,14 +64,8 @@ void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
                                const UDPEndpoint &endpoint )
 {
-    if( packet.getPingbackMode() != NetworkSyncablePacket::ENSPPM_NONE )
-    {
-        NetworkSyncablePacket copy( packet );
-        checkedSendTo( copy, endpoint );
-    }
-    else
-        mSocket->async_send_to( buffer( packet.serialize() ), endpoint, boost::bind(
-                                    &NetworkMessenger::sendHandler, this, _1, _2 ) );
+    mSocket->async_send_to( buffer( packet.serialize() ), endpoint, boost::bind(
+                                &NetworkMessenger::sendHandler, this, _1, _2 ) );
 }
 
 void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
@@ -234,7 +228,13 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
                     syncable->deserialize( packet );
 
             if( replyPacket )
-                send( *replyPacket );
+            {
+                if( replyPacket->getPingbackMode() ==
+                        NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK )
+                    checkedSend( *replyPacket );
+                else
+                    send( *replyPacket );
+            }
         }
         else
             mPacketQueue.push( packet );
