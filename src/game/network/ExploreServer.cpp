@@ -316,7 +316,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
 
                 //FIXME:does this really belong here?
                 WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
-                VisualPlayerPtr p( new VisualPlayer( mExplore, world ) );
+                VisualPlayerPtr p( new VisualPlayer( mExplore, world ), specialDeleters::NullDeleter() );
                 p->setClientID( info.id );
 
                 //FIXME:add possibility to serialize with argument for checkedSend
