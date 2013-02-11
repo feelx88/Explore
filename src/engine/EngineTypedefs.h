@@ -28,6 +28,8 @@
     #else
     #define APIEXPORT __declspec(dllimport)
     #endif
+
+    #pragma warning(disable: 4251)
 #else //_WIN32
     #define APIEXPORT
 #endif
