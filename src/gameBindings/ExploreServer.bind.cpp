@@ -31,22 +31,11 @@ PYTHONBINDER_REGISTER_MODULE( ExploreServer )
         .def( "requestConnection", &ExploreServer::requestConnection )
         .def( "getNetworkMessenger", &ExploreServer::getNetworkMessenger )
         .def( "setSelfInfo", &ExploreServer::setSelfInfo )
-        .def( "serialize", &ExploreServer::serialize )
         .def( "send", &ExploreServer::send )
         .def( "setUpdateInterval", &ExploreServer::setUpdateInterval )
         .def( "updateInterval", &ExploreServer::updateInterval )
         .def( "setClientTimeout", &ExploreServer::setClientTimeout )
         .def( "clientTimeout", &ExploreServer::clientTimeout );
-    enum_<ExploreServer::E_SERVER_ACTIONID>( "E_ACTIONID" )
-        .value( "ESAID_ACK", ExploreServer::ESAID_ACK )
-        .value( "ESAID_NAK", ExploreServer::ESAID_NAK )
-        .value( "ESAID_REQUEST_SERVERINFO",
-               ExploreServer::ESAID_REQUEST_SERVERINFO )
-        .value( "ESAID_REQUEST_CONNECTION",
-               ExploreServer::ESAID_REQUEST_CONNECTION )
-        .value( "ESAID_REQUEST_IS_STILL_ALIVE",
-               ExploreServer::ESAID_REQUEST_IS_STILL_ALIVE )
-        .export_values();
     class_<ExploreServer::HostInfo>( "HostInfo", init<>() )
         .def_readwrite( "hostName",
                         &ExploreServer::HostInfo::hostName );
