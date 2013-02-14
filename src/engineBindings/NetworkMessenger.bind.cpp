@@ -25,10 +25,15 @@ PYTHONBINDER_REGISTER_MODULE( NetworkMessenger )
     using namespace boost::python;
     class_<NetworkMessenger, NetworkMessengerPtr, boost::noncopyable>( "NetworkMessenger", no_init )
         .def( "send", &NetworkMessenger::send )
+        .def( "checkedSend", &NetworkMessenger::checkedSend )
         .def( "sendTo",
-              (void(NetworkMessenger::*)(const NetworkSyncablePacket&,
-                                         const std::string&,
-                                         const int&)) &NetworkMessenger::sendTo )
+              (void(NetworkMessenger::*)( const NetworkSyncablePacket&,
+                                          const std::string&,
+                                          const int&)) &NetworkMessenger::sendTo )
+        .def( "checkedSendTo",
+              (void(NetworkMessenger::*)( NetworkSyncablePacket&,
+                                          const std::string&,
+                                          const int&)) &NetworkMessenger::checkedSendTo )
         .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
         .def( "nextPacket", &NetworkMessenger::nextPacket )
         .def( "bind", &NetworkMessenger::bind );
