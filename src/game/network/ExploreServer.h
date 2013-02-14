@@ -101,8 +101,17 @@ public:
     void checkedSend( const NetworkSyncablePacket &packet );
 
 protected:
-    boost::optional<NetworkSyncablePacket> deserializeInternal( NetworkSyncablePacket &packet );
+    boost::optional<NetworkSyncablePacket> deserializeInternal(
+            NetworkSyncablePacket &packet );
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );
+
+    boost::optional<NetworkSyncablePacket> deserializeInternalServer(
+            NetworkSyncablePacket &packet );
+    boost::optional<NetworkSyncablePacket> deserializeInternalClient(
+        NetworkSyncablePacket &packet );
+
+    void serializeInternalServer( NetworkSyncablePacket &packet, uint8_t actionID );
+    void serializeInternalClient( NetworkSyncablePacket &packet, uint8_t actionID );
 
     uint32_t nextClientID();
 

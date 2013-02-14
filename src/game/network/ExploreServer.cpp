@@ -269,6 +269,106 @@ void ExploreServer::checkedSend( const NetworkSyncablePacket &packet )
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
+    if( mStatusBits[ESB_SERVER] )
+        return deserializeInternalServer( packet );
+    else
+        return deserializeInternalClient( packet );
+}
+
+void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
+{
+    if( mStatusBits[ESB_SERVER] )
+        serializeInternalServer( packet, actionID );
+    else
+        serializeInternalClient( packet, actionID );
+}
+
+boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
+        NetworkSyncablePacket &packet )
+{
+    switch( packet.getActionID() )
+    {
+    case ESAID_REQUEST_SERVERINFO:
+    {
+        _LOG( "Client requesting server info" );
+        return serialize( ESAID_REQUEST_SERVERINFO );
+        break;
+    }
+    case ESAID_REQUEST_CONNECTION:
+    {
+        _LOG( "Client requesting connection from ",
+              packet.getEndpoint().address().to_string() );
+        HostInfo host;
+        host.hostName = packet.readString();
+        host.passwordHash = packet.readString();
+
+        if( mSelfInfo.host.serverConnectedPlayers < mSelfInfo.host.serverMaxPlayers &&
+                host.passwordHash == mSelfInfo.host.passwordHash )
+        {
+            ClientInfo info;
+            info.endpoint = packet.getEndpoint();
+            info.id = nextClientID();
+            info.host = host;
+            info.lastActiveTime = system_clock::now();
+            mClientIDMap.insert( std::make_pair( info.id, info ) );
+
+            _LOG( "Client accepted!" );
+            _LOG( "New client's ID", info.id );
+            _LOG( "New client's name", info.host.hostName );
+
+            //FIXME:does this really belong here?
+            WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
+            VisualPlayerPtr p( new VisualPlayer( mExplore, world ), specialDeleters::NullDeleter() );
+            p->setClientID( info.id );
+
+            //FIXME:add possibility to serialize with argument for checkedSend
+            //Reply has to be check sended
+            NetworkSyncablePacket reply = serialize( ESAID_ACCEPT_CONNECTION );
+            reply.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+
+            return reply;
+        }
+        else
+        {
+            _LOG( "Connection not accepted" );
+            return serialize( ESAID_NAK );
+        }
+        break;
+    }
+    case ESAID_ACK:
+    {
+        //Receive is_alive
+        uint32_t clientID = packet.readUInt32();
+        std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.find( clientID );
+        if( x == mClientIDMap.end() )
+            _LOG( "Unknown ACK received with ClientID", clientID );
+        else
+        {
+            x->second.lastActiveTime = system_clock::now();
+        }
+        break;
+    }
+    case ESAID_REQUEST_ITEM_INFO:
+    {
+        uint32_t uuid = packet.readUInt32();
+
+        NetworkSyncable *syncable = NetworkSyncable::getObject( uuid );
+        if( syncable )
+            return syncable->serialize( EAID_CREATE );
+
+        break;
+    }
+    default:
+    {
+        break;
+    }
+    }
+    return boost::none;
+}
+
+boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
+        NetworkSyncablePacket &packet )
+{
     switch( packet.getActionID() )
     {
     case ESAID_REQUEST_SERVERINFO:
@@ -283,87 +383,17 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
             mServerInfoQueue.push( info );
             mStatusBits[ESB_WAIT_FOR_INFO] = false;
         }
-        else if( mStatusBits[ESB_SERVER] )
-        {
-            _LOG( "Client requesting server info" );
-            return serialize( ESAID_REQUEST_SERVERINFO );
-        }
         break;
     }
     case ESAID_REQUEST_CONNECTION:
     {
-        if( mStatusBits[ESB_SERVER] )
-        {
-            _LOG( "Client requesting connection from ",
-                  packet.getEndpoint().address().to_string() );
-            HostInfo host;
-            host.hostName = packet.readString();
-            host.passwordHash = packet.readString();
-
-            if( mSelfInfo.host.serverConnectedPlayers < mSelfInfo.host.serverMaxPlayers &&
-                    host.passwordHash == mSelfInfo.host.passwordHash )
-            {
-                ClientInfo info;
-                info.endpoint = packet.getEndpoint();
-                info.id = nextClientID();
-                info.host = host;
-                info.lastActiveTime = system_clock::now();
-                mClientIDMap.insert( std::make_pair( info.id, info ) );
-
-                _LOG( "Client accepted!" );
-                _LOG( "New client's ID", info.id );
-                _LOG( "New client's name", info.host.hostName );
-
-                //FIXME:does this really belong here?
-                WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
-                VisualPlayerPtr p( new VisualPlayer( mExplore, world ), specialDeleters::NullDeleter() );
-                p->setClientID( info.id );
-
-                //FIXME:add possibility to serialize with argument for checkedSend
-                //Reply has to be check sended
-                NetworkSyncablePacket reply = serialize( ESAID_ACCEPT_CONNECTION );
-                reply.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
-
-                return reply;
-            }
-            else
-            {
-                _LOG( "Connection not accepted" );
-                return serialize( ESAID_NAK );
-            }
-        }
-        else
-        {
-            _LOG( "Client requesting connection, but serverMode is false" );
-            return serialize( ESAID_NAK );
-        }
-        break;
-    }
-    case ESAID_ACK:
-    {
-        if( mStatusBits[ESB_SERVER] ) //Receive is_alive
-        {
-            uint32_t clientID = packet.readUInt32();
-            std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.find( clientID );
-            if( x == mClientIDMap.end() )
-                _LOG( "Unknown ACK received with ClientID", clientID );
-            else
-            {
-                x->second.lastActiveTime = system_clock::now();
-            }
-        }
-        else
-            _LOG( "ACK received" );
-        break;
-    }
-    case ESAID_NAK:
-    {
-        _LOG( "NAK received" );
+        _LOG( "Client requesting connection, but serverMode is false" );
+        return serialize( ESAID_NAK );
         break;
     }
     case ESAID_ACCEPT_CONNECTION:
     {
-        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] && !mStatusBits[ESB_SERVER] )
+        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
         {
             _LOG( "Connection accepted!" );
             mStatusBits[ESB_CONNECTED] = true;
@@ -416,7 +446,8 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
     return boost::none;
 }
 
-void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID )
+void ExploreServer::serializeInternalServer( NetworkSyncablePacket &packet,
+                                             uint8_t actionID )
 {
     switch( actionID )
     {
@@ -427,21 +458,9 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
         packet.writeUInt8( mSelfInfo.host.serverConnectedPlayers );
         break;
     }
-    case ESAID_REQUEST_CONNECTION:
-    {
-        packet.writeString( mSelfInfo.host.hostName );
-        packet.writeString( mSelfInfo.host.passwordHash );
-        break;
-    }
     case ESAID_ACCEPT_CONNECTION:
     {
         packet.writeUInt32( nextClientID() - 1 );
-        break;
-    }
-    case ESAID_ACK:
-    {
-        if( !mStatusBits[ESB_SERVER] ) //Alive ACK
-            packet.writeUInt32( mSelfInfo.id );
         break;
     }
     default:
@@ -451,8 +470,28 @@ void ExploreServer::serializeInternal( NetworkSyncablePacket &packet, uint8_t ac
     }
 }
 
+void ExploreServer::serializeInternalClient( NetworkSyncablePacket &packet,
+                                             uint8_t actionID )
+{
+    switch( actionID )
+    {
+    case ESAID_REQUEST_CONNECTION:
+    {
+        packet.writeString( mSelfInfo.host.hostName );
+        packet.writeString( mSelfInfo.host.passwordHash );
+        break;
+    }
+    case ESAID_ACK:
+    {
+        packet.writeUInt32( mSelfInfo.id );
+        break;
+    }
+    }
+}
+
 uint32_t ExploreServer::nextClientID()
 {
+    //TODO:maybe search another way to make it faster?
     if( mClientIDMap.empty() )
         return 1;
 
