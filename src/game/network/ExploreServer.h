@@ -41,6 +41,18 @@ public:
         ESAID_CONNECTIONINFO
     };
 
+    enum E_EXPLORESERVER_ACTIONID
+    {
+        EEAID_SERVERINFO_REQUEST = 0,
+        EEAID_SERVERINFO_RESPOND,
+        EEAID_CONNECTION_REQUEST,
+        EEAID_CONNECTION_RESPOND,
+        EEAID_ALIVE_REQUEST,
+        EEAID_ALIVE_RESPOND,
+        EEAID_ITEMINFO_REQUEST,
+        EEAID_CONNECTIONINFO_SEND
+    };
+
     struct InitializationInfo
     {
         size_t curPlayers, totalPlayers;
