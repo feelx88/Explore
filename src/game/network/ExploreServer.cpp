@@ -104,7 +104,7 @@ void ExploreServer::requestServerInfo( const std::string &ip, const int &port )
     _LOG( "Requesting server info from",
           ip + std::string( ":" ) + boost::lexical_cast<std::string>( port ) );
     mStatusBits[ESB_WAIT_FOR_INFO] = true;
-    mMessenger->sendTo( serialize( ESAID_REQUEST_SERVERINFO ), ip, port );
+    mMessenger->sendTo( serialize( EEAID_SERVERINFO_REQUEST ), ip, port );
 }
 
 bool ExploreServer::hasServerInfo() const
@@ -129,7 +129,7 @@ void ExploreServer::requestConnection( const std::string &ip, const int &port )
     mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
     mStatusBits[ESB_CONNECTED] = false;
 
-    mMessenger->sendTo( serialize( ESAID_REQUEST_CONNECTION ), ip, port );
+    mMessenger->sendTo( serialize( EEAID_CONNECTION_REQUEST ), ip, port );
 }
 
 bool ExploreServer::isConnecting() const
@@ -200,7 +200,7 @@ void ExploreServer::update()
             {
                 //Send info packet
                 NetworkSyncablePacket infoPacket =
-                        serialize( ESAID_CONNECTIONINFO );
+                        serialize( EEAID_CONNECTIONINFO_SEND );
 
                 std::list<NetworkSyncablePacket> playerList, itemList;
                 mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
@@ -220,7 +220,7 @@ void ExploreServer::update()
             }
 
             //Send request alive packet
-            mMessenger->sendTo( serialize( ESAID_REQUEST_IS_STILL_ALIVE ),
+            mMessenger->sendTo( serialize( EEAID_ALIVE_REQUEST ),
                                 x.second.endpoint );
         }
 
@@ -288,13 +288,13 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
 {
     switch( packet.getActionID() )
     {
-    case ESAID_REQUEST_SERVERINFO:
+    case EEAID_SERVERINFO_REQUEST:
     {
         _LOG( "Client requesting server info" );
-        return serialize( ESAID_REQUEST_SERVERINFO );
+        return serialize( EEAID_SERVERINFO_RESPOND );
         break;
     }
-    case ESAID_REQUEST_CONNECTION:
+    case EEAID_CONNECTION_REQUEST:
     {
         _LOG( "Client requesting connection from ",
               packet.getEndpoint().address().to_string() );
@@ -323,7 +323,8 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
 
             //FIXME:add possibility to serialize with argument for checkedSend
             //Reply has to be check sended
-            NetworkSyncablePacket reply = serialize( ESAID_ACCEPT_CONNECTION );
+            NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND );
+            reply.writeBool( true );
             reply.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
 
             return reply;
@@ -331,11 +332,15 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
         else
         {
             _LOG( "Connection not accepted" );
-            return serialize( ESAID_NAK );
+            NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND );
+            reply.writeBool( false );
+            reply.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+
+            return reply;
         }
         break;
     }
-    case ESAID_ACK:
+    case EEAID_ALIVE_RESPOND:
     {
         //Receive is_alive
         uint32_t clientID = packet.readUInt32();
@@ -348,7 +353,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
         }
         break;
     }
-    case ESAID_REQUEST_ITEM_INFO:
+    case EEAID_ITEMINFO_REQUEST:
     {
         uint32_t uuid = packet.readUInt32();
 
@@ -371,7 +376,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
 {
     switch( packet.getActionID() )
     {
-    case ESAID_REQUEST_SERVERINFO:
+    case EEAID_SERVERINFO_RESPOND:
     {
         if( mStatusBits[ESB_WAIT_FOR_INFO] )
         {
@@ -385,15 +390,11 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
         }
         break;
     }
-    case ESAID_REQUEST_CONNECTION:
+    case EEAID_CONNECTION_RESPOND:
     {
-        _LOG( "Client requesting connection, but serverMode is false" );
-        return serialize( ESAID_NAK );
-        break;
-    }
-    case ESAID_ACCEPT_CONNECTION:
-    {
-        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
+        bool accepted = packet.readBool();
+
+        if( accepted && mStatusBits[ESB_WAIT_FOR_CONNECTION] )
         {
             _LOG( "Connection accepted!" );
             mStatusBits[ESB_CONNECTED] = true;
@@ -407,15 +408,19 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
             mSelfInfo.id = packet.readUInt32();
             _LOG( "New ClientID", mSelfInfo.id );
         }
+        else if( !accepted )
+        {
+            _LOG( "Connection denied!" );
+            mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
+        }
         break;
     }
-    case ESAID_REQUEST_IS_STILL_ALIVE:
+    case EEAID_ALIVE_REQUEST:
     {
-        if( mStatusBits[ESB_CONNECTED] )
-            return serialize( ESAID_ACK );
+        return serialize( EEAID_ALIVE_RESPOND );
         break;
     }
-    case ESAID_REQUEST_ITEM_INFO:
+    case EEAID_ITEMINFO_REQUEST:
     {
         uint32_t uuid = packet.readUInt32();
 
@@ -425,7 +430,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
 
         break;
     }
-    case ESAID_CONNECTIONINFO:
+    case EEAID_CONNECTIONINFO_SEND:
     {
         mSelfInfo.initializationInfo.totalPlayers = packet.readUInt8();
         mSelfInfo.initializationInfo.totalItems = packet.readUInt32();
@@ -451,14 +456,14 @@ void ExploreServer::serializeInternalServer( NetworkSyncablePacket &packet,
 {
     switch( actionID )
     {
-    case ESAID_REQUEST_SERVERINFO:
+    case EEAID_SERVERINFO_RESPOND:
     {
         packet.writeString( mSelfInfo.host.hostName );
         packet.writeUInt8( mSelfInfo.host.serverMaxPlayers );
         packet.writeUInt8( mSelfInfo.host.serverConnectedPlayers );
         break;
     }
-    case ESAID_ACCEPT_CONNECTION:
+    case EEAID_CONNECTION_RESPOND:
     {
         packet.writeUInt32( nextClientID() - 1 );
         break;
@@ -475,13 +480,13 @@ void ExploreServer::serializeInternalClient( NetworkSyncablePacket &packet,
 {
     switch( actionID )
     {
-    case ESAID_REQUEST_CONNECTION:
+    case EEAID_CONNECTION_REQUEST:
     {
         packet.writeString( mSelfInfo.host.hostName );
         packet.writeString( mSelfInfo.host.passwordHash );
         break;
     }
-    case ESAID_ACK:
+    case EEAID_ALIVE_RESPOND:
     {
         packet.writeUInt32( mSelfInfo.id );
         break;
@@ -522,7 +527,7 @@ void ExploreServer::handleInitPackets()
                 ItemFactory::create( mExplore, packet );
             else
             {
-                NetworkSyncablePacket p = serialize( ESAID_REQUEST_ITEM_INFO );
+                NetworkSyncablePacket p = serialize( EEAID_ITEMINFO_REQUEST );
                 p.writeUInt32( packet.getUID() );
                 send( p );
             }
