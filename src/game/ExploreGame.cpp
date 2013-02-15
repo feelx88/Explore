@@ -83,7 +83,10 @@ E_GAME_STATE ExploreGame::run()
             level->getProperties()->get( "Spawn.Position", vector3df() );
 
     if( !mWorldPlayer )
+    {
+        _LOG( "Creating new World" );
         mWorldPlayer.reset( new WorldPlayer( mExplore ) );
+    }
 
     VisualPlayerPtr p;
 

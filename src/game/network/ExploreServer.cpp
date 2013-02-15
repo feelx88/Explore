@@ -180,6 +180,14 @@ void ExploreServer::update()
         typedef std::map<uint32_t, ClientInfo> map_t;
         foreach_( map_t::value_type &x, mClientIDMap )
         {
+            _LOG( "---" );
+            _LOG( "alive data:" );
+            _LOG( "lastActive", x.second.lastActiveTime );
+            _LOG( "now", now );
+            _LOG( "then", then );
+            _LOG( "lastactive+then", x.second.lastActiveTime + then );
+            _LOG( "diff", now - x.second.lastActiveTime + then );
+            _LOG( "---");
             //If client is inactive to long, kick him
             if( x.second.statusBits[ECSB_INITIALIZED]
                     && x.second.lastActiveTime + then <= now )
@@ -586,11 +594,13 @@ void ExploreServer::handleInitPackets()
 
                 if( clientID == mSelfInfo.id )
                 {
-                    player.reset( new LocalPlayer( mExplore, world ) );
+                    player.reset( new LocalPlayer( mExplore, world ),
+                                  specialDeleters::NullDeleter() );
                     world->setLocalPlayer( player );
                 }
                 else
-                    player.reset( new VisualPlayer( mExplore, world ) );
+                    player.reset( new VisualPlayer( mExplore, world ),
+                                  specialDeleters::NullDeleter() );
                 player->setClientID( clientID );
                 player->deserialize( packet );
 
@@ -613,6 +623,16 @@ void ExploreServer::handleInitPackets()
             WorldPlayerPtr world( new WorldPlayer( mExplore ) );
             mExplore->getExploreGame()->setWorldPlyer( world );
             mSelfInfo.initializationInfo.curPlayers++;
+
+            //TODO: Only for debugging
+            std::stringstream info;
+            info << "Player (World) " << mSelfInfo.initializationInfo.curPlayers << "/"
+                 << mSelfInfo.initializationInfo.totalPlayers << " received.";
+            _LOG( info.str() );
+
+            if( mSelfInfo.initializationInfo.curPlayers >=
+                    mSelfInfo.initializationInfo.totalPlayers )
+                mSelfInfo.statusBits[ECSB_PLAYERS_CREATED] = true;
         }
 
         //If we are a server, distribute the new whatever to all clients
