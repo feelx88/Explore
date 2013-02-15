@@ -346,7 +346,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
         uint32_t clientID = packet.readUInt32();
         std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.find( clientID );
         if( x == mClientIDMap.end() )
-            _LOG( "Unknown ACK received with ClientID", clientID );
+            _LOG( "Unknown ALIVE_RESPOND received with ClientID", clientID );
         else
         {
             x->second.lastActiveTime = system_clock::now();
@@ -432,15 +432,18 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
     }
     case EEAID_CONNECTIONINFO_SEND:
     {
-        mSelfInfo.initializationInfo.totalPlayers = packet.readUInt8();
-        mSelfInfo.initializationInfo.totalItems = packet.readUInt32();
-        mSelfInfo.initializationInfo.curPlayers = 0;
-        mSelfInfo.initializationInfo.curItems = 0;
-        mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] = false;
+        if( mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] )
+        {
+            mSelfInfo.initializationInfo.totalPlayers = packet.readUInt8();
+            mSelfInfo.initializationInfo.totalItems = packet.readUInt32();
+            mSelfInfo.initializationInfo.curPlayers = 0;
+            mSelfInfo.initializationInfo.curItems = 0;
+            mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] = false;
 
-        _LOG( "Info Packet received" );
-        _LOG( "Num players", mSelfInfo.initializationInfo.totalPlayers );
-        _LOG( "Num items", mSelfInfo.initializationInfo.totalItems );
+            _LOG( "Info Packet received" );
+            _LOG( "Num players", mSelfInfo.initializationInfo.totalPlayers );
+            _LOG( "Num items", mSelfInfo.initializationInfo.totalItems );
+        }
         break;
     }
     default:
