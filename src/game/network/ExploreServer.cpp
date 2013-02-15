@@ -392,26 +392,30 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
     }
     case EEAID_CONNECTION_RESPOND:
     {
-        bool accepted = packet.readBool();
-
-        if( accepted && mStatusBits[ESB_WAIT_FOR_CONNECTION] )
+        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
         {
-            _LOG( "Connection accepted!" );
-            mStatusBits[ESB_CONNECTED] = true;
-            mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
-            mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] = true;
+            uint32_t id = packet.readUInt32();
+            bool accepted = packet.readBool();
 
-            boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
-            mMessenger->setRemoteAddress( endpoint.address().to_string(),
-                                          endpoint.port() );
+            if( accepted )
+            {
+                _LOG( "Connection accepted!" );
+                mStatusBits[ESB_CONNECTED] = true;
+                mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
+                mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] = true;
 
-            mSelfInfo.id = packet.readUInt32();
-            _LOG( "New ClientID", mSelfInfo.id );
-        }
-        else if( !accepted )
-        {
-            _LOG( "Connection denied!" );
-            mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
+                boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
+                mMessenger->setRemoteAddress( endpoint.address().to_string(),
+                                              endpoint.port() );
+
+                mSelfInfo.id = id;
+                _LOG( "New ClientID", mSelfInfo.id );
+            }
+            else
+            {
+                _LOG( "Connection denied!" );
+                mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
+            }
         }
         break;
     }
