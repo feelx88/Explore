@@ -411,13 +411,14 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
         else if( !accepted )
         {
             _LOG( "Connection denied!" );
-            mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
+            mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
         }
         break;
     }
     case EEAID_ALIVE_REQUEST:
     {
-        return serialize( EEAID_ALIVE_RESPOND );
+        if( mStatusBits[ESB_CONNECTED] )
+            return serialize( EEAID_ALIVE_RESPOND );
         break;
     }
     case EEAID_ITEMINFO_REQUEST:
