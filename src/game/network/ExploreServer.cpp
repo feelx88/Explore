@@ -172,13 +172,6 @@ void ExploreServer::update()
 {
     handleInitPackets();
 
-    //If every status bit is set except for ECSB_INITIALIZED, set it to true.
-    if( !mSelfInfo.statusBits[ECSB_INITIALIZED] )
-    {
-        if( mSelfInfo.statusBits[ECSB_ITEMS_CREATED] )
-            mSelfInfo.statusBits[ECSB_INITIALIZED] = true;
-    }
-
     if( mStatusBits[ESB_SERVER] )
     {
         system_clock::time_point now = system_clock::now();
@@ -364,6 +357,17 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
 
         break;
     }
+    case EEAID_INITIALIZATION_FINISH:
+    {
+        uint32_t id = packet.readUInt32();
+        std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.find( id );
+        if( x != mClientIDMap.end() )
+        {
+            x->second.statusBits[ECSB_INITIALIZED] = true;
+        }
+
+        break;
+    }
     default:
     {
         break;
@@ -498,6 +502,17 @@ void ExploreServer::serializeInternalClient( NetworkSyncablePacket &packet,
     case EEAID_ALIVE_RESPOND:
     {
         packet.writeUInt32( mSelfInfo.id );
+        break;
+    }
+    case EEAID_INITIALIZATION_FINISH:
+    {
+        //Has to be check-sended
+        packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+        packet.writeUInt32( mSelfInfo.id );
+        break;
+    }
+    default:
+    {
         break;
     }
     }

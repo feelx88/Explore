@@ -38,7 +38,8 @@ public:
         EEAID_ALIVE_REQUEST,
         EEAID_ALIVE_RESPOND,
         EEAID_ITEMINFO_REQUEST,
-        EEAID_CONNECTIONINFO_SEND
+        EEAID_CONNECTIONINFO_SEND,
+        EEAID_INITIALIZATION_FINISH
     };
 
     struct InitializationInfo
