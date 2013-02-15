@@ -55,7 +55,8 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
       mExplore( explore ),
       mMessenger( messenger ),
       mStatusBits( ESB_COUNT ),
-      mUpdateTimer( *mExplore->getIOService().get() )
+      mUpdateTimer( *mExplore->getIOService().get() ),
+      mClientTimeout( 10 )
 {
     mSelfInfo.host = info;
     setUpdateInterval( 200 );
