@@ -105,7 +105,7 @@ E_GAME_STATE ExploreGame::run()
     p = boost::static_pointer_cast<VisualPlayer>(
                 mWorldPlayer->getLocalPlayer() );
 
-    p->getEntity()->setPosition( spawnPos );
+    //p->getEntity()->setPosition( spawnPos );
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 

@@ -174,6 +174,8 @@ void ExploreServer::update()
 
     if( mStatusBits[ESB_SERVER] )
     {
+        WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
+
         system_clock::time_point now = system_clock::now();
         system_clock::duration then = seconds( mClientTimeout );
 
@@ -205,8 +207,7 @@ void ExploreServer::update()
                         serialize( EEAID_CONNECTIONINFO_SEND );
 
                 std::list<NetworkSyncablePacket> playerList, itemList;
-                mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                            EAID_CREATE, playerList, itemList );
+                world->serializeAll( EAID_CREATE, playerList, itemList );
 
                 infoPacket.writeUInt8( playerList.size() );
                 infoPacket.writeUInt32( itemList.size() );
@@ -226,11 +227,10 @@ void ExploreServer::update()
                                 x.second.endpoint );
         }
 
-        if( mExplore->getExploreGame()->getWorldPlayer() )
+        if( world )
         {//TODO:this does not look neat
             std::list<NetworkSyncablePacket> playerList, itemList;
-            mExplore->getExploreGame()->getWorldPlayer()->serializeAll(
-                        EAID_UPDATE, playerList, itemList );
+            world->serializeAll( EAID_UPDATE, playerList, itemList );
 
             foreach_( NetworkSyncablePacket &packet, playerList )
                 send( packet );
