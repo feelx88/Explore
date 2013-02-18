@@ -86,7 +86,10 @@ void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
 {
     if( actionID == EAID_CREATE || actionID == EAID_UPDATE )
     {
-        packet.writeUInt32( mClientID );
+        if( packet.getActionID() == EAID_CREATE )
+        {
+            packet.writeUInt32( mClientID );
+        }
 
         vector3df position = *mEntity->getPosition();
         vector3df rotation = *mEntity->getRotation();
@@ -104,14 +107,10 @@ void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
 boost::optional<NetworkSyncablePacket> VisualPlayer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
+    //TODO:Assign UID?
     if( packet.getActionID() == EAID_CREATE || packet.getActionID() == EAID_UPDATE )
     {
-        //uint32_t [clientID] already read on EAID_CREATE
-        if( packet.getActionID() == EAID_UPDATE )
-        {
-            packet.readUInt32();
-        }
-
+        //clientID already read
         float positionX = packet.readFloat();
         float positionY = packet.readFloat();
         float positionZ = packet.readFloat();
