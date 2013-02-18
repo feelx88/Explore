@@ -36,7 +36,6 @@ enum E_STATUS_BITS
     ESB_WAIT_FOR_INFO,
     ESB_WAIT_FOR_CONNECTION,
     ESB_CONNECTED,
-    ESB_INITIALIZED,
     ESB_COUNT
 };
 
@@ -229,21 +228,6 @@ void ExploreServer::update()
                 send( packet );
             foreach_( NetworkSyncablePacket &packet, itemList )
                 send( packet );
-        }
-    }
-    else
-    {
-        if( !mStatusBits[ESB_INITIALIZED] )
-        {
-            //If we got all information, report it to the server
-            if( mSelfInfo.initializationInfo.curItems >=
-                    mSelfInfo.initializationInfo.totalItems &&
-                    mSelfInfo.initializationInfo.curItems >=
-                    mSelfInfo.initializationInfo.totalItems )
-            {
-                send( serialize( EEAID_INITIALIZATION_FINISH ) );
-                mStatusBits[ESB_INITIALIZED] = true;
-            }
         }
     }
 
@@ -585,6 +569,9 @@ void ExploreServer::handleInitPackets()
             {
                 mSelfInfo.statusBits[ECSB_ITEMS_CREATED] = true;
                 mSelfInfo.statusBits[ECSB_INITIALIZED] = true;
+
+                //Announce that we are ready
+                send( serialize( EEAID_INITIALIZATION_FINISH ) );
             }
         }
         else if( packet.getTypeID() == ENTI_PLAYER )
