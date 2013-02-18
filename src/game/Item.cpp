@@ -197,28 +197,33 @@ void Item::deserializeEntities( NetworkSyncablePacket &packet )
 
     foreach_( const EntityMap::value_type &x, entities )
     {
+        float originX = packet.readFloat();
+        float originY = packet.readFloat();
+        float originZ = packet.readFloat();
 
-        btVector3 origin( packet.readFloat(),
-                          packet.readFloat(),
-                          packet.readFloat() );
+        float rotationX = packet.readFloat();
+        float rotationY = packet.readFloat();
+        float rotationZ = packet.readFloat();
+        float rotationW = packet.readFloat();
 
-        btQuaternion rotation( packet.readFloat(),
-                               packet.readFloat(),
-                               packet.readFloat(),
-                               packet.readFloat() );
+        float linvelX = packet.readFloat();
+        float linvelY = packet.readFloat();
+        float linvelZ = packet.readFloat();
 
-        btVector3 linvel( packet.readFloat(),
-                          packet.readFloat(),
-                          packet.readFloat() );
-
-        btVector3 angvel( packet.readFloat(),
-                          packet.readFloat(),
-                          packet.readFloat() );
+        float angvelX = packet.readFloat();
+        float angvelY = packet.readFloat();
+        float angvelZ = packet.readFloat();
 
         RigidBodyPtr body = x.second->getRigidBody();
-        body->setWorldTransform( btTransform( rotation, origin ) );
-        body->setLinearVelocity( linvel );
-        body->setAngularVelocity( angvel );
+        body->setWorldTransform( btTransform( btQuaternion( rotationX,
+                                                            rotationY,
+                                                            rotationZ,
+                                                            rotationW ),
+                                              btVector3( originX,
+                                                         originY,
+                                                         originZ ) ) );
+        body->setLinearVelocity( btVector3( linvelX, linvelY, linvelZ ) );
+        body->setAngularVelocity( btVector3( angvelX, angvelY, angvelZ ) );
     }
 }
 

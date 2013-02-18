@@ -80,6 +80,8 @@ void LocalPlayer::update()
             mOwnedItems.erase( item );
         }
     }
+
+    mExplore->getExploreServer()->send( serialize( EAID_UPDATE ) );
 }
 
 void LocalPlayer::addOwnedItem( ItemPtr item )

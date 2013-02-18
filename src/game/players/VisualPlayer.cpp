@@ -84,7 +84,7 @@ void VisualPlayer::update()
 void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
                                       uint8_t actionID )
 {
-    if( actionID == EAID_CREATE )
+    if( actionID == EAID_CREATE || actionID == EAID_UPDATE )
     {
         packet.writeUInt32( mClientID );
 
@@ -104,18 +104,24 @@ void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
 boost::optional<NetworkSyncablePacket> VisualPlayer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
-    if( packet.getActionID() == EAID_CREATE )
+    if( packet.getActionID() == EAID_CREATE || packet.getActionID() == EAID_UPDATE )
     {
-        //uint32_t [clientID] already read
-        vector3df position( packet.readFloat(),
-                            packet.readFloat(),
-                            packet.readFloat() );
-        vector3df rotation( packet.readFloat(),
-                             packet.readFloat(),
-                             packet.readFloat() );
+        //uint32_t [clientID] already read on EAID_CREATE
+        if( packet.getActionID() == EAID_UPDATE )
+        {
+            packet.readUInt32();
+        }
 
-        mEntity->setPosition( position );
-        mEntity->setRotation( rotation );
+        float positionX = packet.readFloat();
+        float positionY = packet.readFloat();
+        float positionZ = packet.readFloat();
+
+        float rotationX = packet.readFloat();
+        float rotationY = packet.readFloat();
+        float rotationZ = packet.readFloat();
+
+        mEntity->setPosition( vector3df( positionX, positionY, positionZ ) );
+        mEntity->setRotation( vector3df( rotationX, rotationY, rotationZ ) );
     }
 
     return boost::none;
