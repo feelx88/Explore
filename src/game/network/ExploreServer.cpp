@@ -182,17 +182,8 @@ void ExploreServer::update()
         typedef std::map<uint32_t, ClientInfo> map_t;
         foreach_( map_t::value_type &x, mClientIDMap )
         {
-            _LOG( "---" );
-            _LOG( "alive data:" );
-            _LOG( "lastActive", x.second.lastActiveTime );
-            _LOG( "now", now );
-            _LOG( "then", then );
-            _LOG( "lastactive+then", x.second.lastActiveTime + then );
-            _LOG( "diff", now - x.second.lastActiveTime + then );
-            _LOG( "---");
             //If client is inactive to long, kick him
-            if( x.second.statusBits[ECSB_INITIALIZED]
-                    && x.second.lastActiveTime + then <= now )
+            if( now - x.second.lastActiveTime >= then )
             {
                 std::string name = x.second.host.hostName;
                 _LOG( "Timeout; No response from", name );
@@ -200,7 +191,8 @@ void ExploreServer::update()
                 mClientIDMap.erase( x.second.id );
                 break;
             }
-            else if( !x.second.statusBits[ECSB_PACKETS_SENDED] )
+
+            if( !x.second.statusBits[ECSB_PACKETS_SENDED] )
             {
                 //Send info packet
                 NetworkSyncablePacket infoPacket =
