@@ -122,8 +122,12 @@ void IPlayer::serializeInternal( NetworkSyncablePacket &/*packet*/, uint8_t /*ac
 }
 
 boost::optional<NetworkSyncablePacket> IPlayer::deserializeInternal(
-        NetworkSyncablePacket &/*packet*/ )
+        NetworkSyncablePacket &packet )
 {
+    if( packet.getActionID() == EAID_CREATE )
+    {
+        setUID( packet.getUID() );
+    }
     return boost::none;
 }
 

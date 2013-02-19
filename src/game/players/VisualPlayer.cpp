@@ -107,7 +107,9 @@ void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
 boost::optional<NetworkSyncablePacket> VisualPlayer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
-    //TODO:Assign UID?
+    //Assign UID etc
+    IPlayer::deserializeInternal( packet );
+
     if( packet.getActionID() == EAID_CREATE || packet.getActionID() == EAID_UPDATE )
     {
         //clientID already read
