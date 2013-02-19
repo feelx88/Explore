@@ -59,7 +59,7 @@ ExploreServer::ExploreServer( ExplorePtr explore, const HostInfo &info,
       mClientTimeout( 10 )
 {
     mSelfInfo.host = info;
-    setUpdateInterval( 200 );
+    setUpdateInterval( 50 );
     update();
     mStatusBits.reset();
 }

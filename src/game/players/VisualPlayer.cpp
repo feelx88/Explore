@@ -122,7 +122,7 @@ boost::optional<NetworkSyncablePacket> VisualPlayer::deserializeInternal(
         float rotationZ = packet.readFloat();
 
         mEntity->setPosition( vector3df( positionX, positionY, positionZ ) );
-        mEntity->setRotation( vector3df( rotationX, rotationY, rotationZ ) );
+        //mEntity->setRotation( vector3df( rotationX, rotationY, rotationZ ) );
     }
 
     return boost::none;
