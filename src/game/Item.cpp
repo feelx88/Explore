@@ -169,23 +169,23 @@ void Item::serializeEntities( NetworkSyncablePacket &packet )
         RigidBodyPtr body = x.second->getRigidBody();
         btTransform trans = body->getWorldTransform();
 
-        packet.writeFloat( trans.getOrigin().getZ() );
-        packet.writeFloat( trans.getOrigin().getY() );
         packet.writeFloat( trans.getOrigin().getX() );
+        packet.writeFloat( trans.getOrigin().getY() );
+        packet.writeFloat( trans.getOrigin().getZ() );
 
-        packet.writeFloat( trans.getRotation().getW() );
-        packet.writeFloat( trans.getRotation().getZ() );
-        packet.writeFloat( trans.getRotation().getY() );
         packet.writeFloat( trans.getRotation().getX() );
+        packet.writeFloat( trans.getRotation().getY() );
+        packet.writeFloat( trans.getRotation().getZ() );
+        packet.writeFloat( trans.getRotation().getW() );
 
         btVector3 linvel = body->getLinearVelocity(),
                 angvel = body->getAngularVelocity();
-        packet.writeFloat( linvel.getZ() );
-        packet.writeFloat( linvel.getY() );
         packet.writeFloat( linvel.getX() );
-        packet.writeFloat( angvel.getZ() );
-        packet.writeFloat( angvel.getY() );
+        packet.writeFloat( linvel.getY() );
+        packet.writeFloat( linvel.getZ() );
         packet.writeFloat( angvel.getX() );
+        packet.writeFloat( angvel.getY() );
+        packet.writeFloat( angvel.getZ() );
     }
 }
 
