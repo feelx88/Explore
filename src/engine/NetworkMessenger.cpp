@@ -64,7 +64,7 @@ void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
                                const UDPEndpoint &endpoint )
 {
-    if( packet.getPingbackMode() == NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK )
+    if( packet.getPingbackMode() != NetworkSyncablePacket::ENSPPM_NONE )
     {
         mCheckedSendPackets.insert( std::make_pair( packet.getUID(),
                                                     std::make_pair( packet, endpoint ) ) );
@@ -219,7 +219,7 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
         {
             //pingback requested, send it back
             packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_PINGBACK );
-            checkedSendTo( packet, mRemoteEndpoint );
+            sendTo( packet, mRemoteEndpoint );
         }
 
         packet.setEndpoint( mRemoteEndpoint );
