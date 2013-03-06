@@ -116,6 +116,11 @@ std::string NetworkSyncablePacket::getBody() const
     return mBody.str();
 }
 
+void NetworkSyncablePacket::clearBody()
+{
+    mBody.clear();
+}
+
 bool NetworkSyncablePacket::isValid()
 {
     return mValid;

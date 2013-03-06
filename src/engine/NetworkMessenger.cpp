@@ -217,8 +217,12 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
         if( packet.getPingbackMode() ==
                 NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK )
         {
-            //pingback requested, send it back
-            packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_PINGBACK );
+            //pingback requested, send it back without body
+            NetworkSyncablePacket pingback( packet );
+
+            pingback.setPingbackMode( NetworkSyncablePacket::ENSPPM_PINGBACK );
+            pingback.clearBody();
+
             sendTo( packet, mRemoteEndpoint );
         }
 

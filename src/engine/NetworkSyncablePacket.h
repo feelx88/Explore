@@ -69,6 +69,8 @@ public:
     uint32_t getBodySize() const;
     std::string getBody() const;
 
+    void clearBody();
+
     bool isValid();
 
     void setPingbackMode( NetworkSyncablePacketPingbackMode mode );
