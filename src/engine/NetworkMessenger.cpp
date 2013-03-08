@@ -64,12 +64,6 @@ void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
                                const UDPEndpoint &endpoint )
 {
-    if( packet.getPingbackMode() != NetworkSyncablePacket::ENSPPM_NONE )
-    {
-        mCheckedSendPackets.insert( std::make_pair( packet.getUID(),
-                                                    std::make_pair( packet, endpoint ) ) );
-    }
-
     mSocket->async_send_to( buffer( packet.serialize() ), endpoint, boost::bind(
                                 &NetworkMessenger::sendHandler, this, _1, _2 ) );
 }
@@ -91,7 +85,9 @@ void NetworkMessenger::checkedSend( NetworkSyncablePacket &packet )
 void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
                                       const UDPEndpoint &endpoint )
 {
-    packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+    if( packet.getPingbackMode() == NetworkSyncablePacket::ENSPPM_NONE )
+        packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+    mCheckedSendPackets.insert( std::make_pair( packet.getUID(), std::make_pair( packet, endpoint ) ) );
     sendTo( packet, endpoint );
 }
 
