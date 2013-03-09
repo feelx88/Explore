@@ -539,6 +539,11 @@ void ExploreServer::handleInitPackets()
     {
         NetworkSyncablePacket packet = mMessenger->nextPacket( false );
 
+        //FIXME: This should not be needed; handling of oversupplied packets should
+        //be done by NetworkMessenger
+        if( NetworkSyncable::getObject( packet.getUID() ) )
+            return;
+
         if( !mSelfInfo.statusBits[ECSB_PLAYERS_CREATED]
                 && packet.getTypeID() == ENTI_ITEM )
         {
