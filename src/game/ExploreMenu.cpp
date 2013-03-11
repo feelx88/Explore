@@ -90,10 +90,21 @@ struct ConnectClickedCallback : public EventReceiver::GUICallback
         std::string ip = core::stringc( ipBox->getText() ).c_str();
         int port = boost::lexical_cast<int>( portBox->getText() );
 
-        mServer->requestConnection( ip, port );
+        //FIXME:name resolving should be done in a NetworkMessenger method,
+        //e.g. std::string resolveDomainToIP( std::string name )
+        boost::asio::ip::udp::resolver res( *mExplore->getIOService() );
+        boost::asio::ip::udp::resolver::iterator it =
+                res.resolve( boost::asio::ip::udp::resolver::query( ip, "" ) );
+
+        if( it != boost::asio::ip::udp::resolver::iterator() )
+        {
+            ip = static_cast<boost::asio::ip::udp::endpoint>(
+                        *it ).address().to_string();
+            mExplore->getExploreServer()->requestConnection( ip, port );
+        }
         return true;
     }
-    ExploreServerPtr mServer;
+    ExplorePtr mExplore;
 };
 
 ExploreMenu::ExploreMenu( ExplorePtr explore )
@@ -134,6 +145,20 @@ E_GAME_STATE ExploreMenu::run()
     //Hide windows
     main->getElementFromId( EGID_OPTIONS_WINDOW )->setVisible( false );
     main->getElementFromId( EGID_CONNECT_WINDOW )->setVisible( false );
+
+    //Set ip/port from config file
+    {
+        IGUIEditBoxPtr ipBox = static_cast<IGUIEditBoxPtr>(
+                    main->getElementFromId( EGID_CONNECT_IP, true ) );
+        IGUIEditBoxPtr portBox = static_cast<IGUIEditBoxPtr>(
+                    main->getElementFromId( EGID_CONNECT_PORT, true ) );
+        std::string defaultIP = mExplore->readConfigValue<std::string>(
+                    "Server.DefaultIP", "127.0.0.1" );
+        std::string defaultPort = mExplore->readConfigValue<std::string>(
+                    "Server.DefaultPort", "6556" );
+        ipBox->setText( core::stringw( defaultIP.c_str() ).c_str() );
+        portBox->setText( core::stringw( defaultPort.c_str() ).c_str() );
+    }
 
     //Main button callbacks
     struct : public EventReceiver::GUICallback {
@@ -198,7 +223,7 @@ E_GAME_STATE ExploreMenu::run()
                                                        EGET_ELEMENT_CLOSED );
 
     ConnectClickedCallback connectButtonClicked;
-    connectButtonClicked.mServer = mExplore->getExploreServer();
+    connectButtonClicked.mExplore = mExplore;
     mExplore->getEventReceiver()->registerGUICallback( &connectButtonClicked,
                                                        EGID_CONNECT_BUTTON,
                                                        EGET_BUTTON_CLICKED );
