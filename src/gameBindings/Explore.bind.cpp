@@ -26,6 +26,8 @@ PYTHONBINDER_REGISTER_MODULE( Explore )
     using namespace boost::python;
     class_<Explore, boost::noncopyable>( "Explore", init<>() )
         .def( "readConfigValue", &Explore::readConfigValue<std::string> )
+        .def( "writeConfigValue", &Explore::writeConfigValue<std::string> )
+        .def( "saveConfig", &Explore::saveConfig )
         .def( "getExploreGame", &Explore::getExploreGame )
         .def( "getExploreServer", &Explore::getExploreServer )
         .def( "getKeyCode", &Explore::getKeyCode )

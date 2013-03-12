@@ -111,6 +111,12 @@ public:
         }
     }
 
+    template <typename T>
+    void writeConfigValue( const std::string &key, const T &value )
+    {
+        mConfig->put<T>( key, value );
+    }
+
     void setGameState( const E_GAME_STATE &state );
     E_GAME_STATE getGameState() const;
 
@@ -128,10 +134,11 @@ public:
 
     static irr::EKEY_CODE getKeyCode( const std::string &name );
 
+    void saveConfig();
+
 private:
 
     void loadConfig();
-    void saveConfig();
 
     void initIrrlicht();
     void initBullet();
