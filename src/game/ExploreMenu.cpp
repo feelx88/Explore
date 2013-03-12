@@ -98,6 +98,11 @@ struct ConnectClickedCallback : public EventReceiver::GUICallback
 
         if( it != boost::asio::ip::udp::resolver::iterator() )
         {
+            //Write to config file to store last used server
+            mExplore->writeConfigValue<std::string>( "Server.DefaultIP", ip );
+            mExplore->writeConfigValue<int>( "Server.DefaultPort", port );
+            mExplore->saveConfig();
+
             ip = static_cast<boost::asio::ip::udp::endpoint>(
                         *it ).address().to_string();
             mExplore->getExploreServer()->requestConnection( ip, port );
