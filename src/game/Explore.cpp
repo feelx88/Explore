@@ -97,6 +97,7 @@ int Explore::run()
         case EGS_QUIT:
             _LOG( "Quit application" );
             mRunning = false;
+            saveConfig();
             break;
         case EGS_MAIN_MENU:
             mMenu->run();
