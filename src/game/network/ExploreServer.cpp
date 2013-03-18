@@ -255,7 +255,7 @@ void ExploreServer::send( const NetworkSyncablePacket &packet )
 void ExploreServer::checkedSend( const NetworkSyncablePacket &packet )
 {
     NetworkSyncablePacket copy( packet );
-    copy.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+    copy.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
     send( copy );
 }
 
@@ -319,7 +319,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
             //Reply has to be check sended
             NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND );
             reply.writeBool( true );
-            reply.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+            reply.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
 
             return reply;
         }
@@ -328,7 +328,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
             _LOG( "Connection not accepted" );
             NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND );
             reply.writeBool( false );
-            reply.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+            reply.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
 
             return reply;
         }
@@ -507,7 +507,7 @@ void ExploreServer::serializeInternalClient( NetworkSyncablePacket &packet,
     case EEAID_INITIALIZATION_FINISH:
     {
         //Has to be check-sended
-        packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+        packet.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
         packet.writeUInt32( mSelfInfo.id );
         break;
     }

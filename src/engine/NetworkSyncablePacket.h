@@ -27,32 +27,61 @@
 #include <boost/asio.hpp>
 
 /*
- * General packet structure: [Version 2]
+ * General packet structure [Version 3]:
  *
- *--------------------------*
- *  UID: uint32_t           *
- *--------------------------*
- *  ActionID: uint8_t       *
- *--------------------------*
- *  TypeID: uint8_t         *
- *--------------------------*
- *  Pingback mode: 1 byte   *
- *--------------------------*
- *  Body size: uint32_t     *
- *--------------------------*
- *  Body                    *
- *--------------------------*
+ *------------------------------*
+ *  Packet type: char           *
+ *------------------------------*
+ *  Connection id: uint8_t      *
+ *------------------------------*
+ *  Sequence counter: uint8_t   *
+ *------------------------------*
+ *  UID: uint32_t               *
+ *------------------------------*
+ *  ActionID: uint8_t           *
+ *------------------------------*
+ *  TypeID: uint8_t             *
+ *------------------------------*
+ *  [Body]                      *
+ *------------------------------*
+ *
+ * Connection id is always the connection id of the other side of the connection!
+ * If there is a body, it consists of:
+ *
+ *------------------------------*
+ *  Body length: uint32_t       *
+ *------------------------------*
+ *  Body data                   *
+ *------------------------------*
+ *
+ * Packet types:
+ * - 'n': Normal, unchecked data packet
+ *   + Connection id can be 0
+ *   + Sequence counter is 0
+ *   + Body: data
+ * - 'c': Checked data packet
+ *   + Body: data
+ * - 'p': Pingback packet
+ *   + No body
+ * - 'i': Connection initialization packet
+ *   + No body
+ *   + UID, ActionID and TypeID are 0
+ * - 'r': Connection initialization response packet
+ *   + UID, ActionID and TypeID are 0
+ *   + Body: uint8_t with foreign connection id
  *
  */
 
 class APIEXPORT NetworkSyncablePacket
 {
 public:
-    enum NetworkSyncablePacketPingbackMode
+    enum E_PACKET_TYPE
     {
-        ENSPPM_NONE = 0,
-        ENSPPM_REQUEST_PINGBACK,
-        ENSPPM_PINGBACK
+        EPT_NORMAL = 0,
+        EPT_CHECKED,
+        EPT_PINGBACK,
+        EPT_INITIALIZATION,
+        EPT_INITIALIZATION_RESPONSE
     };
 
     NetworkSyncablePacket( const std::string &data );
@@ -64,6 +93,8 @@ public:
     NetworkSyncablePacket& operator=( NetworkSyncablePacket other );
 
     uint32_t getUID() const;
+    uint8_t getConnectionID() const;
+    uint8_t getSequenceCounter() const;
     uint8_t getTypeID() const;
     uint8_t getActionID() const;
     uint32_t getBodySize() const;
@@ -73,8 +104,11 @@ public:
 
     bool isValid();
 
-    void setPingbackMode( NetworkSyncablePacketPingbackMode mode );
-    NetworkSyncablePacketPingbackMode getPingbackMode() const;
+    void setPacketType( E_PACKET_TYPE mode );
+    E_PACKET_TYPE getPacketType() const;
+
+    void setConnectionID( uint8_t id );
+    void setSequenceCounter( uint8_t seq );
 
     boost::asio::ip::udp::endpoint getEndpoint();
     void setEndpoint( const boost::asio::ip::udp::endpoint &endpoint );
@@ -106,16 +140,16 @@ public:
     std::string serialize() const;
 
 private:
-    inline char pingbackModeToChar( NetworkSyncablePacketPingbackMode mode ) const;
-    inline NetworkSyncablePacketPingbackMode charToPingbackMode( char mode ) const;
+    inline char packetTypeToChar( E_PACKET_TYPE mode ) const;
+    inline E_PACKET_TYPE charToPacketType( char mode ) const;
 
     uint32_t mUID;
-    uint8_t mTypeID, mActionID;
+    uint8_t mConnectionID, mSequenceCounter, mTypeID, mActionID;
     uint32_t mBodySize;
     std::stringstream mBody;
 
     bool mValid;
-    char mPingbackMode;
+    char mPacketType;
 
     boost::asio::ip::udp::endpoint mEndpoint;
 };

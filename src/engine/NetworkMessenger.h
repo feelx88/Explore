@@ -27,14 +27,30 @@
 #include <boost/unordered_map.hpp>
 
 class NetworkMessenger;
+
 typedef boost::shared_ptr<NetworkMessenger> NetworkMessengerPtr;
 typedef boost::asio::ip::udp::endpoint UDPEndpoint;
+typedef std::queue<NetworkSyncablePacket> PacketQueue;
 
 class APIEXPORT NetworkMessenger
 {
 public:
+
+    struct APIEXPORT Connection
+    {
+        Connection();
+
+        UDPEndpoint endpoint;
+        uint8_t id, foreignID, sequenceCounter;
+        bool connected;
+    };
+
+    typedef std::map<uint8_t, Connection> ConnectionMap;
+
     NetworkMessenger( IOServicePtr ioService, PropTreePtr properties );
     virtual ~NetworkMessenger();
+
+    boost::optional<Connection> connect( std::string host, int port );
 
     void send( const NetworkSyncablePacket &packet );
     void sendTo( const NetworkSyncablePacket &packet,
@@ -67,6 +83,8 @@ private:
 
     void checkedSendHandler();
 
+    uint8_t getNextConnectionID() const;
+
     IOServicePtr mIOService;
     PropTreePtr mProperties;
 
@@ -76,13 +94,20 @@ private:
     int mPort;
 
     std::vector<unsigned char> mReceiveBuffer;
-    std::queue<NetworkSyncablePacket> mPacketQueue;
+    PacketQueue mPacketQueue;
     UDPEndpoint mRemoteEndpoint;
 
     boost::asio::deadline_timer mCheckedSendTimer;
     int mCheckedSendTimerTimeout;
     boost::unordered::unordered_multimap<uint32_t,
         std::pair<NetworkSyncablePacket, UDPEndpoint> > mCheckedSendPackets;
+
+    PacketQueue mCheckedSendQueue;
+
+    ConnectionMap mConnections;
+    std::map<uint8_t, uint8_t> mForeignConnectionIDs;
+    std::vector<uint8_t> mWaitingConnections;
+
 };
 
 #endif //NETWORKMESSENGER_H

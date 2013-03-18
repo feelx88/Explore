@@ -56,6 +56,29 @@ NetworkMessenger::~NetworkMessenger()
     mSocket->close();
 }
 
+boost::optional<NetworkMessenger::Connection> NetworkMessenger::connect(
+        std::string host, int port )
+{
+    ip::udp::resolver res( *mIOService );
+    ip::udp::resolver::iterator it =
+            res.resolve( ip::udp::resolver::query( host, "" ) );
+
+    if( it == ip::udp::resolver::iterator() )
+    {
+        return boost::none;
+    }
+
+    Connection con;
+    con.endpoint = *it;
+    con.id = getNextConnectionID();
+
+    //Only insert into waiting connections
+    mWaitingConnections.push_back( con.id );
+    checkedSendHandler();
+
+    return con;
+}
+
 void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 {
     sendTo( packet, mRemoteEndpoint );
@@ -85,8 +108,10 @@ void NetworkMessenger::checkedSend( NetworkSyncablePacket &packet )
 void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
                                       const UDPEndpoint &endpoint )
 {
-    if( packet.getPingbackMode() == NetworkSyncablePacket::ENSPPM_NONE )
-        packet.setPingbackMode( NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK );
+    if( packet.getPacketType() == NetworkSyncablePacket::EPT_NORMAL )
+        packet.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
+
+    packet.setEndpoint( endpoint );
     mCheckedSendPackets.insert( std::make_pair( packet.getUID(), std::make_pair( packet, endpoint ) ) );
     sendTo( packet, endpoint );
 }
@@ -191,8 +216,8 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
     NetworkSyncablePacket packet( std::string( mReceiveBuffer.begin(),
                                                mReceiveBuffer.end() ) );
 
-    if( packet.getPingbackMode() ==
-             NetworkSyncablePacket::ENSPPM_PINGBACK )
+    if( packet.getPacketType() ==
+             NetworkSyncablePacket::EPT_PINGBACK )
     {
         //Only pingback received, delete from map and return
         typedef boost::unordered::unordered_multimap<uint32_t,
@@ -210,13 +235,13 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
     }
     else
     {
-        if( packet.getPingbackMode() ==
-                NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK )
+        if( packet.getPacketType() ==
+                NetworkSyncablePacket::EPT_CHECKED )
         {
             //pingback requested, send it back without body
             NetworkSyncablePacket pingback( packet );
 
-            pingback.setPingbackMode( NetworkSyncablePacket::ENSPPM_PINGBACK );
+            pingback.setPacketType( NetworkSyncablePacket::EPT_PINGBACK );
             pingback.clearBody();
 
             sendTo( packet, mRemoteEndpoint );
@@ -233,8 +258,8 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
 
             if( replyPacket )
             {
-                if( replyPacket->getPingbackMode() ==
-                        NetworkSyncablePacket::ENSPPM_REQUEST_PINGBACK )
+                if( replyPacket->getPacketType() ==
+                        NetworkSyncablePacket::EPT_CHECKED )
                     checkedSend( *replyPacket );
                 else
                     send( *replyPacket );
@@ -260,11 +285,49 @@ void NetworkMessenger::checkedSendHandler()
 {
     typedef boost::unordered::unordered_multimap<uint32_t,
             std::pair<NetworkSyncablePacket, UDPEndpoint> > map_t;
+    /*Deprecated....
     foreach_( map_t::value_type &pair, mCheckedSendPackets )
+    {
             sendTo( pair.second.first, pair.second.second );
+    }*/
+
+    //Send the first (not ack'ed) entry in queue if there is one
+    if( !mCheckedSendQueue.empty() )
+    {
+        NetworkSyncablePacket packet = mCheckedSendQueue.front();
+        sendTo( packet, packet.getEndpoint() );
+    }
+
+    foreach_( uint8_t &id, mWaitingConnections )
+    {
+        NetworkSyncablePacket packet( 0, 0, 0, "" );
+        packet.setConnectionID( id );
+        packet.setPacketType( NetworkSyncablePacket::EPT_INITIALIZATION );
+        sendTo( packet, mConnections[id].endpoint );
+    }
 
     mCheckedSendTimer.expires_from_now(
                 boost::posix_time::milliseconds( mCheckedSendTimerTimeout ) );
     mCheckedSendTimer.async_wait(
                 boost::bind( &NetworkMessenger::checkedSendHandler, this ) );
+}
+
+uint8_t NetworkMessenger::getNextConnectionID() const
+{
+    if( mConnections.empty() )
+        return 1;
+
+    ConnectionMap::const_iterator it = mConnections.end();
+    it--;
+
+    return it->first + 1;
+}
+
+
+NetworkMessenger::Connection::Connection()
+    : id( 0 ),
+      foreignID( 0 ),
+      sequenceCounter( 0 ),
+      connected( false )
+{
 }

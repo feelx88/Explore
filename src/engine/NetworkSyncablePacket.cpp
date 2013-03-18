@@ -32,37 +32,49 @@ NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
     std::stringstream stream;
     stream.write( data.data(), data.size() );
 
+    stream.read( &mPacketType, 1 );
+    stream.read( reinterpret_cast<char*>( &mConnectionID ), sizeof( uint8_t ) );
+    stream.read( reinterpret_cast<char*>( &mSequenceCounter ), sizeof( uint8_t ) );
     stream.read( reinterpret_cast<char*>( &mUID ), sizeof( uint32_t ) );
     stream.read( reinterpret_cast<char*>( &mActionID ), sizeof( uint8_t ) );
     stream.read( reinterpret_cast<char*>( &mTypeID ), sizeof( uint8_t ) );
-    stream.read( &mPingbackMode, 1 );
-    stream.read( reinterpret_cast<char*>( &mBodySize ), sizeof( uint32_t ) );
 
-    char *tmp = new char[mBodySize];
-    stream.read( tmp, mBodySize );
+    //Read body only if there is one ( n, c and r )
+    if( getPacketType() != EPT_PINGBACK &&
+            getPacketType() != EPT_INITIALIZATION )
+    {
+        stream.read( reinterpret_cast<char*>( &mBodySize ), sizeof( uint32_t ) );
 
-    mBody.write( tmp, mBodySize );
-    delete[] tmp;
+        char *tmp = new char[mBodySize];
+        stream.read( tmp, mBodySize );
+
+        mBody.write( tmp, mBodySize );
+        delete[] tmp;
+    }
 }
 
 NetworkSyncablePacket::NetworkSyncablePacket( uint32_t uid, uint8_t typeID,
                                               uint8_t actionID,
                                               const std::string &body )
     : mUID( uid ),
+      mConnectionID( 0 ),
+      mSequenceCounter( 0 ),
       mTypeID( typeID ),
       mActionID( actionID ),
       mBodySize( body.length() ),
-      mPingbackMode( '0' )
+      mPacketType( 'n' )
 {
     mBody.write( body.data(), mBodySize );
 }
 
 NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other )
     : mUID( other.getUID() ),
+      mConnectionID( other.getConnectionID() ),
+      mSequenceCounter( other.getSequenceCounter() ),
       mTypeID( other.getTypeID() ),
       mActionID( other.getActionID() ),
       mBodySize( other.getBodySize() ),
-      mPingbackMode( other.mPingbackMode )
+      mPacketType( other.mPacketType )
 {
     mBody.write( other.getBody().data(), other.getBodySize() );
 }
@@ -70,12 +82,14 @@ NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other
 void NetworkSyncablePacket::swap( NetworkSyncablePacket &other )
 {
     std::swap( mUID, other.mUID );
+    std::swap( mConnectionID, other.mConnectionID );
+    std::swap( mSequenceCounter, other.mSequenceCounter );
     std::swap( mTypeID, other.mTypeID );
     std::swap( mActionID, other.mActionID );
     std::swap( mBodySize, other.mBodySize );
     std::swap( mValid, other.mValid );
     std::swap( mEndpoint, other.mEndpoint );
-    std::swap( mPingbackMode, other.mPingbackMode );
+    std::swap( mPacketType, other.mPacketType );
 
     //bacause std::ios cannot be swapped:
     std::string thisBody = mBody.str();
@@ -94,6 +108,16 @@ NetworkSyncablePacket& NetworkSyncablePacket::operator=( NetworkSyncablePacket o
 uint32_t NetworkSyncablePacket::getUID() const
 {
     return mUID;
+}
+
+uint8_t NetworkSyncablePacket::getConnectionID() const
+{
+    return mConnectionID;
+}
+
+uint8_t NetworkSyncablePacket::getSequenceCounter() const
+{
+    return mSequenceCounter;
 }
 
 uint8_t NetworkSyncablePacket::getTypeID() const
@@ -126,16 +150,26 @@ bool NetworkSyncablePacket::isValid()
     return mValid;
 }
 
-void NetworkSyncablePacket::setPingbackMode(
-        NetworkSyncablePacketPingbackMode mode )
+void NetworkSyncablePacket::setPacketType(
+        E_PACKET_TYPE mode )
 {
-    mPingbackMode = pingbackModeToChar( mode );
+    mPacketType = packetTypeToChar( mode );
 }
 
-NetworkSyncablePacket::NetworkSyncablePacketPingbackMode
-    NetworkSyncablePacket::getPingbackMode() const
+NetworkSyncablePacket::E_PACKET_TYPE
+    NetworkSyncablePacket::getPacketType() const
 {
-    return charToPingbackMode( mPingbackMode );
+    return charToPacketType( mPacketType );
+}
+
+void NetworkSyncablePacket::setConnectionID(uint8_t id)
+{
+    mConnectionID = id;
+}
+
+void NetworkSyncablePacket::setSequenceCounter(uint8_t seq)
+{
+    mSequenceCounter = seq;
 }
 
 boost::asio::ip::udp::endpoint NetworkSyncablePacket::getEndpoint()
@@ -329,49 +363,68 @@ std::string NetworkSyncablePacket::serialize() const
     std::string body = mBody.str();
     uint32_t size = body.length();
 
+    stream.write( &mPacketType, 1 );
+    stream.write( reinterpret_cast<const char*>( &mConnectionID ), sizeof( uint8_t ) );
+    stream.write( reinterpret_cast<const char*>( &mSequenceCounter ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &mUID ), sizeof( uint32_t ) );
     stream.write( reinterpret_cast<const char*>( &mActionID ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &mTypeID ), sizeof( uint8_t ) );
-    stream.write( &mPingbackMode, 1 );
-    stream.write( reinterpret_cast<const char*>( &size ), sizeof( uint32_t ) );
 
-    stream.write( body.data(), size );
+    //Only write body if there is one ( n, c and r )
+    if( getPacketType() != EPT_PINGBACK &&
+            getPacketType() != EPT_INITIALIZATION_RESPONSE )
+    {
+        stream.write( reinterpret_cast<const char*>( &size ), sizeof( uint32_t ) );
+        stream.write( body.data(), size );
+    }
 
     return stream.str();
 }
 
-char NetworkSyncablePacket::pingbackModeToChar(
-        NetworkSyncablePacket::NetworkSyncablePacketPingbackMode mode ) const
+char NetworkSyncablePacket::packetTypeToChar(
+        NetworkSyncablePacket::E_PACKET_TYPE mode ) const
 {
     switch( mode )
     {
-    case ENSPPM_NONE:
-        return '0';
+    case EPT_NORMAL:
+        return 'n';
         break;
-    case ENSPPM_REQUEST_PINGBACK:
-        return '1';
+    case EPT_CHECKED:
+        return 'c';
         break;
-    case ENSPPM_PINGBACK:
-        return '2';
+    case EPT_PINGBACK:
+        return 'p';
+        break;
+    case EPT_INITIALIZATION:
+        return 'i';
+        break;
+    case EPT_INITIALIZATION_RESPONSE:
+        return 'r';
         break;
     }
     return '0';
 }
 
-NetworkSyncablePacket::NetworkSyncablePacketPingbackMode
-    NetworkSyncablePacket::charToPingbackMode( char mode ) const
+NetworkSyncablePacket::E_PACKET_TYPE
+    NetworkSyncablePacket::charToPacketType( char mode ) const
 {
     switch( mode )
     {
-    case '0':
-        return ENSPPM_NONE;
+    case 'n':
+        return EPT_NORMAL;
         break;
-    case '1':
-        return ENSPPM_REQUEST_PINGBACK;
+    case 'c':
+        return EPT_CHECKED;
         break;
-    case '2':
-        return ENSPPM_PINGBACK;
+    case 'p':
+        return EPT_PINGBACK;
+        break;
+    case 'i':
+        return EPT_INITIALIZATION;
+        break;
+    case 'r':
+        return EPT_INITIALIZATION_RESPONSE;
         break;
     }
-    return ENSPPM_NONE;
+    return EPT_NORMAL;
 }
