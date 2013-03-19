@@ -61,7 +61,7 @@ public:
 
         uint32_t id;
         HostInfo host;
-        boost::asio::ip::udp::endpoint endpoint;
+        NetworkMessenger::ConnectionPtr connection;
         boost::chrono::system_clock::time_point lastActiveTime;
         boost::dynamic_bitset<> statusBits;
         InitializationInfo initializationInfo;

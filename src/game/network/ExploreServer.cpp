@@ -124,13 +124,24 @@ ExploreServer::HostInfo ExploreServer::nextServerInfo()
 
 void ExploreServer::requestConnection( const std::string &ip, const int &port )
 {
-    _LOG( "Requesting connection to",
-          ip + std::string( ":" ) + boost::lexical_cast<std::string>( port ) );
+    boost::optional<NetworkMessenger::ConnectionPtr> connection =
+            mMessenger->connect( ip, port );
 
-    mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
-    mStatusBits[ESB_CONNECTED] = false;
+    if( connection )
+    {
+        _LOG( "Requesting connection to",
+              ip + std::string( ":" ) + boost::lexical_cast<std::string>( port ) );
 
-    mMessenger->sendTo( serialize( EEAID_CONNECTION_REQUEST ), ip, port );
+        mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
+        mStatusBits[ESB_CONNECTED] = false;
+
+        mSelfInfo.connection = *connection;
+    }
+    else
+    {
+        _LOG( "Host not found", ip );
+    }
+
 }
 
 bool ExploreServer::isConnecting() const
@@ -203,20 +214,24 @@ void ExploreServer::update()
 
                 infoPacket.writeUInt8( playerList.size() );
                 infoPacket.writeUInt32( itemList.size() );
-                mMessenger->checkedSendTo( infoPacket, x.second.endpoint );
+                mMessenger->checkedSendTo( infoPacket, x.second.connection );
 
                 foreach_( NetworkSyncablePacket &packet, playerList )
-                    mMessenger->checkedSendTo( packet, x.second.endpoint );
+                {
+                    mMessenger->checkedSendTo( packet, x.second.connection );
+                }
 
                 foreach_( NetworkSyncablePacket &packet, itemList )
-                    mMessenger->checkedSendTo( packet, x.second.endpoint );
+                {
+                    mMessenger->checkedSendTo( packet, x.second.connection );
+                }
 
                 x.second.statusBits[ECSB_PACKETS_SENDED] = true;
             }
 
             //Send request alive packet
             mMessenger->sendTo( serialize( EEAID_ALIVE_REQUEST ),
-                                x.second.endpoint );
+                                x.second.connection );
         }
 
         if( world )
@@ -228,6 +243,15 @@ void ExploreServer::update()
                 send( packet );
             foreach_( NetworkSyncablePacket &packet, itemList )
                 send( packet );
+        }
+    }
+    else if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
+    {
+        //If NetworkMessenger's connection is established, send Explore's
+        //connection request
+        if( mSelfInfo.connection->connected )
+        {
+            mMessenger->checkedSendTo( serialize( EEAID_CONNECTION_REQUEST ), mSelfInfo.connection );
         }
     }
 
@@ -245,7 +269,7 @@ void ExploreServer::send( const NetworkSyncablePacket &packet )
         foreach_( map_t::value_type &x, mClientIDMap )
         {
             if( x.second.statusBits[ECSB_INITIALIZED] )
-                mMessenger->sendTo( packet, x.second.endpoint );
+                mMessenger->sendTo( packet, x.second.connection );
         }
     }
     else
@@ -300,7 +324,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
                 host.passwordHash == mSelfInfo.host.passwordHash )
         {
             ClientInfo info;
-            info.endpoint = packet.getEndpoint();
+            info.connection = *mMessenger->getConnection( packet.getConnectionID() );
             info.id = nextClientID();
             info.host = host;
             info.lastActiveTime = system_clock::now();

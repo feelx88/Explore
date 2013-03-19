@@ -56,7 +56,7 @@ NetworkMessenger::~NetworkMessenger()
     mSocket->close();
 }
 
-boost::optional<NetworkMessenger::Connection> NetworkMessenger::connect(
+boost::optional<NetworkMessenger::ConnectionPtr> NetworkMessenger::connect(
         std::string host, int port )
 {
     ip::udp::resolver res( *mIOService );
@@ -68,12 +68,12 @@ boost::optional<NetworkMessenger::Connection> NetworkMessenger::connect(
         return boost::none;
     }
 
-    Connection con;
-    con.endpoint = *it;
-    con.id = getNextConnectionID();
+    ConnectionPtr con( new Connection );
+    con->endpoint = *it;
+    con->id = getNextConnectionID();
 
-    //Only insert into waiting connections
-    mWaitingConnections.push_back( con.id );
+    mConnections.insert( std::make_pair( con->id, con ) );
+    mWaitingConnections.push_back( con->id );
     checkedSendHandler();
 
     return con;
@@ -82,6 +82,25 @@ boost::optional<NetworkMessenger::Connection> NetworkMessenger::connect(
 void NetworkMessenger::send( const NetworkSyncablePacket &packet )
 {
     sendTo( packet, mRemoteEndpoint );
+}
+
+void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
+                               const NetworkMessenger::ConnectionPtr &connection )
+{
+    sendTo( packet, connection->id );
+}
+
+void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
+                               const uint8_t &connectionID )
+{
+    if( connectionID == 0 )
+    {
+        throw "Connection ID invalid!";
+    }
+
+    ConnectionPtr connection = mConnections[connectionID];
+
+    sendTo( packet, connection->endpoint );
 }
 
 void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
@@ -102,26 +121,49 @@ void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
 
 void NetworkMessenger::checkedSend( NetworkSyncablePacket &packet )
 {
-    checkedSendTo( packet, mRemoteEndpoint );
+    //If there is at least one connection, send packet to the first available
+    //(ID 1 is the first, 0 is not allowed)
+    if( !mConnections.empty() )
+    {
+        checkedSendTo( packet, mConnections[1] );
+    }
 }
 
 void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
-                                      const UDPEndpoint &endpoint )
+                                      const NetworkMessenger::ConnectionPtr &connection )
 {
+    checkedSendTo( packet, connection->id );
+}
+
+void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
+                                      const uint8_t &connectionID )
+{
+    if( connectionID == 0 )
+    {
+        throw "Connection ID invalid!";
+    }
+
     if( packet.getPacketType() == NetworkSyncablePacket::EPT_NORMAL )
         packet.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
 
-    packet.setEndpoint( endpoint );
-    mCheckedSendPackets.insert( std::make_pair( packet.getUID(), std::make_pair( packet, endpoint ) ) );
-    sendTo( packet, endpoint );
+    ConnectionPtr connection = mConnections[connectionID];
+
+    packet.setConnectionID( connection->foreignID );
+    packet.setEndpoint( connection->endpoint );
+
+    connection->checkedSendQueue.push( packet );
+    sendTo( packet, connection->endpoint );
 }
 
-void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
-                                      const std::string &ip, const int &port )
+boost::optional<NetworkMessenger::ConnectionPtr> NetworkMessenger::getConnection(
+        uint8_t id )
 {
-    ip::udp::endpoint endpoint =
-            ip::udp::endpoint( ip::address::from_string( ip ), port );
-    checkedSendTo( packet, endpoint );
+    ConnectionMap::const_iterator it = mConnections.find( id );
+    if( it != mConnections.end() )
+    {
+        return it->second;
+    }
+    return boost::none;
 }
 
 void NetworkMessenger::setCheckedSendTimeout(int timeoutMS)
@@ -216,27 +258,69 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
     NetworkSyncablePacket packet( std::string( mReceiveBuffer.begin(),
                                                mReceiveBuffer.end() ) );
 
-    if( packet.getPacketType() ==
-             NetworkSyncablePacket::EPT_PINGBACK )
+    ConnectionPtr connection;
+    if( packet.getConnectionID() > 0 )
     {
-        //Only pingback received, delete from map and return
-        typedef boost::unordered::unordered_multimap<uint32_t,
-                std::pair<NetworkSyncablePacket, UDPEndpoint> > map_t;
-        std::pair<map_t::iterator, map_t::iterator> found =
-                mCheckedSendPackets.equal_range( packet.getUID() );
+        connection = mConnections[packet.getConnectionID()];
+    }
 
-        for( map_t::iterator x = found.first; x != found.second; ++x )
+    if( packet.getPacketType() == NetworkSyncablePacket::EPT_INITIALIZATION )
+    {
+        uint8_t foreignID = packet.getConnectionID();
+        std::map<uint8_t, uint8_t>::iterator it =
+                mForeignConnectionIDs.find( foreignID );
+
+        //Create new connection if none is found with this foreignID
+        if( it == mForeignConnectionIDs.end() )
         {
-            NetworkSyncablePacket &p = x->second.first;
-            if( p.getActionID() == packet.getActionID()
-                    && p.getTypeID() == packet.getTypeID() )
-                mCheckedSendPackets.erase( x );
+            connection.reset( new Connection );
+            connection->endpoint = mRemoteEndpoint;
+            connection->id = getNextConnectionID();
+            connection->foreignID = foreignID;
+            connection->connected = true;
+
+            mConnections.insert( std::make_pair( connection->id, connection ) );
+        }
+
+        NetworkSyncablePacket response( packet );
+        response.setPacketType( NetworkSyncablePacket::EPT_INITIALIZATION_RESPONSE );
+        response.setConnectionID( connection->id );
+        response.writeUInt8( foreignID );
+
+        sendTo( response, connection->endpoint );
+    }
+    else if( packet.getPacketType() ==
+             NetworkSyncablePacket::EPT_INITIALIZATION_RESPONSE )
+    {
+        uint8_t id = packet.readUInt8();
+        connection = mConnections[id];
+
+        if( !connection->connected )
+        {
+            connection->foreignID = packet.getConnectionID();
+            connection->connected = true;
+
+            for( unsigned int x = 0; x < mWaitingConnections.size(); ++x )
+            {
+                if( mWaitingConnections.at( x ) == id )
+                    mWaitingConnections.erase( mWaitingConnections.begin() + x );
+            }
+        }
+    }
+    else if( packet.getPacketType() == NetworkSyncablePacket::EPT_PINGBACK
+            && connection )
+    {
+        //Only pingback received, delete from queue and return
+        NetworkSyncablePacket firstInQueue = connection->checkedSendQueue.front();
+        if( packet.getSequenceCounter() == firstInQueue.getSequenceCounter() )
+        {
+            connection->checkedSendQueue.pop();
+            connection->sequenceCounter++;
         }
     }
     else
     {
-        if( packet.getPacketType() ==
-                NetworkSyncablePacket::EPT_CHECKED )
+        if( packet.getPacketType() == NetworkSyncablePacket::EPT_CHECKED )
         {
             //pingback requested, send it back without body
             NetworkSyncablePacket pingback( packet );
@@ -283,19 +367,15 @@ void NetworkMessenger::sendHandler( const boost::system::error_code &error, size
 
 void NetworkMessenger::checkedSendHandler()
 {
-    typedef boost::unordered::unordered_multimap<uint32_t,
-            std::pair<NetworkSyncablePacket, UDPEndpoint> > map_t;
-    /*Deprecated....
-    foreach_( map_t::value_type &pair, mCheckedSendPackets )
+    //Send the first (not ack'ed) entry in each queue if there is one
+    foreach_( ConnectionMap::value_type& entry, mConnections )
     {
-            sendTo( pair.second.first, pair.second.second );
-    }*/
-
-    //Send the first (not ack'ed) entry in queue if there is one
-    if( !mCheckedSendQueue.empty() )
-    {
-        NetworkSyncablePacket packet = mCheckedSendQueue.front();
-        sendTo( packet, packet.getEndpoint() );
+        ConnectionPtr &connection = entry.second;
+        if( !connection->checkedSendQueue.empty() )
+        {
+            NetworkSyncablePacket& packet = connection->checkedSendQueue.front();
+            sendTo( packet, connection->endpoint );
+        }
     }
 
     foreach_( uint8_t &id, mWaitingConnections )
@@ -303,7 +383,7 @@ void NetworkMessenger::checkedSendHandler()
         NetworkSyncablePacket packet( 0, 0, 0, "" );
         packet.setConnectionID( id );
         packet.setPacketType( NetworkSyncablePacket::EPT_INITIALIZATION );
-        sendTo( packet, mConnections[id].endpoint );
+        sendTo( packet, mConnections[id]->endpoint );
     }
 
     mCheckedSendTimer.expires_from_now(

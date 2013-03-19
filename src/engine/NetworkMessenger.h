@@ -43,16 +43,22 @@ public:
         UDPEndpoint endpoint;
         uint8_t id, foreignID, sequenceCounter;
         bool connected;
+        PacketQueue checkedSendQueue;
     };
 
-    typedef std::map<uint8_t, Connection> ConnectionMap;
+    typedef boost::shared_ptr<Connection> ConnectionPtr;
+    typedef std::map<uint8_t, ConnectionPtr> ConnectionMap;
 
     NetworkMessenger( IOServicePtr ioService, PropTreePtr properties );
     virtual ~NetworkMessenger();
 
-    boost::optional<Connection> connect( std::string host, int port );
+    boost::optional<ConnectionPtr> connect( std::string host, int port );
 
     void send( const NetworkSyncablePacket &packet );
+    void sendTo( const NetworkSyncablePacket &packet,
+                 const ConnectionPtr &connection );
+    void sendTo( const NetworkSyncablePacket &packet,
+                 const uint8_t &connectionID );
     void sendTo( const NetworkSyncablePacket &packet,
                  const UDPEndpoint &endpoint );
     void sendTo( const NetworkSyncablePacket &packet, const std::string &ip,
@@ -60,9 +66,11 @@ public:
 
     void checkedSend( NetworkSyncablePacket &packet );
     void checkedSendTo( NetworkSyncablePacket &packet,
-                 const UDPEndpoint &endpoint );
-    void checkedSendTo( NetworkSyncablePacket &packet, const std::string &ip,
-                 const int &port );
+                        const ConnectionPtr &connection );
+    void checkedSendTo( NetworkSyncablePacket &packet,
+                        const uint8_t &connectionID );
+
+    boost::optional<ConnectionPtr> getConnection( uint8_t id );
 
     void setCheckedSendTimeout( int timeoutMS );
     int checkedSendTimeout() const;
@@ -96,13 +104,10 @@ private:
     std::vector<unsigned char> mReceiveBuffer;
     PacketQueue mPacketQueue;
     UDPEndpoint mRemoteEndpoint;
+    uint8_t mRemoteConnectionID;
 
     boost::asio::deadline_timer mCheckedSendTimer;
     int mCheckedSendTimerTimeout;
-    boost::unordered::unordered_multimap<uint32_t,
-        std::pair<NetworkSyncablePacket, UDPEndpoint> > mCheckedSendPackets;
-
-    PacketQueue mCheckedSendQueue;
 
     ConnectionMap mConnections;
     std::map<uint8_t, uint8_t> mForeignConnectionIDs;
