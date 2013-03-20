@@ -27,6 +27,27 @@
 #define INT_SIZE 4
 #define PACKED_FLOAT_SIZE 8
 
+//64bit host-network order switch functions
+//(from http://stackoverflow.com/questions/3022552/is-there-any-standard-htonl-like-function-for-64-bits-integers-in-c)
+uint64_t htonll( uint64_t value )
+{
+    // The answer is 42
+    static const int num = 42;
+
+    // Check the endianness
+    if ( *reinterpret_cast<const char*>(&num) == num )
+    {
+        const uint32_t high_part = htonl( static_cast<uint32_t>( value >> 32 ) );
+        const uint32_t low_part = htonl(static_cast<uint32_t>( value & 0xFFFFFFFFLL ) );
+
+        return ( static_cast<uint64_t>( low_part ) << 32 ) | high_part;
+    } else
+    {
+        return value;
+    }
+}
+#define ntohll htonll
+
 NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
 {
     std::stringstream stream;
@@ -39,12 +60,10 @@ NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
     stream.read( reinterpret_cast<char*>( &mActionID ), sizeof( uint8_t ) );
     stream.read( reinterpret_cast<char*>( &mTypeID ), sizeof( uint8_t ) );
 
-    //Read body only if there is one ( n, c and r )
-    if( getPacketType() != EPT_PINGBACK &&
-            getPacketType() != EPT_INITIALIZATION )
-    {
-        stream.read( reinterpret_cast<char*>( &mBodySize ), sizeof( uint32_t ) );
+    stream.read( reinterpret_cast<char*>( &mBodySize ), sizeof( uint32_t ) );
 
+    if( mBodySize > 0 )
+    {
         char *tmp = new char[mBodySize];
         stream.read( tmp, mBodySize );
 
@@ -76,7 +95,10 @@ NetworkSyncablePacket::NetworkSyncablePacket( const NetworkSyncablePacket &other
       mBodySize( other.getBodySize() ),
       mPacketType( other.mPacketType )
 {
-    mBody.write( other.getBody().data(), other.getBodySize() );
+    if( other.getBodySize() > 0 )
+    {
+        mBody.write( other.getBody().data(), other.getBodySize() );
+    }
 }
 
 void NetworkSyncablePacket::swap( NetworkSyncablePacket &other )
@@ -190,19 +212,22 @@ void NetworkSyncablePacket::writeUInt8( const uint8_t &val )
 
 void NetworkSyncablePacket::writeUInt16( const uint16_t &val )
 {
-    mBody.write( reinterpret_cast<const char*>( &val ), sizeof( uint16_t ) );
+    uint16_t nval = htons( val );
+    mBody.write( reinterpret_cast<const char*>( &nval ), sizeof( uint16_t ) );
     mBodySize += sizeof( uint16_t );
 }
 
 void NetworkSyncablePacket::writeUInt32( const uint32_t &val )
 {
-    mBody.write( reinterpret_cast<const char*>( &val ), sizeof( uint32_t ) );
+    uint32_t nval = htonl( val );
+    mBody.write( reinterpret_cast<const char*>( &nval ), sizeof( uint32_t ) );
     mBodySize += sizeof( uint32_t );
 }
 
 void NetworkSyncablePacket::writeUInt64( const uint64_t &val )
 {
-    mBody.write( reinterpret_cast<const char*>( &val ), sizeof( uint64_t ) );
+    uint64_t nval = htonll( val );
+    mBody.write( reinterpret_cast<const char*>( &nval ), sizeof( uint64_t ) );
     mBodySize += sizeof( uint64_t );
 }
 
@@ -214,19 +239,22 @@ void NetworkSyncablePacket::writeInt8( const int8_t &val )
 
 void NetworkSyncablePacket::writeInt16( const int16_t &val )
 {
-    mBody.write( reinterpret_cast<const char*>( &val ), sizeof( int16_t ) );
+    int16_t nval = htons( val );
+    mBody.write( reinterpret_cast<const char*>( &nval ), sizeof( int16_t ) );
     mBodySize += sizeof( int16_t );
 }
 
 void NetworkSyncablePacket::writeInt32( const int32_t &val )
 {
-    mBody.write( reinterpret_cast<const char*>( &val ), sizeof( int32_t ) );
+    int32_t nval = htonl( val );
+    mBody.write( reinterpret_cast<const char*>( &nval ), sizeof( int32_t ) );
     mBodySize += sizeof( int32_t );
 }
 
 void NetworkSyncablePacket::writeInt64( const int64_t &val )
 {
-    mBody.write( reinterpret_cast<const char*>( &val ), sizeof( int64_t ) );
+    int64_t nval = htonll( val );
+    mBody.write( reinterpret_cast<const char*>( &nval ), sizeof( int64_t ) );
     mBodySize += sizeof( int64_t );
 }
 
@@ -268,7 +296,7 @@ uint16_t NetworkSyncablePacket::readUInt16()
     uint16_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( uint16_t ) );
     mBodySize -= sizeof( uint16_t );
-    return val;
+    return ntohs( val );
 }
 
 uint32_t NetworkSyncablePacket::readUInt32()
@@ -276,7 +304,7 @@ uint32_t NetworkSyncablePacket::readUInt32()
     uint32_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( uint32_t ) );
     mBodySize -= sizeof( uint32_t );
-    return val;
+    return ntohl( val );
 }
 
 uint64_t NetworkSyncablePacket::readUInt64()
@@ -284,7 +312,7 @@ uint64_t NetworkSyncablePacket::readUInt64()
     uint64_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( uint64_t ) );
     mBodySize -= sizeof( uint64_t );
-    return val;
+    return ntohll( val );
 }
 
 int8_t NetworkSyncablePacket::readInt8()
@@ -300,7 +328,7 @@ int16_t NetworkSyncablePacket::readInt16()
     int16_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( int16_t ) );
     mBodySize -= sizeof( int16_t );
-    return val;
+    return ntohs( val );
 }
 
 int32_t NetworkSyncablePacket::readInt32()
@@ -308,7 +336,7 @@ int32_t NetworkSyncablePacket::readInt32()
     int32_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( int32_t ) );
     mBodySize -= sizeof( int32_t );
-    return val;
+    return ntohl( val );
 }
 
 int64_t NetworkSyncablePacket::readInt64()
@@ -316,7 +344,7 @@ int64_t NetworkSyncablePacket::readInt64()
     int64_t val = 0;
     mBody.read( reinterpret_cast<char*>( &val ), sizeof( int64_t ) );
     mBodySize -= sizeof( int64_t );
-    return val;
+    return ntohll( val );
 }
 
 float NetworkSyncablePacket::readFloat()
@@ -370,13 +398,9 @@ std::string NetworkSyncablePacket::serialize() const
     stream.write( reinterpret_cast<const char*>( &mActionID ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &mTypeID ), sizeof( uint8_t ) );
 
-    //Only write body if there is one ( n, c and r )
-    if( getPacketType() != EPT_PINGBACK &&
-            getPacketType() != EPT_INITIALIZATION_RESPONSE )
-    {
-        stream.write( reinterpret_cast<const char*>( &size ), sizeof( uint32_t ) );
-        stream.write( body.data(), size );
-    }
+
+    stream.write( reinterpret_cast<const char*>( &size ), sizeof( uint32_t ) );
+    stream.write( body.data(), size );
 
     return stream.str();
 }

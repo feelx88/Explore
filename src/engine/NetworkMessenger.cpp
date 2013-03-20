@@ -69,12 +69,13 @@ boost::optional<NetworkMessenger::ConnectionPtr> NetworkMessenger::connect(
     }
 
     ConnectionPtr con( new Connection );
-    con->endpoint = *it;
+    UDPEndpoint endpoint = *it;
+    con->endpoint = UDPEndpoint( endpoint.address(), port );
     con->id = getNextConnectionID();
 
     mConnections.insert( std::make_pair( con->id, con ) );
     mWaitingConnections.push_back( con->id );
-    checkedSendHandler();
+    //checkedSendHandler();
 
     return con;
 }
@@ -122,10 +123,9 @@ void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
 void NetworkMessenger::checkedSend( NetworkSyncablePacket &packet )
 {
     //If there is at least one connection, send packet to the first available
-    //(ID 1 is the first, 0 is not allowed)
     if( !mConnections.empty() )
     {
-        checkedSendTo( packet, mConnections[1] );
+        checkedSendTo( packet, mConnections.begin()->second );
     }
 }
 
@@ -150,6 +150,7 @@ void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
 
     packet.setConnectionID( connection->foreignID );
     packet.setEndpoint( connection->endpoint );
+    packet.setSequenceCounter( connection->sequenceCounter );
 
     connection->checkedSendQueue.push( packet );
     sendTo( packet, connection->endpoint );
@@ -320,7 +321,8 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
     }
     else
     {
-        if( packet.getPacketType() == NetworkSyncablePacket::EPT_CHECKED )
+        if( packet.getPacketType() == NetworkSyncablePacket::EPT_CHECKED
+                && packet.getSequenceCounter() >= connection->sequenceCounter )
         {
             //pingback requested, send it back without body
             NetworkSyncablePacket pingback( packet );
