@@ -120,7 +120,7 @@ void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
     sendTo( packet, endpoint );
 }
 
-void NetworkMessenger::checkedSend( NetworkSyncablePacket &packet )
+void NetworkMessenger::checkedSend( const NetworkSyncablePacket &packet )
 {
     //If there is at least one connection, send packet to the first available
     if( !mConnections.empty() )
@@ -129,13 +129,13 @@ void NetworkMessenger::checkedSend( NetworkSyncablePacket &packet )
     }
 }
 
-void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
+void NetworkMessenger::checkedSendTo( const NetworkSyncablePacket &packet,
                                       const NetworkMessenger::ConnectionPtr &connection )
 {
     checkedSendTo( packet, connection->id );
 }
 
-void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
+void NetworkMessenger::checkedSendTo( const NetworkSyncablePacket &packet,
                                       const uint8_t &connectionID )
 {
     if( connectionID == 0 )
@@ -143,17 +143,19 @@ void NetworkMessenger::checkedSendTo( NetworkSyncablePacket &packet,
         throw "Connection ID invalid!";
     }
 
-    if( packet.getPacketType() == NetworkSyncablePacket::EPT_NORMAL )
-        packet.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
+    NetworkSyncablePacket p( packet );
+
+    if( p.getPacketType() == NetworkSyncablePacket::EPT_NORMAL )
+        p.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
 
     ConnectionPtr connection = mConnections[connectionID];
 
-    packet.setConnectionID( connection->foreignID );
-    packet.setEndpoint( connection->endpoint );
-    packet.setSequenceCounter( connection->sequenceCounter );
+    p.setConnectionID( connection->foreignID );
+    p.setEndpoint( connection->endpoint );
+    p.setSequenceCounter( connection->sequenceCounter );
 
-    connection->checkedSendQueue.push( packet );
-    sendTo( packet, connection->endpoint );
+    connection->checkedSendQueue.push( p );
+    sendTo( p, connection->endpoint );
 }
 
 boost::optional<NetworkMessenger::ConnectionPtr> NetworkMessenger::getConnection(

@@ -64,10 +64,10 @@ public:
     void sendTo( const NetworkSyncablePacket &packet, const std::string &ip,
                  const int &port );
 
-    void checkedSend( NetworkSyncablePacket &packet );
-    void checkedSendTo( NetworkSyncablePacket &packet,
+    void checkedSend( const NetworkSyncablePacket &packet );
+    void checkedSendTo( const NetworkSyncablePacket &packet,
                         const ConnectionPtr &connection );
-    void checkedSendTo( NetworkSyncablePacket &packet,
+    void checkedSendTo( const NetworkSyncablePacket &packet,
                         const uint8_t &connectionID );
 
     boost::optional<ConnectionPtr> getConnection( uint8_t id );

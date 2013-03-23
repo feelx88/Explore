@@ -31,7 +31,7 @@ PYTHONBINDER_REGISTER_MODULE( NetworkMessenger )
                                           const std::string&,
                                           const int&)) &NetworkMessenger::sendTo )
         .def( "checkedSendTo",
-              (void(NetworkMessenger::*)( NetworkSyncablePacket&,
+              (void(NetworkMessenger::*)( const NetworkSyncablePacket&,
                                           const uint8_t&)) &NetworkMessenger::checkedSendTo )
         .def( "hasPacketsInQueue", &NetworkMessenger::hasPacketsInQueue )
         .def( "nextPacket", &NetworkMessenger::nextPacket )
