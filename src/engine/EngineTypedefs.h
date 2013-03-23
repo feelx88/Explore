@@ -21,6 +21,9 @@
 #ifndef ENGINETYPEDEFS_H
 #define ENGINETYPEDEFS_H
 
+//Python include to remove warnings
+#include <Python.h>
+
 //Windows dll export/import define
 #ifdef _WIN32
     #ifdef ENGINE_EXPORTS

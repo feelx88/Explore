@@ -21,9 +21,10 @@
 #ifndef BULLETSCENENODEANIMATOR_H
 #define BULLETSCENENODEANIMATOR_H
 
+#include "EngineTypedefs.h"
+
 #include <irrlicht/irrlicht.h>
 #include <bullet/btBulletDynamicsCommon.h>
-#include "EngineTypedefs.h"
 
 class APIEXPORT BulletSceneNodeAnimator : public irr::scene::ISceneNodeAnimator
 {

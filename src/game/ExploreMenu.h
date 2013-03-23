@@ -21,8 +21,8 @@
 #ifndef EXPLOREMENU_H
 #define EXPLOREMENU_H
 
-#include <irrlicht/irrlicht.h>
 #include <engine/EngineTypedefs.h>
+#include <irrlicht/irrlicht.h>
 #include "GameState.h"
 
 class APIEXPORT ExploreMenu

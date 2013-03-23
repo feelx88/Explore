@@ -21,10 +21,11 @@
 #ifndef EXPLORE_H
 #define EXPLORE_H
 
+#include <engine/EngineTypedefs.h>
+
 #include <fstream>
 #include <boost/enable_shared_from_this.hpp>
 
-#include <engine/EngineTypedefs.h>
 #include <engine/EventReceiver.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/ScriptConsole.h>

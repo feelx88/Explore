@@ -396,7 +396,7 @@ std::string NetworkSyncablePacket::serialize() const
     uint32_t size = body.length();
 
     //Convert multi byte datatypes to host order
-    uID = htonl( mUID );
+    int32_t uID = htonl( mUID );
     size = htonl( size );
 
     stream.write( &mPacketType, 1 );

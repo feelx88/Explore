@@ -21,7 +21,6 @@
 #define PYTHONTOOLS_H
 
 #include "EngineTypedefs.h"
-#include <Python.h>
 #include <boost/python.hpp>
 
 class APIEXPORT PythonTools

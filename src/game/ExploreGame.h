@@ -21,9 +21,9 @@
 #ifndef EXPLOREGAME_H
 #define EXPLOREGAME_H
 
+#include <engine/EngineTypedefs.h>
 #include "GameState.h"
 #include "players/WorldPlayer.h"
-#include <engine/EngineTypedefs.h>
 
 class APIEXPORT ExploreGame
 {

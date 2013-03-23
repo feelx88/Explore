@@ -19,7 +19,7 @@
 
 #include <engine/PythonTools.h>
 
-int main( int argc, char** argv )
+int main( int, char** )
 {
     PythonTools::initPython();
     boost::python::api::object main = boost::python::import( "__main__" ).attr( "__dict__" );

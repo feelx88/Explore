@@ -79,8 +79,8 @@ E_GAME_STATE ExploreGame::run()
                                   mDevice, mBulletWorld,
                                   PathTools::getAbsolutePath( "TestMap1" ) ) );
 
-    vector3df spawnPos =
-            level->getProperties()->get( "Spawn.Position", vector3df() );
+    //vector3df spawnPos =
+    //        level->getProperties()->get( "Spawn.Position", vector3df() );
 
     if( !mWorldPlayer )
     {
