@@ -33,6 +33,7 @@
     #endif
 
     #pragma warning(disable: 4251)
+    #pragma warning(disable: 4275)
 #else //_WIN32
     #define APIEXPORT
 #endif
