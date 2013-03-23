@@ -21,6 +21,8 @@
 #ifndef LOGGERSINGLETON_H
 #define LOGGERSINGLETON_H
 
+#include "EngineTypedefs.h"
+
 #include <ostream>
 #include <list>
 #include <boost/lexical_cast.hpp>
