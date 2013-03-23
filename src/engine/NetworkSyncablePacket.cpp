@@ -62,6 +62,10 @@ NetworkSyncablePacket::NetworkSyncablePacket( const std::string &data )
 
     stream.read( reinterpret_cast<char*>( &mBodySize ), sizeof( uint32_t ) );
 
+    //Convert multi byte datatypes to host order
+    mUID = ntohl( mUID );
+    mBodySize = ntohl( mBodySize );
+
     if( mBodySize > 0 )
     {
         char *tmp = new char[mBodySize];
@@ -391,10 +395,14 @@ std::string NetworkSyncablePacket::serialize() const
     std::string body = mBody.str();
     uint32_t size = body.length();
 
+    //Convert multi byte datatypes to host order
+    uID = htonl( mUID );
+    size = htonl( size );
+
     stream.write( &mPacketType, 1 );
     stream.write( reinterpret_cast<const char*>( &mConnectionID ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &mSequenceCounter ), sizeof( uint8_t ) );
-    stream.write( reinterpret_cast<const char*>( &mUID ), sizeof( uint32_t ) );
+    stream.write( reinterpret_cast<const char*>( &uID ), sizeof( uint32_t ) );
     stream.write( reinterpret_cast<const char*>( &mActionID ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &mTypeID ), sizeof( uint8_t ) );
 
