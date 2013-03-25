@@ -123,9 +123,10 @@ void NetworkMessenger::sendTo( const NetworkSyncablePacket &packet,
 void NetworkMessenger::checkedSend( const NetworkSyncablePacket &packet )
 {
     //If there is at least one connection, send packet to the first available
-    if( !mConnections.empty() )
+    uint8_t id = packet.getConnectionID();
+    if( id > 0 )
     {
-        checkedSendTo( packet, mConnections.begin()->second );
+        checkedSendTo( packet, mConnections[id] );
     }
 }
 
