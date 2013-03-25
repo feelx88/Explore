@@ -396,8 +396,8 @@ std::string NetworkSyncablePacket::serialize() const
     uint32_t size = body.length();
 
     //Convert multi byte datatypes to host order
-    int32_t uID = htonl( mUID );
-    size = htonl( size );
+    uint32_t uID = htonl( mUID );
+    uint32_t nsize = htonl( size );
 
     stream.write( &mPacketType, 1 );
     stream.write( reinterpret_cast<const char*>( &mConnectionID ), sizeof( uint8_t ) );
@@ -406,8 +406,7 @@ std::string NetworkSyncablePacket::serialize() const
     stream.write( reinterpret_cast<const char*>( &mActionID ), sizeof( uint8_t ) );
     stream.write( reinterpret_cast<const char*>( &mTypeID ), sizeof( uint8_t ) );
 
-
-    stream.write( reinterpret_cast<const char*>( &size ), sizeof( uint32_t ) );
+    stream.write( reinterpret_cast<const char*>( &nsize ), sizeof( uint32_t ) );
     stream.write( body.data(), size );
 
     return stream.str();
