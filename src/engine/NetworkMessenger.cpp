@@ -284,6 +284,12 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
             connection->connected = true;
 
             mConnections.insert( std::make_pair( connection->id, connection ) );
+            mForeignConnectionIDs.insert(
+                        std::make_pair( connection->foreignID, connection->id ) );
+        }
+        else
+        {
+            connection = mConnections[it->second];
         }
 
         NetworkSyncablePacket response( packet );
