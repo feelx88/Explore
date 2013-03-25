@@ -143,19 +143,22 @@ void NetworkMessenger::checkedSendTo( const NetworkSyncablePacket &packet,
         throw "Connection ID invalid!";
     }
 
-    NetworkSyncablePacket p( packet );
-
-    if( p.getPacketType() == NetworkSyncablePacket::EPT_NORMAL )
-        p.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
-
     ConnectionPtr connection = mConnections[connectionID];
 
-    p.setConnectionID( connection->foreignID );
-    p.setEndpoint( connection->endpoint );
-    p.setSequenceCounter( connection->sequenceCounter );
+    if( connection )
+    {
+        NetworkSyncablePacket p( packet );
 
-    connection->checkedSendQueue.push( p );
-    sendTo( p, connection->endpoint );
+        if( p.getPacketType() == NetworkSyncablePacket::EPT_NORMAL )
+            p.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
+
+        p.setConnectionID( connection->foreignID );
+        p.setEndpoint( connection->endpoint );
+        p.setSequenceCounter( connection->sequenceCounter );
+
+        connection->checkedSendQueue.push( p );
+        sendTo( p, connection->endpoint );
+    }
 }
 
 boost::optional<NetworkMessenger::ConnectionPtr> NetworkMessenger::getConnection(
