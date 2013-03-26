@@ -18,8 +18,8 @@
 */
 
 
-#include "EntityTools.h"
-#include "VectorConverter.h"
+#include <EntityTools.h>
+#include <VectorConverter.h>
 
 using namespace irr;
 using namespace core;

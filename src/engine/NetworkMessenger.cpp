@@ -17,9 +17,9 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "NetworkMessenger.h"
-#include "LoggerSingleton.h"
-#include "NetworkSyncable.h"
+#include <NetworkMessenger.h>
+#include <LoggerSingleton.h>
+#include <NetworkSyncable.h>
 
 using namespace boost::asio;
 

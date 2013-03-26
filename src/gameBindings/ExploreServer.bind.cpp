@@ -18,7 +18,7 @@
 */
 
 #include <engine/PythonBinder.h>
-#include "../game/network/ExploreServer.h"
+#include <network/ExploreServer.h>
 
 PYTHONBINDER_REGISTER_MODULE( ExploreServer )
 {

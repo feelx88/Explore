@@ -18,7 +18,7 @@
 */
 
 #include <engine/PythonBinder.h>
-#include "../game/IPlayer.h"
+#include <IPlayer.h>
 
 class IPlayerWrapper : public IPlayer, boost::python::wrapper<IPlayer>
 {

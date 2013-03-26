@@ -18,9 +18,9 @@
 */
 
 
-#include "Item.h"
-#include "ItemFactory.h"
-#include "IPlayer.h"
+#include <Item.h>
+#include <ItemFactory.h>
+#include <IPlayer.h>
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 

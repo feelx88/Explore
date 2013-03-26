@@ -1,15 +1,15 @@
 file( GLOB Engine_SRCS
     engine/*.cpp
-    engine/*.h
+    ../include/engine/*.h
     engine/*/*.cpp
-    engine/*/*.h
+    ../include/engine/*/*.h
 )
 
 file( GLOB Explore_SRCS
     game/*.cpp
-    game/*.h
+    ../include/game/*.h
     game/*/*.cpp
-    game/*/*.h
+    ../include/game/*/*.h
 )
 
 file( GLOB EngineBindings_SRC
@@ -54,8 +54,8 @@ find_package( Boost COMPONENTS foreach )
 
 include_directories( ${BULLET_INCLUDE_DIR}
                        ${PYTHON_INCLUDE_DIR}
-			${Boost_INCLUDE_DIR}
-			${IRRLICHT_INCLUDE_DIR} )
+                        ${Boost_INCLUDE_DIR}
+                        ${IRRLICHT_INCLUDE_DIR} )
 
 target_link_libraries( Engine
                         ${IRRLICHT_LIBRARIES}

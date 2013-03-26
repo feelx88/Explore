@@ -17,9 +17,9 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ScriptConsole.h"
-#include "IrrlichtTools.h"
-#include "LoggerSingleton.h"
+#include <ScriptConsole.h>
+#include <IrrlichtTools.h>
+#include <LoggerSingleton.h>
 
 using namespace irr;
 using namespace core;

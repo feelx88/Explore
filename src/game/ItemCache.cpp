@@ -17,7 +17,7 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ItemCache.h"
+#include <ItemCache.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>

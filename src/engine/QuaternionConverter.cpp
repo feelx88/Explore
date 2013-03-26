@@ -18,7 +18,7 @@
 */
 
 
-#include "QuaternionConverter.h"
+#include <QuaternionConverter.h>
 
 btQuaternion QuaternionConverter::bt( const irr::core::quaternion &irr )
 {

@@ -17,10 +17,10 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SimpleSpawnerItem.h"
-#include "../ItemFactory.h"
-#include "../ItemCache.h"
-#include "../players/LocalPlayer.h"
+#include <items/SimpleSpawnerItem.h>
+#include <ItemFactory.h>
+#include <ItemCache.h>
+#include <players/LocalPlayer.h>
 #include <engine/EntityTools.h>
 #include <engine/IrrlichtTools.h>
 

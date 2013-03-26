@@ -17,10 +17,10 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ItemFactory.h"
-#include "ItemCache.h"
-#include "IPlayer.h"
-#include "ExploreGame.h"
+#include <ItemFactory.h>
+#include <ItemCache.h>
+#include <IPlayer.h>
+#include <ExploreGame.h>
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 

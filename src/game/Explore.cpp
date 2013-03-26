@@ -18,7 +18,7 @@
 */
 
 
-#include "Explore.h"
+#include <Explore.h>
 
 #include <string>
 #include <boost/property_tree/ini_parser.hpp>
@@ -29,10 +29,10 @@
 #include <engine/PythonBinder.h>
 #include <engine/EventReceiver.h>
 
-#include "ExploreMenu.h"
-#include "ExploreGame.h"
+#include <ExploreMenu.h>
+#include <ExploreGame.h>
 
-#include "ItemCache.h"
+#include <ItemCache.h>
 
 using namespace irr;
 using namespace core;

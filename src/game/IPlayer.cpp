@@ -17,13 +17,13 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "IPlayer.h"
+#include <IPlayer.h>
 
 #include <engine/PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
-#include "Item.h"
-#include "ItemFactory.h"
+#include <Item.h>
+#include <ItemFactory.h>
 
 using namespace irr;
 using namespace core;

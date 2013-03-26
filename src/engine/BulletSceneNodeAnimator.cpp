@@ -18,9 +18,9 @@
 */
 
 
-#include "BulletSceneNodeAnimator.h"
-#include "VectorConverter.h"
-#include "QuaternionConverter.h"
+#include <BulletSceneNodeAnimator.h>
+#include <VectorConverter.h>
+#include <QuaternionConverter.h>
 
 using namespace irr;
 using namespace core;

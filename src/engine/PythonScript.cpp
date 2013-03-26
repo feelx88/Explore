@@ -17,9 +17,9 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PythonScript.h"
-#include "PythonTools.h"
-#include "PathTools.h"
+#include <PythonScript.h>
+#include <PythonTools.h>
+#include <PathTools.h>
 #include <fstream>
 
 PythonScript::PythonScript( std::string script, bool isFile, bool doNotCache )

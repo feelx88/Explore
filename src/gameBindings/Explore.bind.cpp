@@ -18,8 +18,8 @@
 */
 
 #include <engine/PythonBinder.h>
-#include "../game/Explore.h"
-#include "../game/ExploreGame.h"
+#include <Explore.h>
+#include <ExploreGame.h>
 
 PYTHONBINDER_REGISTER_MODULE( Explore )
 {

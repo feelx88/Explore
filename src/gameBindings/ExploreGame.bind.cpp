@@ -18,7 +18,7 @@
 */
 
 #include <engine/PythonBinder.h>
-#include "../game/ExploreGame.h"
+#include <ExploreGame.h>
 
 PYTHONBINDER_REGISTER_MODULE( ExploreGame )
 {

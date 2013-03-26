@@ -17,8 +17,8 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "NetworkSyncablePacket.h"
-#include "LoggerSingleton.h"
+#include <NetworkSyncablePacket.h>
+#include <LoggerSingleton.h>
 #include <sstream>
 #include <cmath>
 #include <cstring>

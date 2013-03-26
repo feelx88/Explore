@@ -17,8 +17,8 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "WorldPlayer.h"
-#include "../Item.h"
+#include <players/WorldPlayer.h>
+#include <Item.h>
 #include <boost/foreach.hpp>
 
 WorldPlayer::WorldPlayer( ExplorePtr explore )

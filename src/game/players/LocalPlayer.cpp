@@ -17,7 +17,7 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "LocalPlayer.h"
+#include <players/LocalPlayer.h>
 
 #include <engine/IrrlichtTools.h>
 #include <engine/EntityTools.h>
@@ -27,9 +27,9 @@
 #include <engine/VectorConverter.h>
 #include <engine/PathTools.h>
 
-#include "../ItemFactory.h"
-#include "../items/SimpleGunItem.h"
-#include "../items/SimpleForceGunItem.h"
+#include <ItemFactory.h>
+#include <items/SimpleGunItem.h>
+#include <items/SimpleForceGunItem.h>
 
 #include <boost/property_tree/xml_parser.hpp>
 

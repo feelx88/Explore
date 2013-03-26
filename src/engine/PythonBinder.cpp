@@ -17,7 +17,7 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PythonBinder.h"
+#include <PythonBinder.h>
 
 boost::shared_ptr<std::vector<PythonBinderPtr> > PythonBinder::sBinders(
         PythonBinder::sBinders );

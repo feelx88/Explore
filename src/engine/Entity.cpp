@@ -18,14 +18,14 @@
 */
 
 
-#include "Entity.h"
-#include "IrrlichtTools.h"
-#include "BulletTools.h"
-#include "PathTools.h"
-#include "VectorConverter.h"
-#include "QuaternionConverter.h"
-#include "LoggerSingleton.h"
-#include "BulletSceneNodeAnimator.h"
+#include <Entity.h>
+#include <IrrlichtTools.h>
+#include <BulletTools.h>
+#include <PathTools.h>
+#include <VectorConverter.h>
+#include <QuaternionConverter.h>
+#include <LoggerSingleton.h>
+#include <BulletSceneNodeAnimator.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <iostream>
 

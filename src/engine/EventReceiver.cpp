@@ -18,9 +18,9 @@
 */
 
 
-#include "EventReceiver.h"
-#include "LoggerSingleton.h"
-#include "PythonTools.h"
+#include <EventReceiver.h>
+#include <LoggerSingleton.h>
+#include <PythonTools.h>
 
 using namespace irr;
 

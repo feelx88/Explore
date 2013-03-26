@@ -17,8 +17,8 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "PythonTools.h"
-#include "LoggerSingleton.h"
+#include <PythonTools.h>
+#include <LoggerSingleton.h>
 
 void PythonTools::initPython()
 {

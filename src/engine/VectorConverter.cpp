@@ -18,7 +18,7 @@
 */
 
 
-#include "VectorConverter.h"
+#include <VectorConverter.h>
 
 irr::core::vector3df VectorConverter::irr( const btVector3 &btVec )
 {

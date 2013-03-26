@@ -17,7 +17,7 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "NetworkSyncable.h"
+#include <NetworkSyncable.h>
 #include <sstream>
 #include <iostream>
 

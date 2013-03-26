@@ -18,9 +18,9 @@
 */
 
 
-#include "SimpleForceGunItem.h"
-#include "../players/LocalPlayer.h"
-#include "../ItemFactory.h"
+#include <items/SimpleForceGunItem.h>
+#include <players/LocalPlayer.h>
+#include <ItemFactory.h>
 #include <engine/EntityTools.h>
 #include <engine/PathTools.h>
 #include <engine/VectorConverter.h>

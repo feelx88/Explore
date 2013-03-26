@@ -5,7 +5,7 @@ endif()
 project(Explore)
 cmake_minimum_required(VERSION 2.8)
 
-include_directories( src )
+include_directories( include include/engine include/game )
 
-add_subdirectory(src)
+add_subdirectory( src )
 

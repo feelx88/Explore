@@ -17,15 +17,15 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ExploreServer.h"
-#include "../ExploreGame.h"
-#include "../ItemFactory.h"
+#include <network/ExploreServer.h>
+#include <ExploreGame.h>
+#include <ItemFactory.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/PythonTools.h>
 #include <iostream>
 #include <boost/foreach.hpp>
-#include "../Explore.h"
-#include "../players/LocalPlayer.h"
+#include <Explore.h>
+#include <players/LocalPlayer.h>
 
 using namespace boost::asio::ip;
 using namespace boost::chrono;

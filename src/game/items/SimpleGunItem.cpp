@@ -18,9 +18,9 @@
 */
 
 
-#include "SimpleGunItem.h"
-#include "../players/LocalPlayer.h"
-#include "../ItemFactory.h"
+#include <items/SimpleGunItem.h>
+#include <players/LocalPlayer.h>
+#include <ItemFactory.h>
 #include <engine/PathTools.h>
 #include <engine/VectorConverter.h>
 #include <boost/property_tree/xml_parser.hpp>

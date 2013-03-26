@@ -18,9 +18,9 @@
 */
 
 
-#include "EntityContainer.h"
-#include "LoggerSingleton.h"
-#include "PathTools.h"
+#include <EntityContainer.h>
+#include <LoggerSingleton.h>
+#include <PathTools.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 EntityContainer::EntityContainer( IrrlichtDevicePtr device, BulletWorldPtr world,

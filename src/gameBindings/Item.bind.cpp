@@ -18,7 +18,7 @@
 */
 
 #include <engine/PythonBinder.h>
-#include "../game/Item.h"
+#include <Item.h>
 
 PYTHONBINDER_REGISTER_MODULE( Item )
 {

@@ -18,10 +18,10 @@
 */
 
 
-#include "ExploreGame.h"
-#include "Explore.h"
-#include "players/WorldPlayer.h"
-#include "players/LocalPlayer.h"
+#include <ExploreGame.h>
+#include <Explore.h>
+#include <players/WorldPlayer.h>
+#include <players/LocalPlayer.h>
 #include <engine/IrrlichtTools.h>
 #include <engine/PathTools.h>
 #include <engine/LoggerSingleton.h>
@@ -29,7 +29,7 @@
 #include <engine/Entity.h>
 #include <engine/EntityContainer.h>
 #include <boost/property_tree/xml_parser.hpp>
-#include "ItemFactory.h"
+#include <ItemFactory.h>
 
 using namespace irr;
 using namespace core;

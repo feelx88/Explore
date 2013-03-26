@@ -17,7 +17,7 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "VisualPlayer.h"
+#include <players/VisualPlayer.h>
 
 using namespace irr;
 using namespace core;

@@ -17,8 +17,8 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../engine/PythonBinder.h"
-#include "../engine/LoggerSingleton.h"
+#include <engine/PythonBinder.h>
+#include <engine/LoggerSingleton.h>
 
 PYTHONBINDER_REGISTER_MODULE( LoggerSingleton )
 {

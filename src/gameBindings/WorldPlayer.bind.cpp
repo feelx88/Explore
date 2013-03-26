@@ -18,7 +18,7 @@
 */
 
 #include <engine/PythonBinder.h>
-#include "../game/players/WorldPlayer.h"
+#include <players/WorldPlayer.h>
 
 PYTHONBINDER_REGISTER_MODULE_PRIORITY( WorldPlayer, 1 )
 {

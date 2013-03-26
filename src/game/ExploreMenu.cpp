@@ -18,9 +18,9 @@
 */
 
 
-#include "ExploreMenu.h"
-#include "Explore.h"
-#include "network/ExploreServer.h"
+#include <ExploreMenu.h>
+#include <Explore.h>
+#include <network/ExploreServer.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/IrrlichtTools.h>
 

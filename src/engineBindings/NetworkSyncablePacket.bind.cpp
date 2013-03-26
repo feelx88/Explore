@@ -17,8 +17,8 @@
     along with Explore.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../engine/PythonBinder.h"
-#include "../engine/NetworkSyncablePacket.h"
+#include <engine/PythonBinder.h>
+#include <engine/NetworkSyncablePacket.h>
 
 PYTHONBINDER_REGISTER_MODULE( NetworkSyncablePacket )
 {
