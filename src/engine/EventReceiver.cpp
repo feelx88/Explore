@@ -159,7 +159,7 @@ bool EventReceiver::OnEvent( const SEvent &event )
         mMouseX = event.MouseInput.X;
         mMouseY = event.MouseInput.Y;
 
-        mMouseWheelY = event.MouseInput.Wheel;
+        mMouseWheelY = static_cast<int>( event.MouseInput.Wheel );
         return false;
     }
 

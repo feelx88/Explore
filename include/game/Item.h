@@ -33,7 +33,7 @@ class APIEXPORT Item : public NetworkSyncable
 {
 public:
     template <class T>
-    friend class ItemCreator;
+    friend struct ItemCreator;
     friend class ItemFactory;
 
     virtual ~Item();

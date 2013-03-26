@@ -266,7 +266,7 @@ void NetworkSyncablePacket::writeFloat( const float &val )
 {
     int32_t exponent = 0;
     float mantissa = frexp( val, &exponent );
-    int32_t mantissaInt = ldexp( mantissa, MANTISSA_SIZE );
+    int32_t mantissaInt = static_cast<int32_t>( ldexp( mantissa, MANTISSA_SIZE ) );
 
     writeInt32( exponent );
     writeInt32( mantissaInt );
