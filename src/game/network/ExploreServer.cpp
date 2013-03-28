@@ -34,7 +34,8 @@ enum E_STATUS_BITS
 {
     ESB_SERVER = 0,
     ESB_WAIT_FOR_INFO,
-    ESB_WAIT_FOR_CONNECTION,
+    ESB_WAIT_FOR_CONNECTION_PHASE1,
+    ESB_WAIT_FOR_CONNECTION_PHASE2,
     ESB_CONNECTED,
     ESB_COUNT
 };
@@ -132,7 +133,7 @@ void ExploreServer::requestConnection( const std::string &ip, const int &port )
         _LOG( "Requesting connection to",
               ip + std::string( ":" ) + boost::lexical_cast<std::string>( port ) );
 
-        mStatusBits[ESB_WAIT_FOR_CONNECTION] = true;
+        mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE1] = true;
         mStatusBits[ESB_CONNECTED] = false;
 
         mSelfInfo.connection = *connection;
@@ -146,7 +147,8 @@ void ExploreServer::requestConnection( const std::string &ip, const int &port )
 
 bool ExploreServer::isConnecting() const
 {
-    return mStatusBits[ESB_WAIT_FOR_CONNECTION];
+    return mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE1] ||
+            mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE2];
 }
 
 bool ExploreServer::hasConnection() const
@@ -245,13 +247,15 @@ void ExploreServer::update()
                 send( packet );
         }
     }
-    else if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
+    else if( mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE1] )
     {
         //If NetworkMessenger's connection is established, send Explore's
         //connection request
         if( mSelfInfo.connection->connected )
         {
             mMessenger->checkedSendTo( serialize( EEAID_CONNECTION_REQUEST ), mSelfInfo.connection );
+            mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE1] = false;
+            mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE2] = true;
         }
     }
 
@@ -421,7 +425,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
     }
     case EEAID_CONNECTION_RESPOND:
     {
-        if( mStatusBits[ESB_WAIT_FOR_CONNECTION] )
+        if( mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE2] )
         {
             uint32_t id = packet.readUInt32();
             bool accepted = packet.readBool();
@@ -430,7 +434,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
             {
                 _LOG( "Connection accepted!" );
                 mStatusBits[ESB_CONNECTED] = true;
-                mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
+                mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE2] = false;
                 mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] = true;
 
                 boost::asio::ip::udp::endpoint endpoint = packet.getEndpoint();
@@ -443,7 +447,7 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalClient(
             else
             {
                 _LOG( "Connection denied!" );
-                mStatusBits[ESB_WAIT_FOR_CONNECTION] = false;
+                mStatusBits[ESB_WAIT_FOR_CONNECTION_PHASE2] = false;
             }
         }
         break;
