@@ -157,6 +157,8 @@ void NetworkMessenger::checkedSendTo( const NetworkSyncablePacket &packet,
         p.setEndpoint( connection->endpoint );
         p.setSequenceCounter( connection->sequenceCounter );
 
+        connection->sequenceCounter++;
+
         connection->checkedSendQueue.push( p );
         sendTo( p, connection->endpoint );
     }
@@ -328,19 +330,27 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
         if( packet.getSequenceCounter() == firstInQueue.getSequenceCounter() )
         {
             connection->checkedSendQueue.pop();
-            connection->sequenceCounter++;
         }
     }
     else
     {
-        if( connection && packet.getPacketType() == NetworkSyncablePacket::EPT_CHECKED
-                && packet.getSequenceCounter() >= connection->sequenceCounter )
+        if( connection && packet.getPacketType() == NetworkSyncablePacket::EPT_CHECKED )
         {
             //pingback requested, send it back without body
             NetworkSyncablePacket pingback( packet );
 
             pingback.setPacketType( NetworkSyncablePacket::EPT_PINGBACK );
             pingback.clearBody();
+
+            if( connection->sequenceCounter == packet.getSequenceCounter() )
+            {
+                connection->sequenceCounter++;
+            }
+            else
+            {
+                receive();
+                return;
+            }
 
             sendTo( packet, mRemoteEndpoint );
         }
@@ -356,11 +366,15 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
 
             if( replyPacket )
             {
-                if( replyPacket->getPacketType() ==
-                        NetworkSyncablePacket::EPT_CHECKED )
-                    checkedSend( *replyPacket );
+                if( replyPacket->getPacketType() == NetworkSyncablePacket::EPT_CHECKED
+                        && connection )
+                {
+                    checkedSendTo( *replyPacket, connection->id );
+                }
                 else
+                {
                     send( *replyPacket );
+                }
             }
         }
         else
