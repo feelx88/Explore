@@ -23,8 +23,14 @@
 void PythonTools::initPython()
 {
     Py_Initialize();
-    const char *p = ".";
-    PySys_SetPath( const_cast<char*>( p ) );
+
+    #if PY_MAJOR_VERSION < 3
+        const char *p = ".";
+        PySys_SetPath( const_cast<char*>( p ) );
+    #else
+        const wchar_t *p = L".";
+        PySys_SetPath( const_cast<wchar_t*>( p ) );
+    #endif
 }
 
 void PythonTools::execString( const std::string &script, bool useMainNamespace )
@@ -55,7 +61,14 @@ std::string PythonTools::pythonErrorDescription()
         PyObject *type = 0, *value = 0, *traceback = 0;
         PyErr_Fetch( &type, &value, &traceback );
         if( value )
-            error = PyString_AsString( value );
+        {
+            #if PY_MAJOR_VERSION < 3
+                error = std::string( PyString_AsString( value ) );
+            #else
+                PyObject *ascii = PyUnicode_AsASCIIString( value );
+                error = std::string( PyByteArray_AsString( ascii ) );
+            #endif
+        }
     }
     return error;
 }
