@@ -333,7 +333,7 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
     }
     else
     {
-        if( packet.getPacketType() == NetworkSyncablePacket::EPT_CHECKED
+        if( connection && packet.getPacketType() == NetworkSyncablePacket::EPT_CHECKED
                 && packet.getSequenceCounter() >= connection->sequenceCounter )
         {
             //pingback requested, send it back without body
@@ -385,7 +385,7 @@ void NetworkMessenger::checkedSendHandler()
     foreach_( ConnectionMap::value_type& entry, mConnections )
     {
         ConnectionPtr &connection = entry.second;
-        if( !connection->checkedSendQueue.empty() )
+        if( connection && !connection->checkedSendQueue.empty() )
         {
             NetworkSyncablePacket& packet = connection->checkedSendQueue.front();
             sendTo( packet, connection->endpoint );
