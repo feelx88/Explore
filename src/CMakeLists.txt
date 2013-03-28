@@ -49,7 +49,7 @@ set( IRRLICHT_INCLUDE_DIR CACHE PATH "Irrlicht Include directory" )
 find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
 find_package( PythonLibs REQUIRED )
 set( BOOST_PYTHON_VERSION "python3" CACHE STRING "Library version for boost_python; eiter python or python3" )
-find_package( Boost COMPONENTS system filesystem python3 REQUIRED )
+find_package( Boost COMPONENTS system filesystem ${BOOST_PYTHON_VERSION} REQUIRED )
 find_package( Boost COMPONENTS chrono )
 find_package( Boost COMPONENTS foreach )
 
