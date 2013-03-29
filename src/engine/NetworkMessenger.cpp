@@ -75,7 +75,7 @@ boost::optional<NetworkMessenger::ConnectionPtr> NetworkMessenger::connect(
 
     mConnections.insert( std::make_pair( con->id, con ) );
     mWaitingConnections.push_back( con->id );
-    //checkedSendHandler();
+    checkedSendHandler();
 
     return con;
 }
@@ -268,19 +268,29 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
                                                mReceiveBuffer.end() ) );
 
     ConnectionPtr connection;
-    if( packet.getConnectionID() > 0 )
+    uint8_t connectionID = packet.getConnectionID();
+    ConnectionMap::iterator connectionIt = mConnections.find( connectionID );
+
+    if( connectionIt != mConnections.end() &&
+            packet.getPacketType() != NetworkSyncablePacket::EPT_INITIALIZATION )
     {
-        connection = mConnections[packet.getConnectionID()];
+        connection = connectionIt->second;
     }
 
     if( packet.getPacketType() == NetworkSyncablePacket::EPT_INITIALIZATION )
     {
         uint8_t foreignID = packet.getConnectionID();
-        std::map<uint8_t, uint8_t>::iterator it =
-                mForeignConnectionIDs.find( foreignID );
+
+        foreach_( ConnectionMap::value_type &val, mConnections )
+        {
+            if( val.second->foreignID == foreignID )
+            {
+                connection = val.second;
+            }
+        }
 
         //Create new connection if none is found with this foreignID
-        if( it == mForeignConnectionIDs.end() )
+        if( !connection )
         {
             connection.reset( new Connection );
             connection->endpoint = mRemoteEndpoint;
@@ -289,35 +299,28 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
             connection->connected = true;
 
             mConnections.insert( std::make_pair( connection->id, connection ) );
-            mForeignConnectionIDs.insert(
-                        std::make_pair( connection->foreignID, connection->id ) );
-        }
-        else
-        {
-            connection = mConnections[it->second];
         }
 
         NetworkSyncablePacket response( packet );
         response.setPacketType( NetworkSyncablePacket::EPT_INITIALIZATION_RESPONSE );
-        response.setConnectionID( connection->id );
-        response.writeUInt8( foreignID );
+        response.setConnectionID( connection->foreignID );
+        response.writeUInt8( connection->id );
 
         sendTo( response, connection->endpoint );
     }
     else if( packet.getPacketType() ==
              NetworkSyncablePacket::EPT_INITIALIZATION_RESPONSE )
     {
-        uint8_t id = packet.readUInt8();
-        connection = mConnections[id];
+        uint8_t foreignID = packet.readUInt8();
 
-        if( !connection->connected )
+        if( connection && !connection->connected )
         {
-            connection->foreignID = packet.getConnectionID();
+            connection->foreignID = foreignID;
             connection->connected = true;
 
             for( unsigned int x = 0; x < mWaitingConnections.size(); ++x )
             {
-                if( mWaitingConnections.at( x ) == id )
+                if( mWaitingConnections.at( x ) == connection->id )
                     mWaitingConnections.erase( mWaitingConnections.begin() + x );
             }
         }
@@ -342,6 +345,8 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
             pingback.setPacketType( NetworkSyncablePacket::EPT_PINGBACK );
             pingback.clearBody();
 
+            sendTo( packet, mRemoteEndpoint );
+
             if( connection->sequenceCounter == packet.getSequenceCounter() )
             {
                 connection->sequenceCounter++;
@@ -351,8 +356,6 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
                 receive();
                 return;
             }
-
-            sendTo( packet, mRemoteEndpoint );
         }
 
         packet.setEndpoint( mRemoteEndpoint );

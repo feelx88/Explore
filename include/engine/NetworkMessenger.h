@@ -110,7 +110,6 @@ private:
     int mCheckedSendTimerTimeout;
 
     ConnectionMap mConnections;
-    std::map<uint8_t, uint8_t> mForeignConnectionIDs;
     std::vector<uint8_t> mWaitingConnections;
 
 };
