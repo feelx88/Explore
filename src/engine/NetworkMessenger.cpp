@@ -75,7 +75,6 @@ boost::optional<NetworkMessenger::ConnectionPtr> NetworkMessenger::connect(
 
     mConnections.insert( std::make_pair( con->id, con ) );
     mWaitingConnections.push_back( con->id );
-    checkedSendHandler();
 
     return con;
 }
@@ -345,7 +344,7 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
             pingback.setPacketType( NetworkSyncablePacket::EPT_PINGBACK );
             pingback.clearBody();
 
-            sendTo( packet, mRemoteEndpoint );
+            sendTo( pingback, mRemoteEndpoint );
 
             if( connection->sequenceCounter == packet.getSequenceCounter() )
             {
