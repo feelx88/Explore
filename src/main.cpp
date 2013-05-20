@@ -18,12 +18,21 @@
 */
 
 #include <engine/PythonTools.h>
+#include <iostream>
 
 int main( int, char** )
 {
-    PythonTools::initPython();
-    boost::python::api::object main = boost::python::import( "__main__" ).attr( "__dict__" );
-    boost::python::exec_file( "init.py", main, main );
+    try
+    {
+        PythonTools::initPython();
+        boost::python::api::object main = boost::python::import( "__main__" ).attr( "__dict__" );
+        boost::python::exec_file( "init.py", main, main );
+    }
+    catch( ... )
+    {
+        std::cout << PythonTools::pythonErrorDescription() << std::endl;
+    }
+
     return 0;
 }
 

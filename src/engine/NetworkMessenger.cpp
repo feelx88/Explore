@@ -27,7 +27,7 @@ NetworkMessenger::NetworkMessenger( IOServicePtr ioService, PropTreePtr properti
     : mIOService( ioService ),
       mProperties( properties ),
       mCheckedSendTimer( *ioService.get() ),
-      mCheckedSendTimerTimeout( 1000 )
+      mCheckedSendTimerTimeout( 500 )
 {
     mServerIP = mProperties->get( "Server.IP", "127.0.0.1" );
     mPort = mProperties->get( "Server.Port", 6556 );

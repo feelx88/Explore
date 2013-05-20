@@ -65,8 +65,12 @@ std::string PythonTools::pythonErrorDescription()
             #if PY_MAJOR_VERSION < 3
                 error = std::string( PyString_AsString( value ) );
             #else
-                PyObject *ascii = PyUnicode_AsASCIIString( value );
-                error = std::string( PyByteArray_AsString( ascii ) );
+                PyObject *description = PyUnicode_AsUTF8String( value );
+                if( description )
+                {
+                    const char *c = PyBytes_AsString( description );
+                    error = std::string( c );
+                }
             #endif
         }
     }
