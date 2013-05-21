@@ -29,62 +29,17 @@ ItemCreatorMapPtr ItemFactory::sCreators( ItemFactory::sCreators );
 ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
                              std::string fileName )
 {
-    boost::optional<PropTreePtr> cachedProps =
-            ItemCache::instance()->getItemProps( fileName );
-
-    std::string newFileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
-    std::string basePath = PathTools::getBasePathFromFile( newFileName );
-
-    PropTreePtr properties;
-
-    if( !cachedProps )
-    {
-        properties.reset( new boost::property_tree::ptree() );
-        boost::property_tree::xml_parser::read_xml( newFileName, *properties );
-    }
-    else
-    {
-        properties.reset( new boost::property_tree::ptree( **cachedProps ) );
-        basePath = properties->get<std::string>( "Item.BasePath", "" );
-    }
-
-    std::string className = properties->get( "Item.Class", "Item" );
-
-    ItemCreatorMap::iterator x = sCreators->find( className );
-
-    if( x != sCreators->end() )
-    {
-        ItemPtr item( x->second->create( explore, owner, properties, basePath ) );
-        owner->addOwnedItem( item );
-        item->startAction( EAID_CREATE );
-        return item;
-    }
-    else
-    {
-        _LOG( "Item class not found", className );
-        return ItemPtr();
-    }
+    ItemPtr item = createInternal( explore, owner, fileName, 0 );
+    item->startAction( EAID_CREATE );
+    return item;
 }
 
 ItemPtr ItemFactory::create( ExplorePtr explore, IPlayerPtr owner,
                              PropTreePtr props, std::string basePath )
 {
-    std::string className = props->get( "Item.Class", "Item" );
-
-    ItemCreatorMap::iterator x = sCreators->find( className );
-
-    if( x != sCreators->end() )
-    {
-        ItemPtr item( x->second->create( explore, owner, props, basePath ) );
-        owner->addOwnedItem( item );
-        item->startAction( EAID_CREATE );
-        return item;
-    }
-    else
-    {
-        _LOG( "Item class not found", className );
-        return ItemPtr();
-    }
+    ItemPtr item = createInternal( explore, owner, props, basePath, 0 );
+    item->startAction( EAID_CREATE );
+    return item;
 }
 
 ItemPtr ItemFactory::create( ExplorePtr explore, NetworkSyncablePacket &packet )
@@ -110,9 +65,58 @@ ItemPtr ItemFactory::create( ExplorePtr explore, NetworkSyncablePacket &packet )
     if( !owner )
         owner = world; //TODO: Maybe throw/request player or something?
 
-    ItemPtr item = create( explore, *owner, fileName );
-    item->setUID( packet.getUID() );
+    ItemPtr item = createInternal( explore, *owner, fileName, packet.getUID() );
     item->deserialize( packet );
 
     return item;
+}
+
+ItemPtr ItemFactory::createInternal( ExplorePtr explore, IPlayerPtr owner,
+                                     std::string fileName, uint32_t uid )
+{
+    boost::optional<PropTreePtr> cachedProps =
+            ItemCache::instance()->getItemProps( fileName );
+
+    std::string newFileName = PathTools::getAbsoluteFileNameFromFolder( fileName, "xml" );
+    std::string basePath = PathTools::getBasePathFromFile( newFileName );
+
+    PropTreePtr properties;
+
+    if( !cachedProps )
+    {
+        properties.reset( new boost::property_tree::ptree() );
+        boost::property_tree::xml_parser::read_xml( newFileName, *properties );
+    }
+    else
+    {
+        properties.reset( new boost::property_tree::ptree( **cachedProps ) );
+        basePath = properties->get<std::string>( "Item.BasePath", "" );
+    }
+
+    return createInternal( explore, owner, properties, basePath, uid );
+}
+
+ItemPtr ItemFactory::createInternal( ExplorePtr explore,
+                                     IPlayerPtr owner, PropTreePtr props,
+                                     std::string basePath, uint32_t uid )
+{
+    std::string className = props->get( "Item.Class", "Item" );
+
+    ItemCreatorMap::iterator x = sCreators->find( className );
+
+    if( x != sCreators->end() )
+    {
+        ItemPtr item( x->second->create( explore, owner, props, basePath ) );
+        if( uid != 0 )
+        {
+            item->setUID( uid );
+        }
+        owner->addOwnedItem( item );
+        return item;
+    }
+    else
+    {
+        _LOG( "Item class not found", className );
+        return ItemPtr();
+    }
 }

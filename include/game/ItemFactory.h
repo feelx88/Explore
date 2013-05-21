@@ -59,7 +59,7 @@ public:
 
     static ItemPtr create( ExplorePtr explore, IPlayerPtr owner, std::string fileName );
     static ItemPtr create( ExplorePtr explore, IPlayerPtr owner, PropTreePtr props,
-                         std::string basePath );
+                           std::string basePath );
     static ItemPtr create( ExplorePtr explore, NetworkSyncablePacket &packet );
 
     template <typename T>
@@ -79,6 +79,12 @@ public:
 
 private:
     static ItemCreatorMapPtr sCreators;
+
+    static ItemPtr createInternal( ExplorePtr explore, IPlayerPtr owner,
+                                   std::string fileName, uint32_t uid );
+    static ItemPtr createInternal( ExplorePtr explore, IPlayerPtr owner,
+                                   PropTreePtr props, std::string basePath,
+                                   uint32_t uid );
 };
 
 #endif // ITEMFACTORY_H
