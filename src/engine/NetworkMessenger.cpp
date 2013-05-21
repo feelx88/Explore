@@ -325,10 +325,10 @@ void NetworkMessenger::receiveHandler( const boost::system::error_code &error,
         }
     }
     else if( packet.getPacketType() == NetworkSyncablePacket::EPT_PINGBACK
-            && connection )
+            && connection && !connection->checkedSendQueue.empty() )
     {
         //Only pingback received, delete from queue and return
-        NetworkSyncablePacket firstInQueue = connection->checkedSendQueue.front();
+        NetworkSyncablePacket &firstInQueue = connection->checkedSendQueue.front();
         if( packet.getSequenceCounter() == firstInQueue.getSequenceCounter() )
         {
             connection->checkedSendQueue.pop();

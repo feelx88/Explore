@@ -150,7 +150,7 @@ boost::optional<NetworkSyncablePacket> Item::deserializeInternal(
 {
     if( packet.getActionID() == EAID_CREATE || packet.getActionID() == EAID_UPDATE )
     {
-        //ENGA_CREATE: string[name] and uint32_t[ownerID] already read
+        //EAID_CREATE: string[name] and uint32_t[ownerID] already read
         deserializeEntities( packet );
     }
     else
