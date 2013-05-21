@@ -627,13 +627,21 @@ void ExploreServer::handleInitPackets()
                 {
                     player.reset( new LocalPlayer( mExplore, world ),
                                   specialDeleters::NullDeleter() );
-                    world->setLocalPlayer( player );
                 }
                 else
+                {
                     player.reset( new VisualPlayer( mExplore, world ),
                                   specialDeleters::NullDeleter() );
+                }
                 player->setClientID( clientID );
                 player->deserialize( packet );
+
+                //Set local player
+                if( clientID == mSelfInfo.id )
+                {
+                    world->setLocalPlayer(
+                                *( world->getChild( packet.getUID() ) ) );
+                }
 
                 mSelfInfo.initializationInfo.curPlayers++;
 

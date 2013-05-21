@@ -79,8 +79,8 @@ E_GAME_STATE ExploreGame::run()
                                   mDevice, mBulletWorld,
                                   PathTools::getAbsolutePath( "TestMap1" ) ) );
 
-    //vector3df spawnPos =
-    //        level->getProperties()->get( "Spawn.Position", vector3df() );
+    vector3df spawnPos =
+            level->getProperties()->get( "Spawn.Position", vector3df() );
 
     if( !mWorldPlayer )
     {
@@ -105,7 +105,7 @@ E_GAME_STATE ExploreGame::run()
     p = boost::static_pointer_cast<VisualPlayer>(
                 mWorldPlayer->getLocalPlayer() );
 
-    //p->getEntity()->setPosition( spawnPos );
+    p->getEntity()->setPosition( spawnPos );
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
