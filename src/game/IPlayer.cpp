@@ -93,7 +93,9 @@ void IPlayer::destroyChild( uint32_t uid )
     {
         if( ( *x )->getUID() == uid )
         {
+            x->reset();
             mChildren.erase( x );
+            return;
         }
     }
 }

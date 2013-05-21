@@ -59,7 +59,7 @@ public:
     {
         ClientInfo();
 
-        uint32_t id;
+        uint32_t id, playerUID;
         HostInfo host;
         NetworkMessenger::ConnectionPtr connection;
         boost::chrono::system_clock::time_point lastActiveTime;

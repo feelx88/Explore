@@ -196,11 +196,16 @@ void ExploreServer::update()
         foreach_( map_t::value_type &x, mClientIDMap )
         {
             //If client is inactive to long, kick him
-            if( now - x.second.lastActiveTime >= then )
+            if( x.second.statusBits[ECSB_INITIALIZED] &&
+                    now - x.second.lastActiveTime >= then )
             {
                 std::string name = x.second.host.hostName;
                 _LOG( "Timeout; No response from", name );
                 _LOG( "Kicking client", name );
+
+                mExplore->getExploreGame()->getWorldPlayer()->destroyChild(
+                            x.second.playerUID );
+
                 mClientIDMap.erase( x.second.id );
                 break;
             }
@@ -332,7 +337,6 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
             info.id = nextClientID();
             info.host = host;
             info.lastActiveTime = system_clock::now();
-            mClientIDMap.insert( std::make_pair( info.id, info ) );
 
             _LOG( "Client accepted!" );
             _LOG( "New client's ID", info.id );
@@ -340,8 +344,12 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
 
             //FIXME:does this really belong here?
             WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
-            VisualPlayerPtr p( new VisualPlayer( mExplore, world ), specialDeleters::NullDeleter() );
+            VisualPlayerPtr p( new VisualPlayer( mExplore, world ),
+                               specialDeleters::NullDeleter() );
             p->setClientID( info.id );
+            info.playerUID = p->getUID();
+
+            mClientIDMap.insert( std::make_pair( info.id, info ) );
 
             //FIXME:add possibility to serialize with argument for checkedSend
             //Reply has to be check sended
@@ -627,6 +635,7 @@ void ExploreServer::handleInitPackets()
                 {
                     player.reset( new LocalPlayer( mExplore, world ),
                                   specialDeleters::NullDeleter() );
+                    mSelfInfo.playerUID = packet.getUID();
                 }
                 else
                 {
@@ -682,6 +691,7 @@ void ExploreServer::handleInitPackets()
 
 ExploreServer::ClientInfo::ClientInfo()
     : id( 0 ),
+      playerUID( 0 ),
       statusBits( ECSB_COUNT )
 {
 }
