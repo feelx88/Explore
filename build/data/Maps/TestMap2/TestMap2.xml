@@ -1,0 +1,18 @@
+<Spawn>
+    <Position>0,0,0</Position>
+</Spawn>
+
+<Entity Name="Floor" ID="5">
+    <Node>
+        <Mesh Type="Octree">floor.obj</Mesh>
+        <Material>
+            <Lighting>false</Lighting>
+        </Material>
+    </Node>
+    <Body>
+        <Shape Type="Mesh" />
+        <Position>0,0,0</Position>
+        <Mass>0</Mass>
+        <Friction>0.9</Friction>
+    </Body>
+</Entity>

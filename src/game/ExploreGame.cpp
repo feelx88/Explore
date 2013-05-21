@@ -77,7 +77,7 @@ E_GAME_STATE ExploreGame::run()
 
     EntityContainerPtr level( new EntityContainer(
                                   mDevice, mBulletWorld,
-                                  PathTools::getAbsolutePath( "TestMap1" ) ) );
+                                  PathTools::getAbsolutePath( "TestMap2" ) ) );
 
     vector3df spawnPos =
             level->getProperties()->get( "Spawn.Position", vector3df() );

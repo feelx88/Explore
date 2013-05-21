@@ -29,7 +29,7 @@ VisualPlayer::VisualPlayer( ExplorePtr explore, IPlayerPtr parent )
     //FIXME:search for another way to create the (right) player model
     mEntity.reset( new Entity( mExplore->getIrrlichtDevice(),
                                mExplore->getBulletWorld(),
-                               "TestCube" ) );
+                               "VisualPlayer" ) );
 }
 
 VisualPlayer::~VisualPlayer()

@@ -1,0 +1,15 @@
+<Entity Name="VisualPlayer">
+    <Node>
+        <Mesh Type="File">player.obj</Mesh>
+        <Scale>1,1,1</Scale>
+    </Node>
+    <Body>
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Box</Type>
+                <Size>2,2,2</Size>
+            </Child>
+        </Shape>
+        <Mass>30</Mass>
+    </Body>
+</Entity>
