@@ -43,6 +43,9 @@ enum E_GUI_ID
     EGID_CONNECT_BUTTON
 };
 
+namespace menuCallbacks
+{
+
 struct WindowOpenCallback : EventReceiver::GUICallback
 {
     WindowOpenCallback( IGUIEnvironmentPtr env, E_GUI_ID id )
@@ -111,6 +114,8 @@ struct ConnectClickedCallback : public EventReceiver::GUICallback
     }
     ExplorePtr mExplore;
 };
+
+}
 
 ExploreMenu::ExploreMenu( ExplorePtr explore )
     : mExplore( explore ),
@@ -184,9 +189,9 @@ E_GAME_STATE ExploreMenu::run()
         }
     } loadGameClicked;
 
-    WindowOpenCallback connectClicked( mGUI, EGID_CONNECT_WINDOW );
+    menuCallbacks::WindowOpenCallback connectClicked( mGUI, EGID_CONNECT_WINDOW );
 
-    WindowOpenCallback optionsClicked( mGUI, EGID_OPTIONS_WINDOW );
+    menuCallbacks::WindowOpenCallback optionsClicked( mGUI, EGID_OPTIONS_WINDOW );
 
     struct : public EventReceiver::GUICallback {
         bool call( IGUIElementPtr ) {
@@ -215,9 +220,9 @@ E_GAME_STATE ExploreMenu::run()
                                                        EGET_BUTTON_CLICKED );
 
     //Callbacks used to prevent closing of windows
-    WindowCloseCallback optionsWindowClose;
+    menuCallbacks::WindowCloseCallback optionsWindowClose;
 
-    WindowCloseCallback connectWindowClose;
+    menuCallbacks::WindowCloseCallback connectWindowClose;
 
     mExplore->getEventReceiver()->registerGUICallback( &connectWindowClose,
                                                        EGID_CONNECT_WINDOW,
@@ -227,7 +232,7 @@ E_GAME_STATE ExploreMenu::run()
                                                        EGID_OPTIONS_WINDOW,
                                                        EGET_ELEMENT_CLOSED );
 
-    ConnectClickedCallback connectButtonClicked;
+    menuCallbacks::ConnectClickedCallback connectButtonClicked;
     connectButtonClicked.mExplore = mExplore;
     mExplore->getEventReceiver()->registerGUICallback( &connectButtonClicked,
                                                        EGID_CONNECT_BUTTON,
