@@ -178,7 +178,9 @@ uint32_t ExploreServer::clientID() const
 
 void ExploreServer::disconnect()
 {
-    mStatusBits[ESB_CONNECTED] = false;
+    send( serialize( EEAID_CONNECTION_QUIT ) );
+    mStatusBits.reset();
+    mSelfInfo.statusBits.reset();
 }
 
 void ExploreServer::update()
@@ -203,10 +205,7 @@ void ExploreServer::update()
                 _LOG( "Timeout; No response from", name );
                 _LOG( "Kicking client", name );
 
-                mExplore->getExploreGame()->getWorldPlayer()->destroyChild(
-                            x.second.playerUID );
-
-                mClientIDMap.erase( x.second.id );
+                removeClient( x.second );
                 break;
             }
 
@@ -368,6 +367,15 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
 
             return reply;
         }
+        break;
+    }
+    case EEAID_CONNECTION_QUIT:
+    {
+        uint32_t clientID = packet.readUInt32();
+        uint8_t reason = packet.readUInt8();
+        _LOG( "Client disconnected", clientID );
+        _LOG( "Reason", (int)reason ); //TODO: Reason code
+        removeClient( mClientIDMap[clientID] );
         break;
     }
     case EEAID_ALIVE_RESPOND:
@@ -535,6 +543,12 @@ void ExploreServer::serializeInternalClient( NetworkSyncablePacket &packet,
         packet.writeString( mSelfInfo.host.passwordHash );
         break;
     }
+    case EEAID_CONNECTION_QUIT:
+    {
+        packet.writeUInt32( mSelfInfo.id );
+        packet.writeUInt8( 0 ); //TODO: Add reason code
+        break;
+    }
     case EEAID_ALIVE_RESPOND:
     {
         packet.writeUInt32( mSelfInfo.id );
@@ -563,6 +577,14 @@ uint32_t ExploreServer::nextClientID()
     std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.end();
     x--;
     return x->first + 1;
+}
+
+void ExploreServer::removeClient( const ClientInfo &client )
+{
+    mExplore->getExploreGame()->getWorldPlayer()->destroyChild(
+                client.playerUID );
+
+    mClientIDMap.erase( client.id );
 }
 
 void ExploreServer::handleInitPackets()

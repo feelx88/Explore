@@ -35,6 +35,7 @@ public:
         EEAID_SERVERINFO_RESPOND,
         EEAID_CONNECTION_REQUEST,
         EEAID_CONNECTION_RESPOND,
+        EEAID_CONNECTION_QUIT,
         EEAID_ALIVE_REQUEST,
         EEAID_ALIVE_RESPOND,
         EEAID_ITEMINFO_REQUEST,
@@ -115,6 +116,8 @@ protected:
     void serializeInternalClient( NetworkSyncablePacket &packet, uint8_t actionID );
 
     uint32_t nextClientID();
+
+    void removeClient( const ClientInfo &client );
 
     void handleInitPackets();
 
