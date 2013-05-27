@@ -27,7 +27,8 @@ class APIEXPORT PythonTools
 {
 public:
     static void initPython();
-    static void execString(const std::string &script , bool useMainNamespace = true );
+    static void execString( const std::string &script , bool useMainNamespace = true );
+    static void execFile( const std::string &file , bool useMainNamespace = true );
     static std::string pythonErrorDescription();
 };
 

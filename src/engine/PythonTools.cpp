@@ -53,6 +53,26 @@ void PythonTools::execString( const std::string &script, bool useMainNamespace )
     }
 }
 
+void PythonTools::execFile( const std::string &file, bool useMainNamespace )
+{
+    try
+    {
+        if( useMainNamespace )
+        {
+            boost::python::api::object main( boost::python::import( "__main__" ) );
+            boost::python::api::object globals = main.attr( "__dict__" );
+            boost::python::exec_file( file.c_str(), globals, globals );
+        }
+        else
+            boost::python::exec_file( file.c_str() );
+    }
+    catch( boost::python::error_already_set& )
+    {
+        _LOG( pythonErrorDescription() );
+        boost::python::handle_exception();
+    }
+}
+
 std::string PythonTools::pythonErrorDescription()
 {
     std::string error;
