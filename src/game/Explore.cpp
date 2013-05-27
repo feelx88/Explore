@@ -63,7 +63,9 @@ struct ScriptConsoleKeyCallback : public EventReceiver::KeyCallback
 
 Explore::Explore( StringVector args )
     : mArgs( args ),
+      mConfigFileName( "config.ini" ),
       mConfig( new boost::property_tree::ptree ),
+      mDedicated( false ),
       mLogFile( new std::ofstream( "log.txt" ) ),
       mEventReceiver( new EventReceiver() ),
       mRunning( true ),
@@ -72,6 +74,7 @@ Explore::Explore( StringVector args )
     LoggerSingleton::instance().addStream( *mLogFile );
     mIOService.reset( new boost::asio::io_service() );
 
+    parseCommandLine();
     loadConfig();
     initIrrlicht();
     initBullet();
@@ -79,6 +82,7 @@ Explore::Explore( StringVector args )
     initMenu();
     initGame();
     initServer();
+    parseCommandLine();
 
     //Import init script
     PythonTools::execString( "from init import *" );
@@ -176,11 +180,41 @@ EKEY_CODE Explore::getKeyCode( const std::string &name )
     return static_cast<EKEY_CODE>( sKeyCodes->get( name, 0 ) );
 }
 
+void Explore::parseCommandLine()
+{
+    StringVector::iterator found, begin = mArgs.begin(), end = mArgs.end();
+
+    //Enable deicated server mode
+    if( std::find( begin, end, "--dedicated" ) != end  )
+    {
+        if( mServer ) //Pre loadConfig run
+        {
+            mServer->setServerMode( true );
+        }
+        else //Post init* run
+        {
+            setGameState( EGS_GAME );
+            mDedicated = true;
+        }
+    }
+
+    //Set another configuration file
+    if( ( found = std::find( begin, end, "--config" ) ) != end )
+    {
+        ++found;
+        if( found != end )
+        {
+            mConfigFileName = *found;
+        }
+    }
+    found = end;
+}
+
 void Explore::loadConfig()
 {
     try
     {
-        boost::property_tree::ini_parser::read_ini( "config.ini", *mConfig );
+        boost::property_tree::ini_parser::read_ini( mConfigFileName, *mConfig );
     }
     catch( ... )
     {
@@ -223,7 +257,7 @@ void Explore::loadConfig()
 
 void Explore::saveConfig()
 {
-    boost::property_tree::ini_parser::write_ini( "config.ini", *mConfig );
+    boost::property_tree::ini_parser::write_ini( mConfigFileName, *mConfig );
 }
 
 void Explore::initIrrlicht()
@@ -232,7 +266,9 @@ void Explore::initIrrlicht()
     std::string deviceType =
             readConfigValue<std::string>( "Engine.DeviceType", "OpenGL" );
 
-    if( deviceType == "OpenGL" )
+    if ( deviceType == "Null" || mDedicated )
+        params.DriverType = video::EDT_NULL;
+    else if( deviceType == "OpenGL" )
         params.DriverType = video::EDT_OPENGL;
     else
         params.DriverType = video::EDT_BURNINGSVIDEO;

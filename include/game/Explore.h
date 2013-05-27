@@ -139,6 +139,7 @@ public:
 
 private:
 
+    void parseCommandLine();
     void loadConfig();
 
     void initIrrlicht();
@@ -160,7 +161,9 @@ private:
     BroadphasePtr mBroadphase;
     ConstraintSolverPtr mConstraintSolver;
 
+    std::string mConfigFileName;
     PropTreePtr mConfig;
+    bool mDedicated;
 
     boost::shared_ptr<std::ofstream> mLogFile;
 
