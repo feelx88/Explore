@@ -1,4 +1,5 @@
 from ExploreBind import *
+import sys
 
 def LOG( what ):
     if isinstance( what, list ):
@@ -10,7 +11,9 @@ def LOG( what ):
 if __name__ == "__main__":
     LOG( "== Importing init module ==" )
 
-    Explore.Instance = Explore()
+    args = StringVector()
+    args.extend( sys.argv )
+    Explore.Instance = Explore( args )
 
     server = Explore.Instance.getExploreServer()
     messenger = server.getNetworkMessenger()

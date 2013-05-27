@@ -20,11 +20,16 @@
 #include <engine/PythonBinder.h>
 #include <Explore.h>
 #include <ExploreGame.h>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 PYTHONBINDER_REGISTER_MODULE( Explore )
 {
     using namespace boost::python;
-    class_<Explore, boost::noncopyable>( "Explore", init<>() )
+
+    class_<StringVector>( "StringVector" )
+            .def( vector_indexing_suite<StringVector>() );
+
+    class_<Explore, boost::noncopyable>( "Explore", init<StringVector>() )
         .def( "readConfigValue", &Explore::readConfigValue<std::string> )
         .def( "writeConfigValue", &Explore::writeConfigValue<std::string> )
         .def( "saveConfig", &Explore::saveConfig )

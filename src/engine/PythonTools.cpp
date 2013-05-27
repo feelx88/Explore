@@ -20,17 +20,26 @@
 #include <PythonTools.h>
 #include <LoggerSingleton.h>
 
-void PythonTools::initPython()
+void PythonTools::initPython( const StringVector &args )
 {
+    //Initialize python
     Py_Initialize();
 
-    #if PY_MAJOR_VERSION < 3
-        const char *p = ".";
-        PySys_SetPath( const_cast<char*>( p ) );
-    #else
-        const wchar_t *p = L".";
-        PySys_SetPath( const_cast<wchar_t*>( p ) );
-    #endif
+    //import sys module to python and create argv list
+    execString( "import sys\n"
+                "sys.argv = []" );
+
+    //Append each command line argument to sys.argv
+    foreach_( const std::string &x, args )
+    {
+        std::stringstream str;
+        str << "sys.argv.append( '" << x << "' )";
+        execString( str.str() );
+    }
+
+    //Add current runtime path to module search path to allow importing from
+    //current directory
+    execString( "sys.path.append( '.' )" );
 }
 
 void PythonTools::execString( const std::string &script, bool useMainNamespace )

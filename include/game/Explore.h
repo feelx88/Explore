@@ -92,7 +92,7 @@ class APIEXPORT Explore
 {
 public:
 
-    Explore();
+    Explore( StringVector args );
     ~Explore();
 
     int run();
@@ -147,6 +147,8 @@ private:
     void initMenu();
     void initGame();
     void initServer();
+
+    StringVector mArgs;
 
     IrrlichtDevicePtr mDevice;
     IVideoDriverPtr mVideoDriver;

@@ -61,8 +61,9 @@ struct ScriptConsoleKeyCallback : public EventReceiver::KeyCallback
     ScriptConsolePtr mConsole;
 };
 
-Explore::Explore()
-    : mConfig( new boost::property_tree::ptree ),
+Explore::Explore( StringVector args )
+    : mArgs( args ),
+      mConfig( new boost::property_tree::ptree ),
       mLogFile( new std::ofstream( "log.txt" ) ),
       mEventReceiver( new EventReceiver() ),
       mRunning( true ),

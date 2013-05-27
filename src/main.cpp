@@ -20,18 +20,17 @@
 #include <engine/PythonTools.h>
 #include <iostream>
 
-int main( int, char** )
+int main( int argc, char** argv )
 {
-    try
+    StringVector args;
+
+    for( int x = 0; x < argc; ++x )
     {
-        PythonTools::initPython();
-        boost::python::api::object main = boost::python::import( "__main__" ).attr( "__dict__" );
-        boost::python::exec_file( "init.py", main, main );
+        args.push_back( argv[x] );
     }
-    catch( ... )
-    {
-        std::cout << PythonTools::pythonErrorDescription() << std::endl;
-    }
+
+    PythonTools::initPython( args );
+    PythonTools::execFile( "init.py" );
 
     return 0;
 }
