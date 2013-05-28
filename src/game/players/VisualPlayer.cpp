@@ -105,6 +105,7 @@ void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
 
         vector3df position = *mEntity->getPosition();
         vector3df rotation = *mEntity->getRotation();
+        btVector3 linVel = mEntity->getRigidBody()->getLinearVelocity();
 
         packet.writeFloat( position.X );
         packet.writeFloat( position.Y );
@@ -113,6 +114,10 @@ void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
         packet.writeFloat( rotation.X );
         packet.writeFloat( rotation.Y );
         packet.writeFloat( rotation.Z );
+
+        packet.writeFloat( linVel.getX() );
+        packet.writeFloat( linVel.getY() );
+        packet.writeFloat( linVel.getZ() );
     }
 }
 
@@ -129,12 +134,19 @@ boost::optional<NetworkSyncablePacket> VisualPlayer::deserializeInternal(
         float positionY = packet.readFloat();
         float positionZ = packet.readFloat();
 
-        //float rotationX = packet.readFloat();
-        //float rotationY = packet.readFloat();
-        //float rotationZ = packet.readFloat();
+        float rotationX = packet.readFloat();
+        float rotationY = packet.readFloat();
+        float rotationZ = packet.readFloat();
+        rotationX = rotationZ = 0.f;
+
+        float linVelX = packet.readFloat();
+        float linVelY = packet.readFloat();
+        float linVelZ = packet.readFloat();
 
         mEntity->setPosition( vector3df( positionX, positionY, positionZ ) );
-        //mEntity->setRotation( vector3df( rotationX, rotationY, rotationZ ) );
+        mEntity->setRotation( vector3df( rotationX, rotationY, rotationZ ) );
+        mEntity->getRigidBody()->setLinearVelocity(
+                    btVector3( linVelX, linVelY, linVelZ ) );
     }
 
     return boost::none;
