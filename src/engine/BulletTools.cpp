@@ -20,7 +20,12 @@
 
 #include <BulletTools.h>
 
-RigidBodyPtr BulletTools::createRigidBodyptr( BulletWorldPtr world, btRigidBody *body )
+RigidBodyPtr BulletTools::createRigidBodyPtr( BulletWorldPtr world, btRigidBody *body )
 {
     return RigidBodyPtr( body, specialDeleters::RigidBodyDeleter( world ) );
+}
+
+CollisionObjectPtr BulletTools::createCollisionObjectPtr(BulletWorldPtr world, btCollisionObject *object)
+{
+    return CollisionObjectPtr( object, specialDeleters::CollisionObjectDeleter( world ) );
 }

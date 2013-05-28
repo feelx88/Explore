@@ -122,8 +122,25 @@ struct RigidBodyDeleter
 private:
     BulletWorldPtr mWorld;
 };
+
+struct CollisionObjectDeleter
+{
+    CollisionObjectDeleter( BulletWorldPtr world )
+        : mWorld( world )
+    {}
+
+    void operator()( btCollisionObject *object )
+    {
+        mWorld->removeCollisionObject( object );
+        delete object;
+    }
+
+private:
+    BulletWorldPtr mWorld;
+};
 }
 
+typedef boost::shared_ptr<btCollisionObject> CollisionObjectPtr;
 typedef boost::shared_ptr<btRigidBody> RigidBodyPtr;
 typedef boost::shared_ptr<btCollisionShape> CollisionShapePtr;
 typedef boost::shared_ptr<btMotionState> MotionStatePtr;

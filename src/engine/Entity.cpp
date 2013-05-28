@@ -224,7 +224,8 @@ void Entity::internalCreateRigidBody()
     else
         mCollisionShape->calculateLocalInertia( mass, info.m_localInertia );
 
-    mRigidBody.reset( new btRigidBody( info ) );
+    mRigidBody = BulletTools::createRigidBodyPtr(
+                mBulletWorld, new btRigidBody( info ) );
 
     mRigidBody->setFriction( mProperties->get( "Entity.Body.Friction", 0.5f ) );
 

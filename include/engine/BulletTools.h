@@ -27,7 +27,9 @@
 class APIEXPORT BulletTools
 {
 public:
-    static RigidBodyPtr createRigidBodyptr( BulletWorldPtr world, btRigidBody *body );
+    static RigidBodyPtr createRigidBodyPtr( BulletWorldPtr world, btRigidBody *body );
+    static CollisionObjectPtr createCollisionObjectPtr(
+            BulletWorldPtr world, btCollisionObject *object );
 };
 
 #endif // BULLETTOOLS_H
