@@ -44,6 +44,7 @@ public:
 
     ISceneNodePtr getSceneNode() const;
     ISceneNodeAnimatorPtr getSceneNodeAnimator() const;
+    CollisionObjectPtr getCollisionObject() const;
     RigidBodyPtr getRigidBody() const;
     CollisionShapePtr getCollisionShape() const;
     PropTreePtr getProperties() const;
@@ -71,6 +72,7 @@ protected:
 
     ISceneNodePtr mSceneNode, mChildNode;
     ISceneNodeAnimatorPtr mAnimator;
+    CollisionObjectPtr mCollisionObject;
     RigidBodyPtr mRigidBody;
     CollisionShapePtr mCollisionShape;
     MotionStatePtr mMotionState;
@@ -80,8 +82,9 @@ protected:
 private:
     void internalCreate();
     void internalCreateSceneNode();
+    void internalCreateCollisionObject();
     void internalCreateRigidBody();
-    void internalCreateCollisionShape();
+    void internalCreateCollisionShape( const PropTree &subtree );
 
     static void globalInsertEntity( Entity *entity );
     static void globalRemoveEntity( Entity *entity );

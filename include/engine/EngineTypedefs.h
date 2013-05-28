@@ -98,12 +98,14 @@ typedef boost::shared_ptr<irr::scene::ISceneNodeAnimator> ISceneNodeAnimatorPtr;
 typedef irr::video::ITexture* ITexturePtr;
 
 #include <bullet/btBulletDynamicsCommon.h>
+#include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
 
 typedef boost::shared_ptr<btDiscreteDynamicsWorld> BulletWorldPtr;
 typedef boost::shared_ptr<btCollisionConfiguration> CollisionConfigurationPtr;
 typedef boost::shared_ptr<btCollisionDispatcher> DispatcherPtr;
 typedef boost::shared_ptr<btBroadphaseInterface> BroadphasePtr;
 typedef boost::shared_ptr<btConstraintSolver> ConstraintSolverPtr;
+typedef boost::shared_ptr<btGhostPairCallback> GhostPairCallback;
 
 namespace specialDeleters
 {

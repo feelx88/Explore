@@ -28,6 +28,7 @@
 #include <BulletSceneNodeAnimator.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <iostream>
+#include <BulletCollision/CollisionDispatch/btGhostObject.h>
 
 using namespace irr;
 using namespace core;
@@ -89,6 +90,7 @@ void Entity::internalCreate()
     preCreate();
 
     internalCreateSceneNode();
+    internalCreateCollisionObject();
     internalCreateRigidBody();
 
     if( mSceneNode && mRigidBody )
@@ -186,16 +188,51 @@ void Entity::internalCreateSceneNode()
     }
 }
 
+void Entity::internalCreateCollisionObject()
+{
+    std::string type = mProperties->get(
+                "Entity.CollisionObject.Shape.<xmlattr>.Type", std::string() );
+    if( type.empty() )
+    {
+        return;
+    }
+
+    internalCreateCollisionShape(
+                mProperties->get_child( "Entity.CollisionObject.Shape" ) );
+
+    if( !mCollisionShape )
+    {
+        return;
+    }
+
+    type = mProperties->get( "Entity.CollisionObject.<xmlattr>.Type", std::string() );
+
+    //btGhostObject
+    if( type == "Ghost" )
+    {
+        mCollisionObject = BulletTools::createCollisionObjectPtr(
+                    mBulletWorld, new btGhostObject() );
+        mCollisionObject->setCollisionShape( mCollisionShape.get() );
+        mCollisionObject->setCollisionFlags(
+                    btCollisionObject::CF_NO_CONTACT_RESPONSE );
+
+        mBulletWorld->addCollisionObject( mCollisionObject.get() );
+    }
+}
+
 void Entity::internalCreateRigidBody()
 {
-    std::string type = mProperties->get( "Entity.Body.Shape.<xmlattr>.Type", std::string() );
+    std::string type = mProperties->get( "Entity.Body.Shape.<xmlattr>.Type",
+                                         std::string() );
     if( type.empty() || type == "none" )
         return;
 
-    internalCreateCollisionShape();
+    internalCreateCollisionShape( mProperties->get_child( "Entity.Body.Shape" ) );
 
     if( !mCollisionShape )
+    {
         return;
+    }
 
     vector3df nullVec( 0.f, 0.f, 0.f );
 
@@ -233,31 +270,31 @@ void Entity::internalCreateRigidBody()
 
 }
 
-void Entity::internalCreateCollisionShape()
+void Entity::internalCreateCollisionShape( const PropTree &subtree )
 {
-    std::string type = mProperties->get( "Entity.Body.Shape.<xmlattr>.Type", std::string() );
+    std::string type = subtree.get( "<xmlattr>.Type", std::string() );
 
     if( type == "Primitive" )
     {
         //Primitive
-        std::string childType = mProperties->get( "Entity.Body.Shape.Child.Type", std::string() );
+        std::string childType = subtree.get( "Child.Type", std::string() );
 
         if( childType == "Box" )
         {
             btVector3 extents = VectorConverter::bt(
-                        mProperties->get( "Entity.Body.Shape.Child.Size", vector3df() ) );
+                        subtree.get( "Child.Size", vector3df() ) );
             mCollisionShape.reset( new btBoxShape( extents / 2.f ) );
         }
         else if( childType == "Sphere" )
         {
-            float radius = mProperties->get( "Entity.Body.Shape.Child.Size", 0.f );
+            float radius = subtree.get( "Child.Size", 0.f );
             mCollisionShape.reset( new btSphereShape( radius / 2.f ) );
         }
         else if( childType == "Cylinder" )
         {
             btVector3 extents = VectorConverter::bt(
-                        mProperties->get( "Entity.Body.Shape.Child.Size", vector3df() ) );
-            std::string direction = mProperties->get( "Entity.Body.Shape.Child.Direction", "Y" );
+                        subtree.get( "Child.Size", vector3df() ) );
+            std::string direction = mProperties->get( "Child.Direction", "Y" );
 
             if( direction == "X" )
                 mCollisionShape.reset( new btCylinderShapeX( extents / 2.f ) );
@@ -346,6 +383,11 @@ ISceneNodeAnimatorPtr Entity::getSceneNodeAnimator() const
     return mAnimator;
 }
 
+CollisionObjectPtr Entity::getCollisionObject() const
+{
+    return mCollisionObject;
+}
+
 RigidBodyPtr Entity::getRigidBody() const
 {
     return mRigidBody;
@@ -372,6 +414,13 @@ void Entity::setPosition( const vector3df &pos )
     else if( mSceneNode )
     {
         mSceneNode->setPosition( pos );
+    }
+
+    if( mCollisionObject )
+    {
+        btTransform trans = mCollisionObject->getWorldTransform();
+        trans.setOrigin( VectorConverter::bt( pos ) );
+        mCollisionObject->setWorldTransform( trans );
     }
 }
 
@@ -403,6 +452,16 @@ void Entity::setRotation( const vector3df &rot )
     else if( mSceneNode )
     {
         mSceneNode->setRotation( rot );
+    }
+
+    if( mCollisionObject )
+    {
+        btTransform trans = mCollisionObject->getWorldTransform();
+        matrix4 m;
+        m.setRotationDegrees( rot );
+        trans.setRotation( QuaternionConverter::bt( quaternion( m ) ) );
+
+        mCollisionObject->setWorldTransform( trans );
     }
 }
 
