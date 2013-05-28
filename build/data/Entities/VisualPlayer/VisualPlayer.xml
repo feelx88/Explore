@@ -13,3 +13,13 @@
         <Mass>30</Mass>
     </Body>
 </Entity>
+<Entity Name="ActivationGhost">
+    <CollisionObject Type="Ghost">
+        <Shape Type="Primitive">
+            <Child>
+                <Type>Sphere</Type>
+                <Size>10</Size>
+            </Child>
+        </Shape>
+    </CollisionObject>
+</Entity>

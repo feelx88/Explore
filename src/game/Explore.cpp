@@ -330,6 +330,10 @@ void Explore::initBullet()
                             mConstraintSolver.get(),
                             mCollisionConfiguration.get() ) );
 
+    //Create ghost pair callback to allow use of btGhostObject
+    mGhostPairCallback.reset( new btGhostPairCallback() );
+    mBulletWorld->getPairCache()->setInternalGhostPairCallback( mGhostPairCallback.get() );
+
     mBulletDebugDrawer.reset( new BulletIrrlichtDebugDrawer() );
     mBulletDebugDrawer->driver = mDevice->getVideoDriver();
     mBulletWorld->setDebugDrawer( mBulletDebugDrawer.get() );

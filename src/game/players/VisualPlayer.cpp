@@ -29,7 +29,10 @@ VisualPlayer::VisualPlayer( ExplorePtr explore, IPlayerPtr parent )
     //FIXME:search for another way to create the (right) player model
     mEntity.reset( new Entity( mExplore->getIrrlichtDevice(),
                                mExplore->getBulletWorld(),
-                               "VisualPlayer" ) );
+                               "VisualPlayer", "VisualPlayer" ) );
+    mActivationGhost.reset( new Entity( mExplore->getIrrlichtDevice(),
+                                        mExplore->getBulletWorld(),
+                                        "VisualPlayer", "ActivationGhost" ) );
 }
 
 VisualPlayer::~VisualPlayer()
@@ -79,6 +82,15 @@ uint32_t VisualPlayer::clientID() const
 
 void VisualPlayer::update()
 {
+    mActivationGhost->setPosition( *mEntity->getPosition() );
+
+    btGhostObject *ghost = dynamic_cast<btGhostObject*>(
+                mActivationGhost->getCollisionObject().get() );
+
+    for( int x = 0; x < ghost->getNumOverlappingObjects(); ++x )
+    {
+        ghost->getOverlappingObject( x )->activate( true );
+    }
 }
 
 void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,

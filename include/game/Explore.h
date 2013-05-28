@@ -160,6 +160,7 @@ private:
     DispatcherPtr mDispatcher;
     BroadphasePtr mBroadphase;
     ConstraintSolverPtr mConstraintSolver;
+    GhostPairCallback mGhostPairCallback;
 
     std::string mConfigFileName;
     PropTreePtr mConfig;

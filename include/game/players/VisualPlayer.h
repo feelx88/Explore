@@ -54,7 +54,7 @@ protected:
     std::vector<ItemPtr> mInventory;
     int mActiveItem;
 
-    EntityPtr mEntity;
+    EntityPtr mEntity, mActivationGhost;
 
     uint32_t mClientID;
 };
