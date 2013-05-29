@@ -33,6 +33,8 @@
 
 #include <boost/property_tree/xml_parser.hpp>
 
+#include <limits>
+
 using namespace irr;
 using namespace core;
 using namespace video;
@@ -42,8 +44,8 @@ using namespace gui;
 LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayerPtr parent )
     : VisualPlayer( explore, parent ),
       mCursorControl( explore->getIrrlichtDevice()->getCursorControl() ),
-      mMouseCenterX( std::numeric_limits<float>::quiet_NaN() ),
-      mMouseCenterY( std::numeric_limits<float>::quiet_NaN() ),
+      mMouseCenterX( -1.f ),
+      mMouseCenterY( -1.f ),
       mJumped( false )
 {
     mProperties.reset( new boost::property_tree::ptree() );
@@ -213,7 +215,7 @@ void LocalPlayer::processControls()
         rot.Z = 0.f;
 
         //Check if center coordiantes are set
-        if( !std::isnan( mMouseCenterX ) && !std::isnan( mMouseCenterX ) )
+        if( mMouseCenterX >= 0.f && mMouseCenterX >= 0.f )
         {
             rot.X -= ( mMouseCenterY - pos.Y ) * mMouseSpeed;
             rot.Y -= ( mMouseCenterX - pos.X ) * mMouseSpeed;

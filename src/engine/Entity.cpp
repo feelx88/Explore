@@ -28,7 +28,7 @@
 #include <BulletSceneNodeAnimator.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <iostream>
-#include <BulletCollision/CollisionDispatch/btGhostObject.h>
+#include <bullet/BulletCollision/CollisionDispatch/btGhostObject.h>
 
 using namespace irr;
 using namespace core;
