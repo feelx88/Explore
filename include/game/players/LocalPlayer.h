@@ -46,18 +46,26 @@ public:
 
     void addOwnedItem( ItemPtr item );
 
+    void setMouseLock( bool value );
+    bool getMouseLock() const;
+
 private:
     void switchItem( int index );
 
     void addItems();
     void createGUI();
-    void setKeyMappings();
+    void loadControlSettings();
     void processControls();
     void drawCrosshair();
 
     ICameraSceneNodePtr mCamera;
 
     irr::EKEY_CODE mKeyMapping[EPKM_COUNT];
+
+    irr::gui::ICursorControl *mCursorControl;
+    float mMouseCenterX, mMouseCenterY;
+    float mMouseSpeed;
+    bool mMouseLock;
 
     int mCrossX, mCrossY;
     irr::video::SColor mCrossColor;

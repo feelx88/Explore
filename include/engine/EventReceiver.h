@@ -51,13 +51,8 @@ public:
     bool mousePressed( const unsigned int &buttonNum ) const;
     bool mouseClicked( const unsigned int &buttonNum );
 
-    void lockMouse( bool lock, bool changeVisibility = true );
-    bool isMouseLocked() const;
-
     int mouseX() const;
     int mouseY() const;
-    int mouseMoveX();
-    int mouseMoveY();
 
     int mouseWheelY();
 
@@ -78,8 +73,7 @@ private:
     bool mClicked[irr::KEY_KEY_CODES_COUNT];
     bool mMousePressed[3];
     bool mMouseClicked[3];
-    bool mMouseLocked;
-    int mMouseX, mMouseY, mMouseMoveX, mMouseMoveY, mMouseWheelY;
+    int mMouseX, mMouseY, mMouseWheelY;
     int mWinWidth, mWinHeight;
 
     boost::unordered::unordered_map<std::pair<int, irr::gui::EGUI_EVENT_TYPE>,

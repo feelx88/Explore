@@ -41,6 +41,9 @@ using namespace gui;
 
 LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayerPtr parent )
     : VisualPlayer( explore, parent ),
+      mCursorControl( explore->getIrrlichtDevice()->getCursorControl() ),
+      mMouseCenterX( std::numeric_limits<float>::quiet_NaN() ),
+      mMouseCenterY( std::numeric_limits<float>::quiet_NaN() ),
       mJumped( false )
 {
     mProperties.reset( new boost::property_tree::ptree() );
@@ -56,12 +59,14 @@ LocalPlayer::LocalPlayer( ExplorePtr explore, IPlayerPtr parent )
 
     //addItems();
     createGUI();
-    setKeyMappings();
+    loadControlSettings();
+    setMouseLock( true );
 }
 
 LocalPlayer::~LocalPlayer()
 {
     mItemWin->remove();
+    setMouseLock( false );
 }
 
 void LocalPlayer::update()
@@ -112,6 +117,17 @@ void LocalPlayer::addOwnedItem( ItemPtr item )
         item->setActivationState( false );
 }
 
+void LocalPlayer::setMouseLock( bool value )
+{
+    mMouseLock = value;
+    mCursorControl->setVisible( !value );
+}
+
+bool LocalPlayer::getMouseLock() const
+{
+    return mMouseLock;
+}
+
 void LocalPlayer::switchItem( int index )
 {
     mInventory.at( mActiveItem )->setGUIVisible( false );
@@ -157,7 +173,7 @@ void LocalPlayer::createGUI()
     mCrossColor = mProperties->get( "Crosshair.Color", SColor( 255, 0, 255, 0 ) );
 }
 
-void LocalPlayer::setKeyMappings()
+void LocalPlayer::loadControlSettings()
 {
     mKeyMapping[EPKM_FORWARD] =
             Explore::getKeyCode( mExplore->readConfigValue<std::string>(
@@ -183,16 +199,32 @@ void LocalPlayer::setKeyMappings()
     mKeyMapping[EPKM_PREVIOUSSLOT] =
             Explore::getKeyCode( mExplore->readConfigValue<std::string>(
                                      "Controls.PreviousSlot", "KEY_KEY_Q" ) );
+
+    mMouseSpeed = mExplore->readConfigValue<float>( "Controls.MouseSpeed", 50.f );
 }
 
 void LocalPlayer::processControls()
 {
-    if( mEventReceiver->isMouseLocked() )
+    if( mMouseLock )
     {
+        position2df pos = mCursorControl->getRelativePosition();
+
         vector3df rot( mEntity->getSceneNode()->getRotation() );
         rot.Z = 0.f;
-        rot.X += float( mEventReceiver->mouseMoveY() ) / 10.f;
-        rot.Y += float( mEventReceiver->mouseMoveX() ) / 10.f;
+
+        //Check if center coordiantes are set
+        if( !std::isnan( mMouseCenterX ) && !std::isnan( mMouseCenterX ) )
+        {
+            rot.X -= ( mMouseCenterY - pos.Y ) * mMouseSpeed;
+            rot.Y -= ( mMouseCenterX - pos.X ) * mMouseSpeed;
+        }
+
+        mCursorControl->setPosition( 0.5f, 0.5f );
+
+        //get center mouse position, because this is not always 0.5
+        pos = mCursorControl->getRelativePosition();
+        mMouseCenterX = pos.X;
+        mMouseCenterY = pos.Y;
 
         if( rot.X < -89.f )
             rot.X = -89.f;
@@ -243,7 +275,7 @@ void LocalPlayer::processControls()
     vel.Y = mEntity->getRigidBody()->getLinearVelocity().getY();
 
     if( mEventReceiver->keyClicked( mKeyMapping[EPKM_MOUSECONTROL] ) )
-        mEventReceiver->lockMouse( !mEventReceiver->isMouseLocked() );
+        setMouseLock( !mMouseLock );
 
     vector3df pos( *mEntity->getPosition() );
 

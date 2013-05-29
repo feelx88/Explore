@@ -70,8 +70,6 @@ E_GAME_STATE ExploreGame::run()
 
     bool running = true;
 
-    mEventReceiver->lockMouse( true );
-
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
                                       SColorf( 1, 1, 1 ), 1000.f );
 
@@ -138,8 +136,6 @@ E_GAME_STATE ExploreGame::run()
         mDevice->setWindowCaption( stringw( mVideoDriver->getFPS() ).c_str() );
         mExplore->getIOService()->poll();
     }
-
-    mEventReceiver->lockMouse( false );
 
     mExplore->getExploreServer()->setServerMode( false );
     mExplore->getExploreServer()->disconnect();

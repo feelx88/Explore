@@ -25,11 +25,8 @@
 using namespace irr;
 
 EventReceiver::EventReceiver()
-    : mMouseLocked( false ),
-      mMouseX( 0 ),
+    : mMouseX( 0 ),
       mMouseY( 0 ),
-      mMouseMoveX( 0 ),
-      mMouseMoveY( 0 ),
       mWinWidth( 0 ),
       mWinHeight( 0 )
 {
@@ -134,28 +131,6 @@ bool EventReceiver::OnEvent( const SEvent &event )
         mMousePressed[1] = event.MouseInput.isRightPressed();
         mMousePressed[2] = event.MouseInput.isMiddlePressed();
 
-        irr::gui::ICursorControl *cursorControl = mDevice->getCursorControl();
-
-        if( mMouseLocked )
-        {
-            irr::core::vector2df pos = cursorControl->getRelativePosition();
-            if( irr::core::isnotzero( pos.X - 0.5f )
-                    && irr::core::isnotzero( pos.Y - 0.5f ) )
-            {
-                //TODO: implement some sort of sensitivity settings, but maybe
-                //only in LocalPlayer(?)
-                mMouseMoveX = event.MouseInput.X - mMouseX;
-                mMouseMoveY = event.MouseInput.Y - mMouseY;
-
-                cursorControl->setPosition( 0.5f, 0.5f );
-            }
-        }
-        else
-        {
-            mMouseMoveX = event.MouseInput.X - mMouseX;
-            mMouseMoveY = event.MouseInput.Y - mMouseY;
-        }
-
         mMouseX = event.MouseInput.X;
         mMouseY = event.MouseInput.Y;
 
@@ -216,34 +191,6 @@ bool EventReceiver::mouseClicked( const unsigned int &buttonNum )
     return click;
 }
 
-void EventReceiver::lockMouse( bool lock, bool changeVisibility )
-{
-    mMouseLocked = lock;
-
-    for( int x = 0; x < 3; ++x )
-    {
-        mMouseClicked[x] = false;
-        mMousePressed[x] = false;
-    }
-
-    if( changeVisibility )
-        mDevice->getCursorControl()->setVisible( !lock );
-
-    if( lock )
-    {
-        mMouseX = mWinWidth / 2;
-        mMouseY = mWinHeight / 2;
-
-        mDevice->getCursorControl()->setPosition( mMouseX, mMouseY );
-    }
-}
-
-
-bool EventReceiver::isMouseLocked() const
-{
-    return mMouseLocked;
-}
-
 int EventReceiver::mouseX() const
 {
     return mMouseX;
@@ -252,20 +199,6 @@ int EventReceiver::mouseX() const
 int EventReceiver::mouseY() const
 {
     return mMouseY;
-}
-
-int EventReceiver::mouseMoveX()
-{
-    int moveX = mMouseMoveX;
-    mMouseMoveX = 0;
-    return moveX;
-}
-
-int EventReceiver::mouseMoveY()
-{
-    int moveY = mMouseMoveY;
-    mMouseMoveY = 0;
-    return moveY;
 }
 
 int EventReceiver::mouseWheelY()
