@@ -95,7 +95,7 @@ void Entity::internalCreate()
 
     if( mSceneNode && mRigidBody )
     {
-        BulletSceneNodeAnimator *ani = new BulletSceneNodeAnimator( mBulletWorld, mRigidBody );
+        BulletSceneNodeAnimator *ani = new BulletSceneNodeAnimator( mRigidBody );
         mAnimator.reset( ani );
         mSceneNode->addAnimator( mAnimator.get() );
     }
@@ -368,6 +368,12 @@ Entity::~Entity()
         mSceneNode->removeAll();
         mSceneNode->remove();
     }
+
+    if( mRigidBody )
+        mBulletWorld->removeRigidBody( mRigidBody.get() );
+
+    if( mCollisionObject )
+        mBulletWorld->removeCollisionObject( mCollisionObject.get() );
 }
 
 ISceneNodePtr Entity::getSceneNode() const

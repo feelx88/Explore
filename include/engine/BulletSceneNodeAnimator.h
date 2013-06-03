@@ -29,7 +29,7 @@
 class APIEXPORT BulletSceneNodeAnimator : public irr::scene::ISceneNodeAnimator
 {
 public:
-    BulletSceneNodeAnimator( BulletWorldPtr world, RigidBodyPtr body );
+    BulletSceneNodeAnimator( RigidBodyPtr body );
     virtual ~BulletSceneNodeAnimator();
 
     void animateNode(irr::scene::ISceneNode *node, irr::u32 );
@@ -40,8 +40,7 @@ public:
     bool isAppliedToCamera() const;
 
 protected:
-    BulletWorldPtr mBulletWorld;
-    RigidBodyPtr mRigidBody;
+    boost::weak_ptr<btRigidBody> mRigidBody;
 
     bool mApplyToCamera;
 };

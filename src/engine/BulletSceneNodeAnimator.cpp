@@ -26,27 +26,24 @@ using namespace irr;
 using namespace core;
 using namespace scene;
 
-BulletSceneNodeAnimator::BulletSceneNodeAnimator( BulletWorldPtr world, RigidBodyPtr body )
-    : mBulletWorld( world ),
-      mRigidBody( body ),
+BulletSceneNodeAnimator::BulletSceneNodeAnimator( RigidBodyPtr body )
+    : mRigidBody( body ),
       mApplyToCamera( false )
 {
-    if( mRigidBody && mBulletWorld )
-        mBulletWorld->addRigidBody( mRigidBody.get() );
 }
 
 BulletSceneNodeAnimator::~BulletSceneNodeAnimator()
 {
-    if( mRigidBody && mBulletWorld )
-        mBulletWorld->removeRigidBody( mRigidBody.get() );
 }
 
 void BulletSceneNodeAnimator::animateNode( ISceneNode *node, u32 )
 {
-    if( !node )
+    if( !node || mRigidBody.expired() )
         return;
 
-    btTransform trans = mRigidBody->getWorldTransform();
+    RigidBodyPtr body = mRigidBody.lock();
+
+    btTransform trans = body->getWorldTransform();
 
     vector3df pos = VectorConverter::irr( trans.getOrigin() );
     matrix4 mat = QuaternionConverter::irr( trans.getRotation() ).getMatrix();
@@ -70,8 +67,8 @@ void BulletSceneNodeAnimator::animateNode( ISceneNode *node, u32 )
 ISceneNodeAnimator *BulletSceneNodeAnimator::createClone( ISceneNode*,
                                                           ISceneManager* )
 {
-    return new BulletSceneNodeAnimator(
-                mBulletWorld, RigidBodyPtr( new btRigidBody( *mRigidBody.get() ) ) );
+    //FIXNE: Make it working
+    return 0;
 }
 
 void BulletSceneNodeAnimator::applyToCamera( bool enabled )
