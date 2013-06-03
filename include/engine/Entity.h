@@ -86,6 +86,9 @@ private:
     void internalCreateRigidBody();
     void internalCreateCollisionShape( const PropTree &subtree );
 
+    void internalCreateCollisionFilter( const PropTree &subtree, short &group,
+                                        short &mask );
+
     static void globalInsertEntity( Entity *entity );
     static void globalRemoveEntity( Entity *entity );
 

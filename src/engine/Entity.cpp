@@ -213,10 +213,20 @@ void Entity::internalCreateCollisionObject()
         mCollisionObject = BulletTools::createCollisionObjectPtr(
                     mBulletWorld, new btGhostObject() );
         mCollisionObject->setCollisionShape( mCollisionShape.get() );
-        mCollisionObject->setCollisionFlags(
-                    btCollisionObject::CF_NO_CONTACT_RESPONSE );
 
-        mBulletWorld->addCollisionObject( mCollisionObject.get() );
+        if( !mProperties->get( "Entity.CollisionObject.CollisionResponse", false ) )
+        {
+            mCollisionObject->setCollisionFlags(
+                        btCollisionObject::CF_NO_CONTACT_RESPONSE );
+        }
+
+        short group, mask;
+        mask = -1;
+        internalCreateCollisionFilter(
+                    mProperties->get_child( "Entity.CollisionObject.CollisionFilter", PropTree() ),
+                    group, mask );
+
+        mBulletWorld->addCollisionObject( mCollisionObject.get(), group, mask );
     }
 }
 
@@ -266,12 +276,23 @@ void Entity::internalCreateRigidBody()
 
     mRigidBody->setFriction( mProperties->get( "Entity.Body.Friction", 0.5f ) );
 
+    short group, mask;
+    mask = -1;
+    internalCreateCollisionFilter(
+                mProperties->get_child( "Entity.Body.CollisionFilter", PropTree() ),
+                group, mask );
+
+    mBulletWorld->addRigidBody( mRigidBody.get(), group, mask );
+
     //TODO:Apply more settings like damping etc.
 
 }
 
 void Entity::internalCreateCollisionShape( const PropTree &subtree )
 {
+    if( subtree.empty() )
+        return;
+
     std::string type = subtree.get( "<xmlattr>.Type", std::string() );
 
     if( type == "Primitive" )
@@ -341,6 +362,37 @@ void Entity::internalCreateCollisionShape( const PropTree &subtree )
     }
     else
         return;
+}
+
+void Entity::internalCreateCollisionFilter( const PropTree &subtree,
+                                            short &group, short &mask )
+{
+    if( subtree.empty() )
+        return;
+
+    if( subtree.get<std::string>( "<xmlattr>.Template", "None" ) == "All" )
+    {
+        mask = -1;
+    }
+    else
+    {
+        mask = 0;
+    }
+
+    //iterateover all keys and create group and mask
+    for( PropTree::const_iterator x = subtree.begin(); x != subtree.end(); ++x )
+    {
+        if( x->first == "GroupBit" )
+        {
+            //Defined as the nth bit
+            group = ( 1 << x->second.get_value<short>() );
+        }
+        else if( x->first == "MaskBit" )
+        {
+            //Defined as the nth bit
+            mask |= ( 1 << x->second.get_value<short>() );
+        }
+    }
 }
 
 void Entity::globalInsertEntity( Entity *entity )
