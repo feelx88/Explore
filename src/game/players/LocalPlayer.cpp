@@ -281,8 +281,9 @@ void LocalPlayer::processControls()
 
     vector3df pos( *mEntity->getPosition() );
 
-    line3df rayDown( pos, pos - vector3df( 0.f, 1.2f, 0.f ) );
-    if( EntityTools::getFirstEntityInRay( mBulletWorld, rayDown ) )
+    EntityTools::RayData rayData;
+    rayData.ray = line3df( pos, pos - vector3df( 0.f, 1.2f, 0.f ) );
+    if( EntityTools::getFirstEntityInRay( mBulletWorld, rayData ) )
     {
         if( mEventReceiver->keyPressed( mKeyMapping[EPKM_JUMP] ) )
         {

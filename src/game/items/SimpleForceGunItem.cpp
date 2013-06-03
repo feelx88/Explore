@@ -51,22 +51,25 @@ void SimpleForceGunItem::startActionInternal( uint8_t actionID )
 
 void SimpleForceGunItem::shoot( bool forward )
 {
-    line3df ray;
     //FIXME:search better way
     LocalPlayer* owner = static_cast<LocalPlayer*>( getOwner().get() );
-    ray.start = *( owner->getEntity()->getPosition() ) + vector3df( 0.f, 1.f, 0.f );
-    ray.end = ray.start + owner->rotateToDirection( vector3df( 0.f, 0.f, mRayDistance ) );
-    vector3df out, normal;
+    EntityTools::RayData rayData;
+
+    rayData.ray.start = *( owner->getEntity()->getPosition() )
+            + vector3df( 0.f, 1.f, 0.f );
+    rayData.ray.end = rayData.ray.start + owner->rotateToDirection(
+                vector3df( 0.f, 0.f, mRayDistance ) );
+
     boost::optional<Entity*> e =
-            EntityTools::getFirstEntityInRay( mBulletWorld, ray, out, normal );
+            EntityTools::getFirstEntityInRay( mBulletWorld, rayData );
 
     if( e )
     {
         Entity *entity = *e;
         scene::IParticleSystemSceneNode *node = mDevice->getSceneManager()->addParticleSystemSceneNode(
-                    false, 0, -1, out );
+                    false, 0, -1, rayData.outPoint );
 
-        node->setEmitter( node->createPointEmitter( normal *= 0.01f, 10, 20,
+        node->setEmitter( node->createPointEmitter( rayData.outNormal *= 0.01f, 10, 20,
                                                     video::SColor(), video::SColor(),
                                                     100, 500, 45 ) );
         node->addAffector( node->createGravityAffector() );
@@ -81,15 +84,15 @@ void SimpleForceGunItem::shoot( bool forward )
 
         entity->getRigidBody()->activate();
         vector3df pos = *entity->getPosition();
-        ray.start = ( ray.end - pos ) * mForceMultiplicator;
+        rayData.ray.start = ( rayData.ray.end - pos ) * mForceMultiplicator;
 
         if( !forward )
-            ray.start *= -1.f;
+            rayData.ray.start *= -1.f;
 
-        ray.end = out - pos;
+        rayData.ray.end = rayData.outPoint - pos;
 
-        entity->getRigidBody()->applyImpulse( VectorConverter::bt( ray.start ),
-                                              VectorConverter::bt( ray.end ) );
+        entity->getRigidBody()->applyImpulse( VectorConverter::bt( rayData.ray.start ),
+                                              VectorConverter::bt( rayData.ray.end ) );
 
         Item *hitItem = Item::getItemFromEntity( entity );
 

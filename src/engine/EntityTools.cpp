@@ -25,47 +25,15 @@ using namespace irr;
 using namespace core;
 
 boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr device,
-                                                  const irr::core::line3df &ray )
-{
-    vector3df tmpPoint, tmpNormal;
-    return getFirstEntityInRay( device, ray, tmpPoint, tmpNormal );
-}
-
-boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
-                                                  const irr::core::line3df &ray )
-{
-    vector3df tmpPoint, tmpNormal;
-    return getFirstEntityInRay( world, ray, tmpPoint, tmpNormal );
-}
-
-boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr device,
-                                                           const irr::core::line3df &ray,
-                                                           irr::core::vector3df &outPoint )
-{
-    vector3df tmpNormal;
-    return getFirstEntityInRay( device, ray, outPoint, tmpNormal );
-}
-
-boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
-                                                           const irr::core::line3df &ray,
-                                                           irr::core::vector3df &outPoint )
-{
-    vector3df tmpNormal;
-    return getFirstEntityInRay( world, ray, outPoint, tmpNormal );
-}
-
-boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr device,
-                                                  const irr::core::line3df &ray,
-                                                  irr::core::vector3df &outPoint,
-                                                  irr::core::vector3df &outNormal )
+                                                           RayData &data )
 {
     ISceneCollisionManagerPtr colMgr = device->getSceneManager()->getSceneCollisionManager();
 
     irr::core::triangle3df outTri;
     ISceneNodePtr node =
-            colMgr->getSceneNodeAndCollisionPointFromRay( ray, outPoint, outTri );
+            colMgr->getSceneNodeAndCollisionPointFromRay( data.ray, data.outPoint, outTri );
 
-    outNormal = outTri.getNormal();
+    data.outNormal = outTri.getNormal();
 
     if( node )
         return Entity::getEntity( node );
@@ -74,24 +42,62 @@ boost::optional<Entity*> EntityTools::getFirstEntityInRay( IrrlichtDevicePtr dev
 }
 
 boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
-                                                  const irr::core::line3df &ray,
-                                                  irr::core::vector3df &outPoint,
-                                                  irr::core::vector3df &outNormal )
+                                                           RayData &data )
 {
-    btVector3 from( VectorConverter::bt( ray.start ) ),
-            to( VectorConverter::bt( ray.end ) );
-    btCollisionWorld::ClosestRayResultCallback callback( from, to );
+    btVector3 from( VectorConverter::bt( data.ray.start ) ),
+            to( VectorConverter::bt( data.ray.end ) );
+    btCollisionWorld::AllHitsRayResultCallback callback( from, to );
+    callback.m_collisionFilterGroup = data.collisionFilterGroup;
+    callback.m_collisionFilterMask = data.collisionFilterMask;
     world->rayTest( from, to, callback );
 
-    outPoint = VectorConverter::irr( callback.m_hitPointWorld );
-    outNormal = VectorConverter::irr( callback.m_hitNormalWorld );
-
-    //FIXME: do not cast const away
-    btRigidBody *body = static_cast<btRigidBody*>(
-                const_cast<btCollisionObject*>( callback.m_collisionObject ) );
-
-    if( body )
-        return Entity::getEntity( body );
-    else
+    if( !callback.hasHit() )
+    {
         return boost::none;
+    }
+
+    float nearestHit = std::numeric_limits<float>::max();
+    boost::optional<Entity*> entity;
+    vector3df outPoint, outNormal;
+
+    for( int x = 0; x < callback.m_collisionObjects.size(); ++x )
+    {
+        //TODO: maybe use m_hitFraction instead of calculating distance?
+        float hitDistanceSQ = ( VectorConverter::irr( callback.m_hitPointWorld[x] )
+                              - data.ray.start ).getLengthSQ();
+
+        //FIXME: do not cast const away
+        btRigidBody *body = static_cast<btRigidBody*>(
+                    const_cast<btCollisionObject*>( callback.m_collisionObjects[x] ) );
+
+        if( body )
+        {
+            boost::optional<Entity*> tmp = Entity::getEntity( body );
+            if( tmp && hitDistanceSQ < nearestHit )
+            {
+                nearestHit = hitDistanceSQ;
+                outPoint = VectorConverter::irr( callback.m_hitPointWorld[x] );
+                outNormal = VectorConverter::irr( callback.m_hitNormalWorld[x] );
+                entity = tmp;
+            }
+        }
+    }
+
+    if( entity )
+    {
+        data.outPoint = outPoint;
+        data.outNormal = outNormal;
+        return entity;
+    }
+    else
+    {
+        return boost::none;
+    }
+}
+
+
+EntityTools::RayData::RayData()
+    : collisionFilterGroup( std::numeric_limits<unsigned short>::max() ),
+      collisionFilterMask( std::numeric_limits<unsigned short>::max() )
+{
 }

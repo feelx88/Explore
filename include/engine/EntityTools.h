@@ -27,26 +27,18 @@
 class APIEXPORT EntityTools
 {
 public:
-    static boost::optional<Entity*> getFirstEntityInRay( IrrlichtDevicePtr device,
-                                                         const irr::core::line3df &ray );
-    static boost::optional<Entity*> getFirstEntityInRay( BulletWorldPtr world,
-                                                         const irr::core::line3df &ray );
+    struct RayData
+    {
+        RayData();
+        irr::core::line3df ray;
+        irr::core::vector3df outPoint, outNormal;
+        unsigned short collisionFilterGroup, collisionFilterMask;
+    };
 
     static boost::optional<Entity*> getFirstEntityInRay( IrrlichtDevicePtr device,
-                                                         const irr::core::line3df &ray,
-                                                         irr::core::vector3df &outPoint );
+                                                         RayData &data );
     static boost::optional<Entity*> getFirstEntityInRay( BulletWorldPtr world,
-                                                         const irr::core::line3df &ray,
-                                                         irr::core::vector3df &outPoint );
-
-    static boost::optional<Entity*> getFirstEntityInRay( IrrlichtDevicePtr device,
-                                                         const irr::core::line3df &ray,
-                                                         irr::core::vector3df &outPoint,
-                                                         irr::core::vector3df &outNormal );
-    static boost::optional<Entity*> getFirstEntityInRay( BulletWorldPtr world,
-                                                         const irr::core::line3df &ray,
-                                                         irr::core::vector3df &outPoint,
-                                                         irr::core::vector3df &outNormal );
+                                                         RayData &data );
 };
 
 #endif // ENTITYTOOLS_H

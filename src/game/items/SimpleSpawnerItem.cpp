@@ -81,27 +81,29 @@ void SimpleSpawnerItem::update()
 
     IVideoDriverPtr driver = mDevice->getVideoDriver();
 
-    vector3df hitPoint, normal, start, end;
     //FIXME:search better way
     LocalPlayer* owner = static_cast<LocalPlayer*>( getOwner().get() );
-    start = owner->getEntity()->getSceneNode()->getAbsolutePosition();
-    end = owner->rotateToDirection( vector3df( 0.f, 0.f, 5.f ) ) + start;
+
+    EntityTools::RayData rayData;
+
+    rayData.ray.start = owner->getEntity()->getSceneNode()->getAbsolutePosition();
+    rayData.ray.end = owner->rotateToDirection( vector3df( 0.f, 0.f, 5.f ) )
+            + rayData.ray.start;
 
     boost::optional<Entity*> e =
             EntityTools::getFirstEntityInRay( mExplore->getBulletWorld(),
-                                              line3df( start, end ),
-                                              hitPoint, normal );
+                                              rayData );
 
     if( e )
     {
         IMeshSceneNode *node = static_cast<IMeshSceneNode*>(
                     mPlacingMarkers.at( 0 )->getSceneNode() );
 
-        hitPoint += normal *
+        rayData.outPoint += rayData.outNormal *
                 ( node->getBoundingBox().getExtent() * node->getScale() ) / 2.f;
 
         matrix4 mat = IdentityMatrix;
-        mat.setTranslation( hitPoint );
+        mat.setTranslation( rayData.outPoint );
         mat.setScale( node->getScale() );
 
         driver->setTransform( ETS_WORLD, mat );
@@ -109,7 +111,7 @@ void SimpleSpawnerItem::update()
 
         driver->drawMeshBuffer( node->getMesh()->getMeshBuffer( 0 ) );
 
-        mSpawnPoint = hitPoint;
+        mSpawnPoint = rayData.outPoint;
 
         mValidSpawnPoint = true;
     }

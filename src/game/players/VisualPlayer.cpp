@@ -30,6 +30,8 @@ VisualPlayer::VisualPlayer( ExplorePtr explore, IPlayerPtr parent )
     mEntity.reset( new Entity( mExplore->getIrrlichtDevice(),
                                mExplore->getBulletWorld(),
                                "VisualPlayer", "VisualPlayer" ) );
+    mEntity->getRigidBody()->setAngularFactor( btVector3( 0.f, 0.f, 0.f ) );
+
     mActivationGhost.reset( new Entity( mExplore->getIrrlichtDevice(),
                                         mExplore->getBulletWorld(),
                                         "VisualPlayer", "ActivationGhost" ) );
