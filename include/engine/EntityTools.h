@@ -27,7 +27,7 @@
 class APIEXPORT EntityTools
 {
 public:
-    struct RayData
+    struct APIEXPORT RayData
     {
         RayData();
         irr::core::line3df ray;
