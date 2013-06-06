@@ -23,6 +23,7 @@
 #include <network/ExploreServer.h>
 #include <engine/LoggerSingleton.h>
 #include <engine/IrrlichtTools.h>
+#include <engine/NetworkTools.h>
 
 using namespace irr;
 using namespace core;
@@ -93,22 +94,18 @@ struct ConnectClickedCallback : public EventReceiver::GUICallback
         std::string ip = core::stringc( ipBox->getText() ).c_str();
         int port = boost::lexical_cast<int>( portBox->getText() );
 
-        //FIXME:name resolving should be done in a NetworkMessenger method,
-        //e.g. std::string resolveDomainToIP( std::string name )
-        boost::asio::ip::udp::resolver res( *mExplore->getIOService() );
-        boost::asio::ip::udp::resolver::iterator it =
-                res.resolve( boost::asio::ip::udp::resolver::query( ip, "" ) );
+        StringVector resolvedIPS = NetworkTools::resolveName(
+                    ip, mExplore->getIOService() );
 
-        if( it != boost::asio::ip::udp::resolver::iterator() )
+        if( !resolvedIPS.empty() )
         {
             //Write to config file to store last used server
             mExplore->writeConfigValue<std::string>( "Server.DefaultIP", ip );
             mExplore->writeConfigValue<int>( "Server.DefaultPort", port );
             mExplore->saveConfig();
 
-            ip = static_cast<boost::asio::ip::udp::endpoint>(
-                        *it ).address().to_string();
-            mExplore->getExploreServer()->requestConnection( ip, port );
+            mExplore->getExploreServer()->requestConnection(
+                        resolvedIPS.at( 0 ), port );
         }
         return true;
     }
