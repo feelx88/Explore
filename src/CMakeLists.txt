@@ -50,8 +50,11 @@ find_package( Bullet COMPONENTS LinearMath BulletDynamics REQUIRED )
 find_package( PythonLibs REQUIRED )
 set( BOOST_PYTHON_VERSION "python3" CACHE STRING "Library version for boost_python; eiter python or python3" )
 find_package( Boost COMPONENTS system filesystem ${BOOST_PYTHON_VERSION} REQUIRED )
+set( boost_libs ${boost_libs} ${Boost_LIBRARIES} )
 find_package( Boost COMPONENTS chrono )
+set( boost_libs ${boost_libs} ${Boost_LIBRARIES} )
 find_package( Boost COMPONENTS foreach )
+set( boost_libs ${boost_libs} ${Boost_LIBRARIES} )
 
 include_directories( ${BULLET_INCLUDE_DIR}
                        ${PYTHON_INCLUDE_DIR}
@@ -63,7 +66,8 @@ target_link_libraries( Engine
                         #${OPENAL_LIBRARIES}
                         ${BULLET_LIBRARIES}
                         ${PYTHON_LIBRARY}
-                        ${Boost_LIBRARIES} )
+                        ${boost_libs} )
+
 target_link_libraries( Explore Engine )
 target_link_libraries( ExploreBind Explore )
 target_link_libraries( Explore.bin ExploreBind )
