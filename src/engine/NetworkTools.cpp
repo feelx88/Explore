@@ -33,7 +33,7 @@ StringVector NetworkTools::resolveName( const std::string &name, IOServicePtr io
 
     StringVector ips;
 
-    for( ;it != boost::asio::ip::udp::resolver::iterator(); ++it )
+    for( ; it != boost::asio::ip::udp::resolver::iterator(); ++it )
     {
         ips.push_back( static_cast<boost::asio::ip::udp::endpoint>( *it )
                        .address().to_string() );

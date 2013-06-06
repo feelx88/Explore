@@ -291,7 +291,6 @@ void ExploreServer::checkedSend( const NetworkSyncablePacket &packet )
     send( copy );
 }
 
-//TODO:Tidy up a bit
 boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternal(
         NetworkSyncablePacket &packet )
 {
@@ -570,7 +569,6 @@ void ExploreServer::serializeInternalClient( NetworkSyncablePacket &packet,
 
 uint32_t ExploreServer::nextClientID()
 {
-    //TODO:maybe search another way to make it faster?
     if( mClientIDMap.empty() )
         return 1;
 
