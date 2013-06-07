@@ -538,7 +538,7 @@ boost::optional<vector3df> Entity::getRotation() const
         return boost::none;
 }
 
-boost::optional<Entity*> Entity::getEntity( btRigidBody *body )
+boost::optional<Entity*> Entity::getEntity( const btRigidBody *body )
 {
     BodyEntityMap::iterator it = sBodyEntityMap.find( body );
 
@@ -548,7 +548,7 @@ boost::optional<Entity*> Entity::getEntity( btRigidBody *body )
         return it->second;
 }
 
-boost::optional<Entity*> Entity::getEntity( ISceneNode *node )
+boost::optional<Entity*> Entity::getEntity( const ISceneNode *node )
 {
     NodeEntityMap::iterator it = sNodeEntityMap.find( node );
     if( it == sNodeEntityMap.end() )

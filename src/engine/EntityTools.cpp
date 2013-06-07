@@ -66,9 +66,8 @@ boost::optional<Entity*> EntityTools::getFirstEntityInRay( BulletWorldPtr world,
         float hitDistanceSQ = ( VectorConverter::irr( callback.m_hitPointWorld[x] )
                               - data.ray.start ).getLengthSQ();
 
-        //FIXME: do not cast const away
-        btRigidBody *body = static_cast<btRigidBody*>(
-                    const_cast<btCollisionObject*>( callback.m_collisionObjects[x] ) );
+        const btRigidBody *body = static_cast<const btRigidBody*>(
+                    callback.m_collisionObjects[x] );
 
         if( body )
         {

@@ -28,8 +28,8 @@
 class Entity;
 typedef boost::shared_ptr<Entity> EntityPtr;
 
-typedef boost::unordered::unordered_map<btRigidBody*, Entity*> BodyEntityMap;
-typedef boost::unordered::unordered_map<irr::scene::ISceneNode*, Entity*> NodeEntityMap;
+typedef boost::unordered::unordered_map<const btRigidBody*, Entity*> BodyEntityMap;
+typedef boost::unordered::unordered_map<const irr::scene::ISceneNode*, Entity*> NodeEntityMap;
 typedef boost::unordered::unordered_set<Entity*> EntitySet;
 
 class APIEXPORT Entity
@@ -55,8 +55,8 @@ public:
     void setRotation( const irr::core::vector3df &rot );
     boost::optional<irr::core::vector3df> getRotation() const;
 
-    static boost::optional<Entity*> getEntity( btRigidBody *body );
-    static boost::optional<Entity*> getEntity( irr::scene::ISceneNode *node );
+    static boost::optional<Entity*> getEntity( const btRigidBody *body );
+    static boost::optional<Entity*> getEntity( const irr::scene::ISceneNode *node );
 
 protected:
 
