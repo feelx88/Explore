@@ -15,11 +15,4 @@ if __name__ == "__main__":
     args.extend( sys.argv )
     Explore.Instance = Explore( args )
 
-    server = Explore.Instance.getExploreServer()
-    messenger = server.getNetworkMessenger()
-
-    ip = "127.0.0.1"
-    port = 6556
-    q = exit
-
     Explore.Instance.run()
