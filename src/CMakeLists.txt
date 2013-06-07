@@ -51,10 +51,13 @@ find_package( PythonLibs REQUIRED )
 set( BOOST_PYTHON_VERSION "python3" CACHE STRING "Library version for boost_python; eiter python or python3" )
 find_package( Boost COMPONENTS system filesystem ${BOOST_PYTHON_VERSION} REQUIRED )
 set( boost_libs ${boost_libs} ${Boost_LIBRARIES} )
+set( ${Boost_LIBRARIES} "" )
 find_package( Boost COMPONENTS chrono )
 set( boost_libs ${boost_libs} ${Boost_LIBRARIES} )
+set( ${Boost_LIBRARIES} "" )
 find_package( Boost COMPONENTS foreach )
 set( boost_libs ${boost_libs} ${Boost_LIBRARIES} )
+set( ${Boost_LIBRARIES} "" )
 
 include_directories( ${BULLET_INCLUDE_DIR}
                        ${PYTHON_INCLUDE_DIR}
