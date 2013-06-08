@@ -340,13 +340,6 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
             _LOG( "New client's ID", info.id );
             _LOG( "New client's name", info.host.hostName );
 
-            //FIXME:does this really belong here?
-            WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
-            VisualPlayerPtr p( new VisualPlayer( mExplore, world ),
-                               specialDeleters::NullDeleter() );
-            p->setClientID( info.id );
-            info.playerUID = p->getUID();
-
             mClientIDMap.insert( std::make_pair( info.id, info ) );
 
             NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND, true );
@@ -403,6 +396,14 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
         if( x != mClientIDMap.end() )
         {
             x->second.statusBits[ECSB_INITIALIZED] = true;
+
+            //Create player
+            WorldPlayerPtr world = mExplore->getExploreGame()->getWorldPlayer();
+            VisualPlayerPtr p( new VisualPlayer( mExplore, world ),
+                               specialDeleters::NullDeleter() );
+            p->setClientID( id );
+
+            x->second.playerUID = p->getUID();
         }
 
         break;
