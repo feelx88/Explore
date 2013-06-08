@@ -57,9 +57,14 @@ boost::optional<NetworkSyncablePacket> NetworkSyncable::deserialize( NetworkSync
     return deserializeInternal( packet );
 }
 
-NetworkSyncablePacket NetworkSyncable::serialize( uint8_t actionID )
+NetworkSyncablePacket NetworkSyncable::serialize( uint8_t actionID, bool checkedSendFlag )
 {
     NetworkSyncablePacket packet( mUID, mTypeID, actionID, "" );
+    if( checkedSendFlag )
+    {
+        packet.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
+    }
+
     serializeInternal( packet, actionID );
     return packet;
 }

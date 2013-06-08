@@ -45,7 +45,7 @@ public:
 
     boost::optional<NetworkSyncablePacket> deserialize(
             NetworkSyncablePacket &packet );
-    NetworkSyncablePacket serialize( uint8_t actionID );
+    NetworkSyncablePacket serialize( uint8_t actionID, bool checkedSendFlag = false );
 
     static NetworkSyncable *getObject( uint32_t uid );
 

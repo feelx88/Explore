@@ -349,20 +349,16 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
 
             mClientIDMap.insert( std::make_pair( info.id, info ) );
 
-            //FIXME:add possibility to serialize with argument for checkedSend
-            //Reply has to be check sended
-            NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND );
+            NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND, true );
             reply.writeBool( true );
-            reply.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
 
             return reply;
         }
         else
         {
             _LOG( "Connection not accepted" );
-            NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND );
+            NetworkSyncablePacket reply = serialize( EEAID_CONNECTION_RESPOND, true );
             reply.writeBool( false );
-            reply.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
 
             return reply;
         }
@@ -555,8 +551,6 @@ void ExploreServer::serializeInternalClient( NetworkSyncablePacket &packet,
     }
     case EEAID_INITIALIZATION_FINISH:
     {
-        //Has to be check-sended
-        packet.setPacketType( NetworkSyncablePacket::EPT_CHECKED );
         packet.writeUInt32( mSelfInfo.id );
         break;
     }
@@ -635,7 +629,7 @@ void ExploreServer::handleInitPackets()
                 mSelfInfo.statusBits[ECSB_INITIALIZED] = true;
 
                 //Announce that we are ready
-                send( serialize( EEAID_INITIALIZATION_FINISH ) );
+                send( serialize( EEAID_INITIALIZATION_FINISH, true ) );
             }
         }
         else if( packet.getTypeID() == ENTI_PLAYER )
