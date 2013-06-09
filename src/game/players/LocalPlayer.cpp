@@ -130,6 +130,11 @@ bool LocalPlayer::getMouseLock() const
     return mMouseLock;
 }
 
+IPlayer::E_PLAYER_TYPE LocalPlayer::getType() const
+{
+    return EPT_LOCAL;
+}
+
 void LocalPlayer::switchItem( int index )
 {
     mInventory.at( mActiveItem )->setGUIVisible( false );

@@ -43,6 +43,11 @@ public:
     {
         return this->get_override( "getRotation" )();
     }
+
+    virtual E_PLAYER_TYPE getType() const
+    {
+        return this->get_override( "getType" )();
+    }
 };
 
 PYTHONBINDER_REGISTER_MODULE( IPlayer )

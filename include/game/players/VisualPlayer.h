@@ -45,6 +45,8 @@ public:
 
     void update();
 
+    virtual E_PLAYER_TYPE getType() const;
+
 protected:
 
     void serializeInternal( NetworkSyncablePacket &packet, uint8_t actionID );

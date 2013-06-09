@@ -95,6 +95,11 @@ void VisualPlayer::update()
     }
 }
 
+IPlayer::E_PLAYER_TYPE VisualPlayer::getType() const
+{
+    return EPT_VISUAL;
+}
+
 void VisualPlayer::serializeInternal( NetworkSyncablePacket &packet,
                                       uint8_t actionID )
 {

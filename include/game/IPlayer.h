@@ -34,6 +34,14 @@ typedef std::vector<IPlayerPtr> IPlayerVector;
 class APIEXPORT IPlayer : public NetworkSyncable
 {
 public:
+
+    enum E_PLAYER_TYPE
+    {
+        EPT_WORLD = 1,
+        EPT_VISUAL,
+        EPT_LOCAL
+    };
+
     IPlayer( ExplorePtr explore, IPlayerPtr parent );
     virtual ~IPlayer();
 
@@ -56,6 +64,8 @@ public:
     virtual void serializeAll( const uint8_t actionID,
                                std::list<NetworkSyncablePacket> &playerList,
                                std::list<NetworkSyncablePacket> &itemList );
+
+    virtual E_PLAYER_TYPE getType() const;
 
 protected:
 

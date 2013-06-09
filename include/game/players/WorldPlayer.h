@@ -39,6 +39,8 @@ public:
     irr::core::vector3df getPosition() const;
     irr::core::quaternion getRotation() const;
 
+    virtual E_PLAYER_TYPE getType() const;
+
 private:
     IPlayerWeakPtr mLocalPlayer;
 };

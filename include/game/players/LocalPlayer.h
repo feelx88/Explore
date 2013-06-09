@@ -49,6 +49,8 @@ public:
     void setMouseLock( bool value );
     bool getMouseLock() const;
 
+    virtual E_PLAYER_TYPE getType() const;
+
 private:
     void switchItem( int index );
 

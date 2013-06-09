@@ -119,6 +119,11 @@ void IPlayer::serializeAll( const uint8_t actionID,
     }
 }
 
+IPlayer::E_PLAYER_TYPE IPlayer::getType() const
+{
+    return static_cast<E_PLAYER_TYPE>( 0 );
+}
+
 void IPlayer::serializeInternal( NetworkSyncablePacket &/*packet*/, uint8_t /*actionID*/ )
 {
 }

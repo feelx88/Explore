@@ -63,3 +63,8 @@ irr::core::quaternion WorldPlayer::getRotation() const
 {
     return irr::core::quaternion();
 }
+
+IPlayer::E_PLAYER_TYPE WorldPlayer::getType() const
+{
+    return EPT_WORLD;
+}
