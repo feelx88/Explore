@@ -51,8 +51,18 @@ void SimpleForceGunItem::startActionInternal( uint8_t actionID )
 
 void SimpleForceGunItem::shoot( bool forward )
 {
-    //FIXME:search better way
-    LocalPlayer* owner = static_cast<LocalPlayer*>( getOwner().get() );
+    VisualPlayerPtr owner;
+
+    {
+        IPlayerPtr o = getOwner();
+        if( o->getType() != IPlayer::EPT_VISUAL
+                && o->getType() != IPlayer::EPT_LOCAL )
+        {
+            return;
+        }
+        owner = boost::static_pointer_cast<VisualPlayer>( o );
+    }
+
     EntityTools::RayData rayData;
 
     rayData.ray.start = *( owner->getEntity()->getPosition() )

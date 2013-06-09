@@ -79,10 +79,19 @@ void SimpleSpawnerItem::update()
     if( !mActivated )
         return;
 
-    IVideoDriverPtr driver = mDevice->getVideoDriver();
+    VisualPlayerPtr owner;
 
-    //FIXME:search better way
-    LocalPlayer* owner = static_cast<LocalPlayer*>( getOwner().get() );
+    {
+        IPlayerPtr o = getOwner();
+        if( o->getType() != IPlayer::EPT_VISUAL
+                && o->getType() != IPlayer::EPT_LOCAL )
+        {
+            return;
+        }
+        owner = boost::static_pointer_cast<VisualPlayer>( o );
+    }
+
+    IVideoDriverPtr driver = mDevice->getVideoDriver();
 
     EntityTools::RayData rayData;
 

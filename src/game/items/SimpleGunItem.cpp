@@ -77,11 +77,22 @@ void SimpleGunItem::startActionInternal( uint8_t actionID )
 
 void SimpleGunItem::shoot()
 {
+    VisualPlayerPtr owner;
+
+    {
+        IPlayerPtr o = getOwner();
+        if( o->getType() != IPlayer::EPT_VISUAL
+                && o->getType() != IPlayer::EPT_LOCAL )
+        {
+            return;
+        }
+        owner = boost::static_pointer_cast<VisualPlayer>( o );
+    }
+
     if( mCurBullet >= mBulletCount )
         return;
 
-    //FIXME:search better way
-    EntityPtr e = static_cast<LocalPlayer*>( getOwner().get() )->getEntity();
+    EntityPtr e = owner->getEntity();
 
     vector3df target = static_cast<LocalPlayer*>( getOwner().get() )->rotateToDirection();
 
