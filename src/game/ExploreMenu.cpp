@@ -41,7 +41,10 @@ enum E_GUI_ID
     EGID_CONNECT_WINDOW = 30,
     EGID_CONNECT_IP,
     EGID_CONNECT_PORT,
-    EGID_CONNECT_BUTTON
+    EGID_CONNECT_BUTTON,
+    EGID_CONNECTIONSTATUS_WINDOW = 100,
+    EGID_CONNECTIONSTATUS_FRAME,
+    EGID_CONNECTIONSTATUS_BUTTON
 };
 
 namespace menuCallbacks
@@ -148,10 +151,13 @@ E_GAME_STATE ExploreMenu::run()
                                      windowWidth / 2, windowHeight / 2 );
     IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_CONNECT_WINDOW ),
                                      windowWidth / 2, windowHeight / 2 );
+    IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_CONNECTIONSTATUS_WINDOW ),
+                                     windowWidth / 2, windowHeight / 2 );
 
     //Hide windows
     main->getElementFromId( EGID_OPTIONS_WINDOW )->setVisible( false );
     main->getElementFromId( EGID_CONNECT_WINDOW )->setVisible( false );
+    main->getElementFromId( EGID_CONNECTIONSTATUS_WINDOW )->setVisible( false );
 
     //Set ip/port from config file
     {
@@ -218,8 +224,8 @@ E_GAME_STATE ExploreMenu::run()
 
     //Callbacks used to prevent closing of windows
     menuCallbacks::WindowCloseCallback optionsWindowClose;
-
     menuCallbacks::WindowCloseCallback connectWindowClose;
+    menuCallbacks::WindowCloseCallback connectionstatusWindowClose;
 
     mExplore->getEventReceiver()->registerGUICallback( &connectWindowClose,
                                                        EGID_CONNECT_WINDOW,
@@ -229,11 +235,23 @@ E_GAME_STATE ExploreMenu::run()
                                                        EGID_OPTIONS_WINDOW,
                                                        EGET_ELEMENT_CLOSED );
 
+    mExplore->getEventReceiver()->registerGUICallback( &connectionstatusWindowClose,
+                                                       EGID_CONNECTIONSTATUS_WINDOW,
+                                                       EGET_ELEMENT_CLOSED );
+
     menuCallbacks::ConnectClickedCallback connectButtonClicked;
     connectButtonClicked.mExplore = mExplore;
     mExplore->getEventReceiver()->registerGUICallback( &connectButtonClicked,
                                                        EGID_CONNECT_BUTTON,
                                                        EGET_BUTTON_CLICKED );
+
+    bool connected = false;
+    int connectionstatusFrameLength;
+    {
+        core::recti rect =
+                main->getElementFromId( EGID_CONNECTIONSTATUS_FRAME, true )->getAbsoluteClippingRect();
+        connectionstatusFrameLength = rect.LowerRightCorner.X- rect.UpperLeftCorner.X;
+    }
 
     //Main loop
     while( mExplore->getGameState() == EGS_MAIN_MENU && mDevice->run() )
@@ -242,8 +260,27 @@ E_GAME_STATE ExploreMenu::run()
                                   irr::video::SColor( 255, 100, 100, 100 ) );
         mGUI->drawAll();
 
-        if( mExplore->getExploreServer()->hasConnection() )
-            mExplore->setGameState( EGS_GAME );
+        if( mExplore->getExploreServer()->hasConnection() && !connected )
+        {
+            connected = true;
+            main->getElementFromId( EGID_MAIN_WINDOW )->setVisible( false );
+            main->getElementFromId( EGID_CONNECT_WINDOW )->setVisible( false );
+            main->getElementFromId( EGID_CONNECTIONSTATUS_WINDOW )->setVisible( true );
+        }
+
+        if( connected )
+        {
+            int length = (float)connectionstatusFrameLength
+                    * mExplore->getExploreServer()->getConnectionProgress();
+            IGUIButtonPtr button = static_cast<IGUIButtonPtr>(
+                        main->getElementFromId( EGID_CONNECTIONSTATUS_BUTTON, true ) );
+            button->setMinSize( core::dimension2du( length, 10 ) );
+
+            if( mExplore->getExploreServer()->isInitialized() )
+            {
+                mExplore->setGameState( EGS_GAME );
+            }
+        }
 
         mVideoDriver->endScene();
         mExplore->getIOService()->poll();

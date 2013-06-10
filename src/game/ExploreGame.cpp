@@ -51,23 +51,6 @@ ExploreGame::ExploreGame( ExplorePtr explore )
 
 E_GAME_STATE ExploreGame::run()
 {
-    //FIXME: Change to a better bahviour.
-    if( !mExplore->getExploreServer()->serverMode() )
-    {
-        while( !mExplore->getExploreServer()->isInitialized() && mDevice->run() )
-        {
-            mVideoDriver->beginScene( true, true, SColor( 255, 255, 0, 255 ) );
-            mSceneManager->drawAll();
-            mGUI->drawAll();
-
-            mVideoDriver->endScene();
-            mExplore->getIOService()->poll();
-        }
-
-        if( !mExplore->getExploreServer()->isInitialized() )
-            return EGS_QUIT;
-    }
-
     bool running = true;
 
     mSceneManager->addLightSceneNode( 0, vector3df( 0.f, 50.f, 0.f ),
@@ -88,20 +71,14 @@ E_GAME_STATE ExploreGame::run()
 
     VisualPlayerPtr p;
 
-    if( mExplore->getExploreServer()->serverMode() )
-    {
-        p.reset( new LocalPlayer( mExplore, mWorldPlayer ),
-                 specialDeleters::NullDeleter() );
-        mWorldPlayer->setLocalPlayer( p );
+    p.reset( new LocalPlayer( mExplore, mWorldPlayer ),
+             specialDeleters::NullDeleter() );
+    mWorldPlayer->setLocalPlayer( p );
 
-        ItemFactory::create( mExplore, p, "de.feelx88.SimpleForceGun" );
-        ItemFactory::create( mExplore, p, "de.feelx88.SimpleBlockSpawner" );
-        ItemFactory::create( mExplore, p, "de.feelx88.SimpleGun" );
-        ItemFactory::create( mExplore, p, "de.feelx88.SuzanneSpawner" );
-    }
-
-    p = boost::static_pointer_cast<VisualPlayer>(
-                mWorldPlayer->getLocalPlayer() );
+    ItemFactory::create( mExplore, p, "de.feelx88.SimpleForceGun" );
+    ItemFactory::create( mExplore, p, "de.feelx88.SimpleBlockSpawner" );
+    ItemFactory::create( mExplore, p, "de.feelx88.SimpleGun" );
+    ItemFactory::create( mExplore, p, "de.feelx88.SuzanneSpawner" );
 
     p->getEntity()->setPosition( spawnPos );
 

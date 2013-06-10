@@ -600,8 +600,11 @@ void ExploreServer::handleInitPackets()
     if( mSelfInfo.statusBits[ECSB_WAIT_FOR_INITIAL_INFO_PACKET] )
         return;
 
+    bool readyToReceive = mExplore->getGameState() == EGS_GAME
+            || mStatusBits[ESB_CONNECTED];
+
     //Create new items and distribute them if this is a server
-    if( mMessenger->hasPacketsInQueue() && mExplore->getGameState() == EGS_GAME )
+    if( mMessenger->hasPacketsInQueue() && readyToReceive )
     {
         NetworkSyncablePacket packet = mMessenger->nextPacket( false );
 
