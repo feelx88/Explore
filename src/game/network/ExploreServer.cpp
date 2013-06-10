@@ -612,7 +612,7 @@ void ExploreServer::handleInitPackets()
         //be done by NetworkMessenger
         if( NetworkSyncable::getObject( packet.getUID() ) )
         {
-            _LOG( "INFO: Oversupplied packet qith UID", packet.getUID() );
+            _LOG( "INFO: Oversupplied packet with UID", packet.getUID() );
             mMessenger->popPacket();
             return;
         }
