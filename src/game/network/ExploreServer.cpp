@@ -161,6 +161,21 @@ bool ExploreServer::isInitialized() const
     return mSelfInfo.statusBits[ECSB_INITIALIZED];
 }
 
+float ExploreServer::getConnectionProgress() const
+{
+    if( !mStatusBits[ESB_CONNECTED] )
+    {
+        return 0.f;
+    }
+
+    int total = mSelfInfo.initializationInfo.totalItems
+            + mSelfInfo.initializationInfo.totalPlayers;
+    int current = mSelfInfo.initializationInfo.curItems
+            +mSelfInfo.initializationInfo.curPlayers;
+
+    return (float)current / (float)total;
+}
+
 void ExploreServer::setClientTimeout(int timeout)
 {
     mClientTimeout = timeout;
@@ -594,6 +609,7 @@ void ExploreServer::handleInitPackets()
         //be done by NetworkMessenger
         if( NetworkSyncable::getObject( packet.getUID() ) )
         {
+            _LOG( "INFO: Oversupplied packet qith UID", packet.getUID() );
             mMessenger->popPacket();
             return;
         }

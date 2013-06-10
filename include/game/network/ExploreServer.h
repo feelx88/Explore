@@ -89,6 +89,7 @@ public:
     bool isConnecting() const;
     bool hasConnection() const;
     bool isInitialized() const;
+    float getConnectionProgress() const;
 
     void setClientTimeout( int timeout );
     int clientTimeout() const;
