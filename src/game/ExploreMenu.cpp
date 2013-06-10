@@ -31,12 +31,12 @@ using namespace gui;
 
 enum E_GUI_ID
 {
-    EGID_MAINMENU = 10,
-    EGID_NEW_GAME,
-    EGID_LOAD_GAME,
-    EGID_CONNECT,
-    EGID_OPTIONS,
-    EGID_QUIT,
+    EGID_MAIN_WINDOW = 10,
+    EGID_MAIN_NEW_GAME,
+    EGID_MAIN_LOAD_GAME,
+    EGID_MAIN_CONNECT,
+    EGID_MAIN_OPTIONS,
+    EGID_MAIN_QUIT,
     EGID_OPTIONS_WINDOW = 20,
     EGID_CONNECT_WINDOW = 30,
     EGID_CONNECT_IP,
@@ -142,7 +142,7 @@ E_GAME_STATE ExploreMenu::run()
     mGUI->getSkin()->setColor( EGDC_3D_FACE, newBGColor );
 
     //Center menu and windows
-    IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_MAINMENU ),
+    IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_MAIN_WINDOW ),
                                      windowWidth / 2, windowHeight / 2 );
     IrrlichtTools::guiCenterElement( main->getElementFromId( EGID_OPTIONS_WINDOW ),
                                      windowWidth / 2, windowHeight / 2 );
@@ -201,19 +201,19 @@ E_GAME_STATE ExploreMenu::run()
     quitClicked.explore = mExplore;
 
     mExplore->getEventReceiver()->registerGUICallback( &newGameClicked,
-                                                       EGID_NEW_GAME,
+                                                       EGID_MAIN_NEW_GAME,
                                                        EGET_BUTTON_CLICKED );
     mExplore->getEventReceiver()->registerGUICallback( &loadGameClicked,
-                                                       EGID_LOAD_GAME,
+                                                       EGID_MAIN_LOAD_GAME,
                                                        EGET_BUTTON_CLICKED );
     mExplore->getEventReceiver()->registerGUICallback( &connectClicked,
-                                                       EGID_CONNECT,
+                                                       EGID_MAIN_CONNECT,
                                                        EGET_BUTTON_CLICKED );
     mExplore->getEventReceiver()->registerGUICallback( &optionsClicked,
-                                                       EGID_OPTIONS,
+                                                       EGID_MAIN_OPTIONS,
                                                        EGET_BUTTON_CLICKED );
     mExplore->getEventReceiver()->registerGUICallback( &quitClicked,
-                                                       EGID_QUIT,
+                                                       EGID_MAIN_QUIT,
                                                        EGET_BUTTON_CLICKED );
 
     //Callbacks used to prevent closing of windows
