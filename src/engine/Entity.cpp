@@ -220,8 +220,7 @@ void Entity::internalCreateCollisionObject()
                         btCollisionObject::CF_NO_CONTACT_RESPONSE );
         }
 
-        short group, mask;
-        mask = -1;
+        short group = 1, mask = -1;
         internalCreateCollisionFilter(
                     mProperties->get_child( "Entity.CollisionObject.CollisionFilter", PropTree() ),
                     group, mask );
@@ -276,8 +275,7 @@ void Entity::internalCreateRigidBody()
 
     mRigidBody->setFriction( mProperties->get( "Entity.Body.Friction", 0.5f ) );
 
-    short group, mask;
-    mask = -1;
+    short group = 1, mask = -1;
     internalCreateCollisionFilter(
                 mProperties->get_child( "Entity.Body.CollisionFilter", PropTree() ),
                 group, mask );
