@@ -589,6 +589,10 @@ uint32_t ExploreServer::nextClientID()
 
 void ExploreServer::removeClient( const ClientInfo &client )
 {
+    //Check if client exists
+    if( mClientIDMap.find( client.id ) == mClientIDMap.end() )
+        return;
+
     mExplore->getExploreGame()->getWorldPlayer()->destroyChild(
                 client.playerUID );
 
@@ -636,12 +640,6 @@ void ExploreServer::handleInitPackets()
 
             mSelfInfo.initializationInfo.curItems++;
 
-            //TODO: Only for debugging
-            std::stringstream info;
-            info << "Item " << mSelfInfo.initializationInfo.curItems << "/"
-                 << mSelfInfo.initializationInfo.totalItems << " received.";
-            _LOG( info.str() );
-
             if( mSelfInfo.initializationInfo.curItems >=
                     mSelfInfo.initializationInfo.totalItems )
             {
@@ -688,15 +686,11 @@ void ExploreServer::handleInitPackets()
 
                 mSelfInfo.initializationInfo.curPlayers++;
 
-                //TODO: Only for debugging
-                std::stringstream info;
-                info << "Player " << mSelfInfo.initializationInfo.curPlayers << "/"
-                     << mSelfInfo.initializationInfo.totalPlayers << " received.";
-                _LOG( info.str() );
-
                 if( mSelfInfo.initializationInfo.curPlayers >=
                         mSelfInfo.initializationInfo.totalPlayers )
+                {
                     mSelfInfo.statusBits[ECSB_PLAYERS_CREATED] = true;
+                }
             }
         }
         else if( packet.getTypeID() == ENTI_WORLD )
@@ -706,20 +700,18 @@ void ExploreServer::handleInitPackets()
             mExplore->getExploreGame()->setWorldPlyer( world );
             mSelfInfo.initializationInfo.curPlayers++;
 
-            //TODO: Only for debugging
-            std::stringstream info;
-            info << "Player (World) " << mSelfInfo.initializationInfo.curPlayers << "/"
-                 << mSelfInfo.initializationInfo.totalPlayers << " received.";
-            _LOG( info.str() );
-
             if( mSelfInfo.initializationInfo.curPlayers >=
                     mSelfInfo.initializationInfo.totalPlayers )
+            {
                 mSelfInfo.statusBits[ECSB_PLAYERS_CREATED] = true;
+            }
         }
 
         //If we are a server, distribute the new whatever to all clients
         if( mStatusBits[ESB_SERVER] )
+        {
             send( packet );
+        }
     }
 }
 
