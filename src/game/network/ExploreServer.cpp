@@ -193,7 +193,7 @@ uint32_t ExploreServer::clientID() const
 
 void ExploreServer::disconnect()
 {
-    send( serialize( EEAID_CONNECTION_QUIT ) );
+    checkedSend( serialize( EEAID_CONNECTION_QUIT ) );
     mStatusBits.reset();
     mSelfInfo.statusBits.reset();
 }
@@ -408,7 +408,8 @@ boost::optional<NetworkSyncablePacket> ExploreServer::deserializeInternalServer(
     {
         uint32_t id = packet.readUInt32();
         std::map<uint32_t,ClientInfo>::iterator x = mClientIDMap.find( id );
-        if( x != mClientIDMap.end() )
+        if( x != mClientIDMap.end()
+                && !x->second.statusBits[ECSB_INITIALIZED] )
         {
             x->second.statusBits[ECSB_INITIALIZED] = true;
 
