@@ -29,6 +29,7 @@
 #include <engine/Entity.h>
 #include <engine/EntityContainer.h>
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/random.hpp>
 #include <ItemFactory.h>
 #include <cmath>
 
@@ -61,12 +62,17 @@ public:
 
         mMeshBuffer = new SMeshBuffer();
 
-        std::vector<triangle3df> tris = calculateSubdividedTriangles(
+        std::vector<vector3df> verts = calculateSubdividedTriangles(
                     triangle3df(a, b, c), subdiv);
 
-        for(unsigned int x = 0; x < tris.size(); ++x)
+        mSceneNode = mgr->addEmptySceneNode();
+
+        boost::random::mt19937 rand;
+        boost::random::uniform_real_distribution<float> dist(0.f, 0.2f);
+
+        for(unsigned int x = 0; x < verts.size(); ++x)
         {
-            S3DVertex v1, v2, v3;
+            /*S3DVertex v1, v2, v3;
             v1.Pos = tris.at(x).pointA;
             v1.Normal = vector3df(0,0,1);
             v1.Color = SColor(255,255,0,0);
@@ -83,17 +89,18 @@ public:
 
             mMeshBuffer->Indices.push_back(mMeshBuffer->Indices.size());
             mMeshBuffer->Indices.push_back(mMeshBuffer->Indices.size());
-            mMeshBuffer->Indices.push_back(mMeshBuffer->Indices.size());
+            mMeshBuffer->Indices.push_back(mMeshBuffer->Indices.size());*/
+            ISceneNodePtr node = mgr->addSphereSceneNode(0.1, 3, mSceneNode, -1, verts.at(x));
         }
 
-        mMeshBuffer->recalculateBoundingBox();
+        /*mMeshBuffer->recalculateBoundingBox();
 
         mMesh = new SMesh();
         mMesh->addMeshBuffer(mMeshBuffer);
         mMesh->setDirty();
         mMesh->recalculateBoundingBox();
 
-        mSceneNode = mgr->addMeshSceneNode(mMesh, 0, -1, vector3df(0, 0, 0));
+        mSceneNode = mgr->addMeshSceneNode(mMesh, 0, -1, vector3df(0, 0, 0));*/
         mSceneNode->setMaterialFlag(EMF_LIGHTING, false);
     }
 
@@ -102,56 +109,42 @@ public:
         //delete[] mVoxels;
     }
 
-    std::vector<triangle3df> calculateSubdividedTriangles(
+    std::vector<vector3df> calculateSubdividedTriangles(
             triangle3df tri,
             int subdivisions)
     {
-        std::vector<triangle3df> triList;
-        calculateSubdividedTrianglesHelper(tri, subdivisions, triList);
-        return triList;
-    }
+        std::vector<vector3df> vertexList;
 
-    void calculateSubdividedTrianglesHelper(
-            triangle3df tri,
-            int subdivisions,
-            std::vector<triangle3df> &tris)
-    {
-        if(subdivisions > 0)
+        if(subdivisions == 0)
         {
-            triangle3df centerTri;
+            vertexList.push_back(tri.pointA);
+            vertexList.push_back(tri.pointB);
+            vertexList.push_back(tri.pointC);
 
-            centerTri.pointA = ( tri.pointC - tri.pointA ) / 2.f + tri.pointA;
-            centerTri.pointB = ( tri.pointB - tri.pointA ) / 2.f + tri.pointA;
-            centerTri.pointC = ( tri.pointC - tri.pointB ) / 2.f + tri.pointB;
-
-            triangle3df calcTri;
-
-            //top
-            calcTri.pointA = tri.pointA;
-            calcTri.pointB = centerTri.pointB;
-            calcTri.pointC = centerTri.pointA;
-            calculateSubdividedTrianglesHelper(calcTri, subdivisions - 1, tris);
-
-            //left
-            calcTri.pointA = centerTri.pointA;
-            calcTri.pointB = centerTri.pointC;
-            calcTri.pointC = tri.pointC;
-            calculateSubdividedTrianglesHelper(calcTri, subdivisions - 1, tris);
-
-            //right
-            calcTri.pointA = centerTri.pointB;
-            calcTri.pointB = tri.pointB;
-            calcTri.pointC = centerTri.pointC;
-            calculateSubdividedTrianglesHelper(calcTri, subdivisions - 1, tris);
-
-            //center
-            calcTri = triangle3df(centerTri);
-            calculateSubdividedTrianglesHelper(calcTri, subdivisions - 1, tris);
+            return vertexList;
         }
-        else
+
+        float maxVerts = pow(2.f, subdivisions) + 1;
+        float maxSize = (tri.pointB - tri.pointC).getLength();
+
+        vector3df startPoint = tri.pointC;
+
+        float div = maxSize / (float)maxVerts;
+        startPoint.X -= div / 2.f;
+
+        for(int x = maxVerts; x > 0; --x)
         {
-            tris.push_back(tri);
+            startPoint.X += div / 2.f;
+            for(int y = maxVerts; y > x; --y)
+            {
+                vertexList.push_back(vector3df(
+                                         startPoint.X + (float)y * div,
+                                         0.f,
+                                         startPoint.Z + (float)x * div));
+            }
         }
+
+        return vertexList;
     }
 
     void update()
@@ -214,13 +207,13 @@ E_GAME_STATE ExploreGame::run()
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
-    VoxelGrid grid1(mSceneManager, 100.f, 7, 0);
-    VoxelGrid grid2(mSceneManager, 100.f, 7, 0);
-    VoxelGrid grid3(mSceneManager, 100.f, 7, 0);
-    grid1.mSceneNode->setPosition(vector3df(0,-50,0));
-    grid2.mSceneNode->setPosition(vector3df(2*75,-50,0));
-    grid3.mSceneNode->setPosition(vector3df(75,-50,75));
-    grid3.mSceneNode->setRotation(vector3df(0,180,0));
+    VoxelGrid grid1(mSceneManager, 50.f, 7, 0);
+    //VoxelGrid grid2(mSceneManager, 100.f, 7, 0);
+    //VoxelGrid grid3(mSceneManager, 100.f, 7, 0);
+    grid1.mSceneNode->setPosition(vector3df(0,0,1));
+    //grid2.mSceneNode->setPosition(vector3df(2*75,-50,0));
+    //grid3.mSceneNode->setPosition(vector3df(75,-50,75));
+    //grid3.mSceneNode->setRotation(vector3df(0,180,0));
     btClock clock;
 
     while( running && mDevice->run() )
