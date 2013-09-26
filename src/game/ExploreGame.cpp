@@ -62,45 +62,39 @@ public:
 
         mMeshBuffer = new SMeshBuffer();
 
-        std::vector<vector3df> verts = calculateSubdividedTriangles(
-                    triangle3df(a, b, c), subdiv);
+        std::vector<vector3df> verts;
+        std::vector<int> indices;
 
-        mSceneNode = mgr->addEmptySceneNode();
+        calculateSubdividedTriangles(
+                    triangle3df(a, b, c), subdiv, verts, indices);
+
+        //mSceneNode = mgr->addEmptySceneNode();
 
         boost::random::mt19937 rand;
-        boost::random::uniform_real_distribution<float> dist(0.f, 0.2f);
+        //boost::random::uniform_real_distribution<float> dist(0.f, 0.2f);
+        boost::random::uniform_int_distribution<> dist(0, 255);
 
-        for(unsigned int x = 0; x < verts.size(); ++x)
+        for(unsigned int x = 0; x < indices.size(); ++x)
         {
-            /*S3DVertex v1, v2, v3;
-            v1.Pos = tris.at(x).pointA;
-            v1.Normal = vector3df(0,0,1);
-            v1.Color = SColor(255,255,0,0);
-            v2.Pos = tris.at(x).pointB;
-            v2.Normal = vector3df(0,0,1);
-            v2.Color = SColor(255,0,255,0);
-            v3.Pos = tris.at(x).pointC;
-            v3.Normal = vector3df(0,0,1);
-            v3.Color = SColor(255,0,0,255);
+            S3DVertex v;
+            v.Pos = verts.at(indices.at(x));
+            v.Normal = vector3df(0,0,1);
+            v.Color = SColor(255, 0, dist(rand), 0);
 
-            mMeshBuffer->Vertices.push_back(v1);
-            mMeshBuffer->Vertices.push_back(v2);
-            mMeshBuffer->Vertices.push_back(v3);
+            mMeshBuffer->Vertices.push_back(v);
 
-            mMeshBuffer->Indices.push_back(mMeshBuffer->Indices.size());
-            mMeshBuffer->Indices.push_back(mMeshBuffer->Indices.size());
-            mMeshBuffer->Indices.push_back(mMeshBuffer->Indices.size());*/
-            ISceneNodePtr node = mgr->addSphereSceneNode(0.1, 3, mSceneNode, -1, verts.at(x));
+            mMeshBuffer->Indices.push_back(indices.at(x));
+            //ISceneNodePtr node = mgr->addSphereSceneNode(0.1, 3, mSceneNode, -1, verts.at(x));
         }
 
-        /*mMeshBuffer->recalculateBoundingBox();
+        mMeshBuffer->recalculateBoundingBox();
 
         mMesh = new SMesh();
         mMesh->addMeshBuffer(mMeshBuffer);
         mMesh->setDirty();
         mMesh->recalculateBoundingBox();
 
-        mSceneNode = mgr->addMeshSceneNode(mMesh, 0, -1, vector3df(0, 0, 0));*/
+        mSceneNode = mgr->addMeshSceneNode(mMesh, 0, -1, vector3df(0, 0, 0));
         mSceneNode->setMaterialFlag(EMF_LIGHTING, false);
     }
 
@@ -109,19 +103,17 @@ public:
         //delete[] mVoxels;
     }
 
-    std::vector<vector3df> calculateSubdividedTriangles(
+    void calculateSubdividedTriangles(
             triangle3df tri,
-            int subdivisions)
+            int subdivisions,
+            std::vector<vector3df> &vertexList,
+            std::vector<int> &indexList)
     {
-        std::vector<vector3df> vertexList;
-
         if(subdivisions == 0)
         {
             vertexList.push_back(tri.pointA);
             vertexList.push_back(tri.pointB);
             vertexList.push_back(tri.pointC);
-
-            return vertexList;
         }
 
         float maxVerts = pow(2.f, subdivisions) + 1;
@@ -132,6 +124,9 @@ public:
         float div = maxSize / (float)maxVerts;
         startPoint.X -= div / 2.f;
 
+        int vertCount = (maxVerts * maxVerts + maxVerts) / 2; //gauss
+        int num = 0;
+
         for(int x = maxVerts; x > 0; --x)
         {
             startPoint.X += div / 2.f;
@@ -141,10 +136,15 @@ public:
                                          startPoint.X + (float)y * div,
                                          0.f,
                                          startPoint.Z + (float)x * div));
+                if(num + x < vertCount - 1)
+                {
+                    //indexList.push_back(num);
+                    //indexList.push_back(num + 1);
+                    //indexList.push_back(num + x);
+                }
+                num++;
             }
         }
-
-        return vertexList;
     }
 
     void update()
@@ -207,7 +207,7 @@ E_GAME_STATE ExploreGame::run()
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
-    VoxelGrid grid1(mSceneManager, 50.f, 7, 0);
+    VoxelGrid grid1(mSceneManager, 50.f, 3, 0);
     //VoxelGrid grid2(mSceneManager, 100.f, 7, 0);
     //VoxelGrid grid3(mSceneManager, 100.f, 7, 0);
     grid1.mSceneNode->setPosition(vector3df(0,0,1));
