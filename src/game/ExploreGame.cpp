@@ -73,19 +73,19 @@ public:
                     triangle3df(a, b, c), subdiv, verts, indices);
 
         boost::random::mt19937 rand;
-        boost::random::uniform_real_distribution<float> dist(-1.f, 1.f);
+        boost::random::uniform_int_distribution<> dist(0, 1);
 
         for(unsigned int x = 0; x < verts.size(); x += 3)
         {
             S3DVertex v1, v2, v3;
-            v1.Pos = verts.at(x) + vector3df(0.f, dist(rand), 0.f);
+            v1.Pos = verts.at(x) + vector3df(0.f, (float)dist(rand), 0.f);
             v1.TCoords = vector2df(0.f, 0.f);
 
-            v2.Pos = verts.at(x + 1) + vector3df(0.f, dist(rand), 0.f);
-            v2.TCoords = vector2df(0.f, 1.f);
+            v2.Pos = verts.at(x + 1) + vector3df(0.f, (float)dist(rand), 0.f);
+            v2.TCoords = vector2df(1.f, 0.f);
 
-            v3.Pos = verts.at(x + 2) + vector3df(0.f, dist(rand), 0.f);
-            v3.TCoords = vector2df(1., 0.5f);
+            v3.Pos = verts.at(x + 2) + vector3df(0.f, (float)dist(rand), 0.f);
+            v3.TCoords = vector2df(0.5f, 1.f);
 
             vector3df normal = v1.Pos.crossProduct(v2.Pos);
             normal.normalize();
@@ -135,8 +135,8 @@ public:
         if(subdivisions == 0)
         {
             vertexList.push_back(tri.pointA);
-            vertexList.push_back(tri.pointB);
             vertexList.push_back(tri.pointC);
+            vertexList.push_back(tri.pointB);
         }
 
         int maxVerts = (int)pow(2.f, subdivisions) + 1;
@@ -241,13 +241,50 @@ E_GAME_STATE ExploreGame::run()
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
-    VoxelGrid grid1(mExplore, 128.f, 7, 0);
-    VoxelGrid grid2(mExplore, 128.f, 7, 0);
-    VoxelGrid grid3(mExplore, 128.f, 7, 0);
-    grid1.getEntity()->setPosition(vector3df(0,-2,0));
-    grid2.getEntity()->setPosition(vector3df(2*96,-2,0));
-    grid3.getEntity()->setPosition(vector3df(96,-2,96));
-    grid3.getEntity()->setRotation(vector3df(0,180,0));
+    std::vector<boost::shared_ptr<VoxelGrid> > grids;
+    grids.resize(6);
+
+    for( int x = 0; x < 3; ++x)
+    {
+        grids[x].reset(new VoxelGrid(mExplore, 128.f, 7, 0));
+
+        if(x % 2 != 0)
+        {
+            grids[x]->getEntity()->setRotation(vector3df(0.f, 180.f, 0.f));
+            grids[x]->getEntity()->setPosition(vector3df(
+                                                  -96.f + x * 96.f,
+                                                  -2.f,
+                                                  80.f + 96.f));
+        }
+        else
+        {
+            grids[x]->getEntity()->setPosition(vector3df(
+                                                  -96.f + x * 96.f,
+                                                  -2.f,
+                                                  80.f));
+        }
+    }
+
+    for( int x = 0; x < 3; ++x)
+    {
+        grids[x + 3].reset(new VoxelGrid(mExplore, 128.f, 7, 0));
+
+        if(x % 2 == 0)
+        {
+            grids[x + 3]->getEntity()->setRotation(vector3df(0.f, 180.f, 0.f));
+            grids[x + 3]->getEntity()->setPosition(vector3df(
+                                                  -96.f + x * 96.f,
+                                                  -2.f,
+                                                  -80.f + 96.f));
+        }
+        else
+        {
+            grids[x + 3]->getEntity()->setPosition(vector3df(
+                                                  -96.f + x * 96.f,
+                                                  -2.f,
+                                                  -80.f));
+        }
+    }
 
     btClock clock;
 
