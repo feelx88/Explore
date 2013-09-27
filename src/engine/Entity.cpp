@@ -39,13 +39,14 @@ EntitySet Entity::sEntitySet;
 BodyEntityMap Entity::sBodyEntityMap;
 NodeEntityMap Entity::sNodeEntityMap;
 
-Entity::Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
-                const PropTreePtr &properties, std::string basePath )
+Entity::Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
+                const PropTreePtr &properties, std::string basePath,
+                ISceneNodePtr sceneNode)
     : mProperties( PropTreePtr( new PropTree( *properties ) ) ),
       mDevice( device ),
       mSceneManager( device->getSceneManager() ),
       mBulletWorld( world ),
-      mSceneNode( 0 ),
+      mSceneNode( sceneNode ),
       mChildNode( 0 )
 {
     mBasePath = PathTools::getAbsolutePath( basePath );
@@ -89,7 +90,10 @@ void Entity::internalCreate()
 {
     preCreate();
 
-    internalCreateSceneNode();
+    if(!mSceneNode)
+    {
+        internalCreateSceneNode();
+    }
     internalCreateCollisionObject();
     internalCreateRigidBody();
 

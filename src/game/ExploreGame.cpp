@@ -42,8 +42,8 @@ using namespace gui;
 class VoxelGrid
 {
 public:
-    VoxelGrid(ISceneManagerPtr mgr, float length, int subdiv, int depth)
-        : mManager(mgr)
+    VoxelGrid(ExplorePtr explore, float length, int subdiv, int depth)
+        : mExplore(explore)
     {
         /*int numVoxel = pow(2.f, 2 * subdiv);
         mVoxels = new int*[numVoxel];
@@ -55,6 +55,10 @@ public:
                 mVoxels[i][j] = 10;
             }
         }*/
+
+        IrrlichtDevicePtr device = explore->getIrrlichtDevice();
+        ISceneManagerPtr mgr = device->getSceneManager();
+        BulletWorldPtr world = explore->getBulletWorld();
 
         vector3df a(0.f, 0.f, length);
         vector3df b(0.75f * length, 0.f, -0.25f * length);
@@ -68,23 +72,36 @@ public:
         calculateSubdividedTriangles(
                     triangle3df(a, b, c), subdiv, verts, indices);
 
-        //mSceneNode = mgr->addEmptySceneNode();
-
         boost::random::mt19937 rand;
-        //boost::random::uniform_real_distribution<float> dist(0.f, 0.2f);
-        boost::random::uniform_int_distribution<> dist(0, 255);
+        boost::random::uniform_real_distribution<float> dist(-1.f, 1.f);
+
+        for(unsigned int x = 0; x < verts.size(); x += 3)
+        {
+            S3DVertex v1, v2, v3;
+            v1.Pos = verts.at(x) + vector3df(0.f, dist(rand), 0.f);
+            v1.TCoords = vector2df(0.f, 0.f);
+
+            v2.Pos = verts.at(x + 1) + vector3df(0.f, dist(rand), 0.f);
+            v2.TCoords = vector2df(0.f, 1.f);
+
+            v3.Pos = verts.at(x + 2) + vector3df(0.f, dist(rand), 0.f);
+            v3.TCoords = vector2df(1., 0.5f);
+
+            vector3df normal = v1.Pos.crossProduct(v2.Pos);
+            normal.normalize();
+
+            v1.Normal = normal;
+            v2.Normal = normal;
+            v3.Normal = normal;
+
+            mMeshBuffer->Vertices.push_back(v1);
+            mMeshBuffer->Vertices.push_back(v2);
+            mMeshBuffer->Vertices.push_back(v3);
+        }
 
         for(unsigned int x = 0; x < indices.size(); ++x)
         {
-            S3DVertex v;
-            v.Pos = verts.at(indices.at(x));
-            v.Normal = vector3df(0,0,1);
-            v.Color = SColor(255, 0, dist(rand), 0);
-
-            mMeshBuffer->Vertices.push_back(v);
-
             mMeshBuffer->Indices.push_back(indices.at(x));
-            //ISceneNodePtr node = mgr->addSphereSceneNode(0.1, 3, mSceneNode, -1, verts.at(x));
         }
 
         mMeshBuffer->recalculateBoundingBox();
@@ -95,7 +112,13 @@ public:
         mMesh->recalculateBoundingBox();
 
         mSceneNode = mgr->addMeshSceneNode(mMesh, 0, -1, vector3df(0, 0, 0));
-        mSceneNode->setMaterialFlag(EMF_LIGHTING, false);
+        mSceneNode->setMaterialTexture(0, mExplore->getIrrlichtDevice()->getVideoDriver()->getTexture("data/Textures/terrain_test.png"));
+
+        PropTreePtr props(new PropTree());
+        props->put<std::string>("Entity.Body.Shape.<xmlattr>.Type", "Mesh");
+        props->put<float>("Entity.Body.Mass", 0.f);
+
+        mEntity.reset(new Entity(device, world, props, "data", mSceneNode));
     }
 
     ~VoxelGrid()
@@ -116,48 +139,59 @@ public:
             vertexList.push_back(tri.pointC);
         }
 
-        float maxVerts = pow(2.f, subdivisions) + 1;
-        float maxSize = (tri.pointB - tri.pointC).getLength();
+        int maxVerts = (int)pow(2.f, subdivisions) + 1;
+        float maxSizeX = (tri.pointB - tri.pointC).getLength();
+        float maxSizeY = (tri.pointA - (tri.pointB - tri.pointC) / 2.f ).getLength();
 
         vector3df startPoint = tri.pointC;
 
-        float div = maxSize / (float)maxVerts;
-        startPoint.X -= div / 2.f;
+        float divX = maxSizeX / (float)(maxVerts - 1);
+        float divY = maxSizeY / (float)(maxVerts - 1);
 
         int vertCount = (maxVerts * maxVerts + maxVerts) / 2; //gauss
         int num = 0;
 
         for(int x = maxVerts; x > 0; --x)
         {
-            startPoint.X += div / 2.f;
-            for(int y = maxVerts; y > x; --y)
+            for(int y = 0; y < x; ++y)
             {
                 vertexList.push_back(vector3df(
-                                         startPoint.X + (float)y * div,
+                                         startPoint.X + (float)y * divX,
                                          0.f,
-                                         startPoint.Z + (float)x * div));
-                if(num + x < vertCount - 1)
+                                         startPoint.Z));
+
+                if(y < x - 1)
                 {
-                    //indexList.push_back(num);
-                    //indexList.push_back(num + 1);
-                    //indexList.push_back(num + x);
+                    indexList.push_back(num + 1);
+                    indexList.push_back(num);
+                    indexList.push_back(num + x);
+                    if(num - x > 0)
+                    {
+                        indexList.push_back(num);
+                        indexList.push_back(num + 1);
+                        indexList.push_back(num - x);
+                    }
                 }
                 num++;
             }
+
+            startPoint.X += divX / 2.f;
+            startPoint.Z += divY;
         }
     }
 
-    void update()
+    EntityPtr getEntity()
     {
-
+        return mEntity;
     }
 
-//private:
+private:
+    ExplorePtr mExplore;
     int **mVoxels;
-    ISceneManagerPtr mManager;
     ISceneNode *mSceneNode;
     SMesh *mMesh;
     SMeshBuffer *mMeshBuffer;
+    EntityPtr mEntity;
 };
 
 ExploreGame::ExploreGame( ExplorePtr explore )
@@ -207,13 +241,14 @@ E_GAME_STATE ExploreGame::run()
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
-    VoxelGrid grid1(mSceneManager, 50.f, 3, 0);
-    //VoxelGrid grid2(mSceneManager, 100.f, 7, 0);
-    //VoxelGrid grid3(mSceneManager, 100.f, 7, 0);
-    grid1.mSceneNode->setPosition(vector3df(0,0,1));
-    //grid2.mSceneNode->setPosition(vector3df(2*75,-50,0));
-    //grid3.mSceneNode->setPosition(vector3df(75,-50,75));
-    //grid3.mSceneNode->setRotation(vector3df(0,180,0));
+    VoxelGrid grid1(mExplore, 128.f, 7, 0);
+    VoxelGrid grid2(mExplore, 128.f, 7, 0);
+    VoxelGrid grid3(mExplore, 128.f, 7, 0);
+    grid1.getEntity()->setPosition(vector3df(0,-2,0));
+    grid2.getEntity()->setPosition(vector3df(2*96,-2,0));
+    grid3.getEntity()->setPosition(vector3df(96,-2,96));
+    grid3.getEntity()->setRotation(vector3df(0,180,0));
+
     btClock clock;
 
     while( running && mDevice->run() )

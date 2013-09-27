@@ -36,8 +36,9 @@ class APIEXPORT Entity
 {
 public:
 
-    Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
-            const PropTreePtr &propeties, std::string basePath = "" );
+    Entity(IrrlichtDevicePtr device, BulletWorldPtr world,
+           const PropTreePtr &propeties, std::string basePath = "",
+           ISceneNodePtr sceneNode = 0);
     Entity( IrrlichtDevicePtr device, BulletWorldPtr world,
             const std::string &propFileName, const std::string &nodeName = "" );
     virtual ~Entity();
