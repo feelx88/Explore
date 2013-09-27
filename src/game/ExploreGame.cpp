@@ -80,14 +80,17 @@ public:
             S3DVertex v1, v2, v3;
             v1.Pos = verts.at(x) + vector3df(0.f, (float)dist(rand), 0.f);
             v1.TCoords = vector2df(0.f, 0.f);
+            v1.Color = SColor(255, 255, 255, 255);
 
             v2.Pos = verts.at(x + 1) + vector3df(0.f, (float)dist(rand), 0.f);
             v2.TCoords = vector2df(1.f, 0.f);
+            v2.Color = SColor(255, 255, 255, 255);
 
             v3.Pos = verts.at(x + 2) + vector3df(0.f, (float)dist(rand), 0.f);
             v3.TCoords = vector2df(0.5f, 1.f);
+            v3.Color = SColor(255, 255, 255, 255);
 
-            vector3df normal = v1.Pos.crossProduct(v2.Pos);
+            vector3df normal = (v1.Pos - v3.Pos).crossProduct((v1.Pos - v2.Pos));
             normal.normalize();
 
             v1.Normal = normal;
