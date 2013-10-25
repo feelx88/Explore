@@ -39,6 +39,31 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
+class Voxel
+{
+    enum E_VOXEL_TYPE
+    {
+        EVT_AIR = 0,
+        EVT_GROUND
+    };
+
+    Voxel()
+        : fillLevel(2),
+          triangleUp(true)
+    {
+        for(int x = 0; x < 6; ++x)
+        {
+            neighbours[x] = 0;
+        }
+    }
+
+    vector3df position;
+    Voxel* neighbours[6];
+    short fillLevel;
+    E_VOXEL_TYPE type;
+    bool triangleUp;
+};
+
 class VoxelGrid
 {
 public:
