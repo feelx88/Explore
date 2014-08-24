@@ -39,7 +39,7 @@ using namespace video;
 using namespace scene;
 using namespace gui;
 
-class Voxel
+struct Voxel
 {
     enum E_VOXEL_TYPE
     {
@@ -47,22 +47,146 @@ class Voxel
         EVT_GROUND
     };
 
+    enum E_NEIGHBOUR
+    {
+        EN_LEFT = 0,
+        EN_RIGHT,
+        EN_TOP,
+        EN_ABOVE,
+        EN_BELOW
+    };
+
     Voxel()
         : fillLevel(2),
           triangleUp(true)
     {
-        for(int x = 0; x < 6; ++x)
+        for(int x = 0; x < 4; ++x)
         {
             neighbours[x] = 0;
         }
     }
 
+    Voxel(int index,
+            int height,
+            vector3df position,
+            vector3df vertices0,
+            vector3df vertices1,
+            vector3df vertices2,
+            short fillLevel,
+            E_VOXEL_TYPE type,
+            bool triangleUp)
+        : index(index),
+          height(height),
+          position(position),
+          vertices({vertices0, vertices1, vertices2}),
+          fillLevel(fillLevel),
+          type(type),
+          triangleUp(triangleUp)
+    {
+        for(int x = 0; x < 4; ++x)
+        {
+            neighbours[x] = 0;
+        }
+    }
+
+    int index, height;
     vector3df position;
-    Voxel* neighbours[6];
+    vector3df vertices[3];
+    Voxel* neighbours[5];
     short fillLevel;
     E_VOXEL_TYPE type;
     bool triangleUp;
 };
+
+std::vector<Voxel*> v = {
+    new Voxel( 0, 10, vector3df(), vector3df(0,0,0),vector3df(1,0,0),vector3df(0.5,0,1), 2, Voxel::EVT_GROUND, true),
+    new Voxel( 1, 10, vector3df(), vector3df(0.5,0,1),vector3df(1.5,0,1),vector3df(1,0,0), 2, Voxel::EVT_GROUND, false),
+    new Voxel( 2, 10, vector3df(), vector3df(1,0,0),vector3df(2,0,0),vector3df(1.5,0,1), 2, Voxel::EVT_GROUND, true),
+    new Voxel( 3, 10, vector3df(), vector3df(1.5,0,1),vector3df(2.5,0,1),vector3df(2,0,0), 2, Voxel::EVT_GROUND, false),
+    new Voxel( 4, 10, vector3df(), vector3df(2,0,0),vector3df(3,0,0),vector3df(2.5,0,1), 2, Voxel::EVT_GROUND, true),
+    new Voxel( 5, 10, vector3df(), vector3df(2.5,0,1),vector3df(3.5,0,1),vector3df(3,0,0), 2, Voxel::EVT_GROUND, false),
+    new Voxel( 6, 10, vector3df(), vector3df(3,0,0),vector3df(4,0,0),vector3df(3.5,0,1), 2, Voxel::EVT_GROUND, true),
+
+    new Voxel( 7, 11, vector3df(), vector3df(0.5,0,1),vector3df(1.5,0,1),vector3df(1,0,2), 1, Voxel::EVT_GROUND, true),
+    new Voxel( 8, 11, vector3df(), vector3df(1,0,2),vector3df(2,0,2),vector3df(1.5,0,1), 2, Voxel::EVT_GROUND, false),
+    new Voxel( 9, 11, vector3df(), vector3df(1.5,0,1),vector3df(2.5,0,1),vector3df(2,0,2), 1, Voxel::EVT_GROUND, true),
+    new Voxel(10, 10, vector3df(), vector3df(2,0,2),vector3df(3,0,2),vector3df(2.5,0,1), 2, Voxel::EVT_GROUND, false),
+    new Voxel(11, 10, vector3df(), vector3df(2.5,0,1),vector3df(3.5,0,1),vector3df(3,0,2), 2, Voxel::EVT_GROUND, true),
+
+    new Voxel(12, 11, vector3df(), vector3df(1,0,2),vector3df(2,0,2),vector3df(1.5,0,3), 1, Voxel::EVT_GROUND, true),
+    new Voxel(13, 11, vector3df(), vector3df(1.5,0,3),vector3df(2.5,0,3),vector3df(2,0,2), 2, Voxel::EVT_GROUND, false),
+    new Voxel(14, 10, vector3df(), vector3df(2,0,2),vector3df(3,0,2),vector3df(2.5,0,3), 2, Voxel::EVT_GROUND, true),
+
+    new Voxel(15, 10, vector3df(), vector3df(1.5,0,3),vector3df(2.5,0,3),vector3df(2,0,4), 2, Voxel::EVT_GROUND, true)
+};
+
+void setV()
+{
+    //no
+    v.at(0)->neighbours[Voxel::EN_RIGHT] = v.at(1);
+    //no
+
+    v.at(1)->neighbours[Voxel::EN_LEFT] = v.at(0);
+    v.at(1)->neighbours[Voxel::EN_RIGHT] = v.at(2);
+    v.at(1)->neighbours[Voxel::EN_TOP] = v.at(7);
+
+    v.at(2)->neighbours[Voxel::EN_LEFT] = v.at(1);
+    v.at(2)->neighbours[Voxel::EN_RIGHT] = v.at(3);
+    //no
+
+    v.at(3)->neighbours[Voxel::EN_LEFT] = v.at(2);
+    v.at(3)->neighbours[Voxel::EN_RIGHT] = v.at(4);
+    v.at(3)->neighbours[Voxel::EN_TOP] = v.at(9);
+
+    v.at(4)->neighbours[Voxel::EN_LEFT] = v.at(3);
+    v.at(4)->neighbours[Voxel::EN_RIGHT] = v.at(5);
+    //no
+
+    v.at(5)->neighbours[Voxel::EN_LEFT] = v.at(4);
+    v.at(5)->neighbours[Voxel::EN_RIGHT] = v.at(6);
+    v.at(5)->neighbours[Voxel::EN_TOP] = v.at(11);
+
+    v.at(6)->neighbours[Voxel::EN_LEFT] = v.at(5);
+    //no
+    //no
+
+    //no
+    v.at(7)->neighbours[Voxel::EN_RIGHT] = v.at(8);
+    v.at(7)->neighbours[Voxel::EN_TOP] = v.at(1);
+
+    v.at(8)->neighbours[Voxel::EN_LEFT] = v.at(7);
+    v.at(8)->neighbours[Voxel::EN_RIGHT] = v.at(9);
+    v.at(8)->neighbours[Voxel::EN_TOP] = v.at(12);
+
+    v.at(9)->neighbours[Voxel::EN_LEFT] = v.at(8);
+    v.at(9)->neighbours[Voxel::EN_RIGHT] = v.at(10);
+    v.at(9)->neighbours[Voxel::EN_TOP] = v.at(3);
+
+    v.at(10)->neighbours[Voxel::EN_LEFT] = v.at(9);
+    v.at(10)->neighbours[Voxel::EN_RIGHT] = v.at(11);
+    v.at(10)->neighbours[Voxel::EN_TOP] = v.at(14);
+
+    v.at(11)->neighbours[Voxel::EN_LEFT] = v.at(10);
+    //no
+    v.at(11)->neighbours[Voxel::EN_TOP] = v.at(5);
+
+    //no
+    v.at(12)->neighbours[Voxel::EN_RIGHT] = v.at(13);
+    v.at(12)->neighbours[Voxel::EN_TOP] = v.at(8);
+
+    v.at(13)->neighbours[Voxel::EN_LEFT] = v.at(12);
+    v.at(13)->neighbours[Voxel::EN_RIGHT] = v.at(14);
+    v.at(13)->neighbours[Voxel::EN_TOP] = v.at(15);
+
+    v.at(14)->neighbours[Voxel::EN_LEFT] = v.at(13);
+    //no
+    v.at(14)->neighbours[Voxel::EN_TOP] = v.at(10);
+
+    //no
+    //no
+    v.at(15)->neighbours[Voxel::EN_TOP] = v.at(13);
+}
+
 
 class VoxelGrid
 {
@@ -70,8 +194,8 @@ public:
     VoxelGrid(ExplorePtr explore, float length, int subdiv, int depth)
         : mExplore(explore)
     {
-        /*int numVoxel = pow(2.f, 2 * subdiv);
-        mVoxels = new int*[numVoxel];
+        int numVoxel = pow(2.f, 2 * subdiv);
+        /*mVoxels = new int*[numVoxel];
         for(int i = 0; i < depth; ++i)
         {
             mVoxels[i] = new int[depth];
@@ -80,6 +204,9 @@ public:
                 mVoxels[i][j] = 10;
             }
         }*/
+
+        mVoxels = new Voxel*[1];
+        mVoxels[0] = new Voxel[numVoxel];
 
         IrrlichtDevicePtr device = explore->getIrrlichtDevice();
         ISceneManagerPtr mgr = device->getSceneManager();
@@ -90,8 +217,117 @@ public:
         vector3df c(-0.75f * length, 0.f, -0.25f * length);
 
         mMeshBuffer = new SMeshBuffer();
+        int counter = 0;
 
-        std::vector<vector3df> verts;
+        setV();
+
+        for(auto x : v)
+        {
+            vector3df height(0, x->height, 0);
+
+            S3DVertex v1, v2, v3;
+            v1.Pos = x->vertices[0] * 2;
+            v1.TCoords = vector2df(0.f, 0.f);
+            v1.Color = SColor(255, 255, 255, 255);
+
+            v2.Pos = x->vertices[1] * 2;
+            v2.TCoords = vector2df(1.f, 0.f);
+            v2.Color = SColor(255, 255, 255, 255);
+
+            v3.Pos = x->vertices[2] * 2;
+            v3.TCoords = vector2df(0.5f, 1.f);
+            v3.Color = SColor(255, 255, 255, 255);
+
+            v1.Normal = v2.Normal = v3.Normal = vector3df(0,1,0);
+
+            if(x->fillLevel == 1) //halb => schräge
+            {
+                if(x->neighbours[Voxel::EN_LEFT])
+                {
+                    int lh = x->neighbours[Voxel::EN_LEFT]->height - x->height;
+                    if(lh == 0)
+                    {
+                        //v1.Pos.Y = -1;
+                        //v3.Pos.Y = -1;
+                        v2.Pos.Y = -1;
+                    }
+                }
+
+                if(x->neighbours[Voxel::EN_RIGHT])
+                {
+                    int rh = x->neighbours[Voxel::EN_RIGHT]->height - x->height;
+                    if(rh == 0)
+                    {
+                        //v2.Pos.Y = -1;
+                        //v3.Pos.Y = -1;
+                        v1.Pos.Y = -1;
+                    }
+                }
+
+                if(x->neighbours[Voxel::EN_TOP])
+                {
+                    int th = x->neighbours[Voxel::EN_TOP]->height - x->height;
+                    if(th == 0)
+                    {
+                        //v1.Pos.Y = -1;
+                        //v2.Pos.Y = -1;
+                        v3.Pos.Y = -1;
+                    }
+                }
+            }//else wenn voll => wand
+            else
+            {
+                if(x->neighbours[Voxel::EN_LEFT])
+                {
+                    int lh = x->neighbours[Voxel::EN_LEFT]->height - x->height;
+                    if(lh > 0)
+                    {
+                        //wand
+                    }
+                }
+
+                if(x->neighbours[Voxel::EN_RIGHT])
+                {
+                    int rh = x->neighbours[Voxel::EN_RIGHT]->height - x->height;
+                    if(rh > 0)
+                    {
+                        //wand
+                    }
+                }
+
+                if(x->neighbours[Voxel::EN_TOP])
+                {
+                    int th = x->neighbours[Voxel::EN_TOP]->height - x->height;
+                    if(th > 0)
+                    {
+                        //wand
+                    }
+                }
+            }
+
+            v1.Pos += height;
+            v2.Pos += height;
+            v3.Pos += height;
+
+            if(x->triangleUp)
+            {
+                mMeshBuffer->Vertices.push_back(v1);
+                mMeshBuffer->Vertices.push_back(v3);
+                mMeshBuffer->Vertices.push_back(v2);
+            }
+            else
+            {
+                mMeshBuffer->Vertices.push_back(v1);
+                mMeshBuffer->Vertices.push_back(v2);
+                mMeshBuffer->Vertices.push_back(v3);
+            }
+
+            mMeshBuffer->Indices.push_back(counter++);
+            mMeshBuffer->Indices.push_back(counter++);
+            mMeshBuffer->Indices.push_back(counter++);
+        }
+
+        /*std::vector<vector3df> verts;
         std::vector<int> indices;
 
         calculateSubdividedTriangles(
@@ -130,7 +366,7 @@ public:
         for(unsigned int x = 0; x < indices.size(); ++x)
         {
             mMeshBuffer->Indices.push_back(indices.at(x));
-        }
+        }*/
 
         mMeshBuffer->recalculateBoundingBox();
 
@@ -154,7 +390,7 @@ public:
         //delete[] mVoxels;
     }
 
-    void calculateSubdividedTriangles(
+    /*void calculateSubdividedTriangles(
             triangle3df tri,
             int subdivisions,
             std::vector<vector3df> &vertexList,
@@ -190,6 +426,11 @@ public:
 
                 if(y < x - 1)
                 {
+                    mVoxels[0][num].fillLevel = 1;
+                    mVoxels[0][num].position = vector3df;
+                    mVoxels[0][num].triangleUp = y % 2 == 0;
+                    mVoxels[0][num].type = Voxel::EVT_GROUND;
+
                     indexList.push_back(num + 1);
                     indexList.push_back(num);
                     indexList.push_back(num + x);
@@ -206,7 +447,7 @@ public:
             startPoint.X += divX / 2.f;
             startPoint.Z += divY;
         }
-    }
+    }*/
 
     EntityPtr getEntity()
     {
@@ -215,7 +456,7 @@ public:
 
 private:
     ExplorePtr mExplore;
-    int **mVoxels;
+    Voxel **mVoxels;
     ISceneNode *mSceneNode;
     SMesh *mMesh;
     SMeshBuffer *mMeshBuffer;
@@ -313,6 +554,8 @@ E_GAME_STATE ExploreGame::run()
                                                   -80.f));
         }
     }
+
+    grids[0]->getEntity()->setPosition(vector3df(0,-9,0));
 
     btClock clock;
 

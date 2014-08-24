@@ -72,7 +72,7 @@ public:
         }
 
         _LOG( "Registering new item class", name );
-        sCreators->insert( std::make_pair( name, new ItemCreator<T>() ) );
+        sCreators->insert( std::make_pair( name, boost::shared_ptr<ItemCreatorBase>(new ItemCreator<T>()) ) );
 
         return 0;
     }
