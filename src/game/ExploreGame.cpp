@@ -216,25 +216,62 @@ public:
         vector3df b(0.75f * length, 0.f, -0.25f * length);
         vector3df c(-0.75f * length, 0.f, -0.25f * length);
 
+        int subdivPow = std::pow(2.f, subdiv);
+        int maxTris = 2 * subdivPow - 1;
+        float triSize = length / subdivPow;
+
+        vector3df offset(-length / 2.f, 0, -length / 2.f * 0.87f);
+
+        int index = 0;
+
+        float left = 0;
+
+        v.clear();
+
+        boost::random::mt19937 rand;
+        boost::random::uniform_int_distribution<> dist(0, 1);
+
+        for(int x = 0; x < subdivPow; ++x)
+        {
+            int limit = (maxTris - (2 * x)) / 2;
+            for(int y = 0; y <= limit; ++y)
+            {
+                v.push_back(new Voxel(index++, depth + (float)dist(rand), vector3df(),
+                                      (vector3df(y + left,0,x * 0.87) + offset) * triSize,
+                                      (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
+                                      (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
+                                      2 - dist(rand), Voxel::EVT_GROUND, true));
+                if(y < limit)
+                {
+                    v.push_back(new Voxel(index++, depth + (float)dist(rand), vector3df(),
+                                          (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
+                                          (vector3df(y + left + 1.5,0,x * 0.87 + 0.87) + offset) * triSize,
+                                          (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
+                                          2 - dist(rand), Voxel::EVT_GROUND, false));
+                }
+            }
+            left += 0.5;
+        }
+
         mMeshBuffer = new SMeshBuffer();
         int counter = 0;
 
-        setV();
+        //setV();
 
         for(auto x : v)
         {
             vector3df height(0, x->height, 0);
 
             S3DVertex v1, v2, v3;
-            v1.Pos = x->vertices[0] * 2;
+            v1.Pos = x->vertices[0];
             v1.TCoords = vector2df(0.f, 0.f);
             v1.Color = SColor(255, 255, 255, 255);
 
-            v2.Pos = x->vertices[1] * 2;
+            v2.Pos = x->vertices[1] ;
             v2.TCoords = vector2df(1.f, 0.f);
             v2.Color = SColor(255, 255, 255, 255);
 
-            v3.Pos = x->vertices[2] * 2;
+            v3.Pos = x->vertices[2];
             v3.TCoords = vector2df(0.5f, 1.f);
             v3.Color = SColor(255, 255, 255, 255);
 
@@ -521,16 +558,16 @@ E_GAME_STATE ExploreGame::run()
         {
             grids[x]->getEntity()->setRotation(vector3df(0.f, 180.f, 0.f));
             grids[x]->getEntity()->setPosition(vector3df(
-                                                  -96.f + x * 96.f,
+                                                  -64 + x * 64/*-96.f + x * 96.f*/,
                                                   -2.f,
-                                                  80.f + 96.f));
+                                                  64 * 0.87/*80.f + 96.f*/));
         }
         else
         {
             grids[x]->getEntity()->setPosition(vector3df(
-                                                  -96.f + x * 96.f,
+                                                  -64+ x * 64/*-96.f + x * 96.f*/,
                                                   -2.f,
-                                                  80.f));
+                                                  64 * 0.87/*80.f*/));
         }
     }
 
@@ -542,20 +579,18 @@ E_GAME_STATE ExploreGame::run()
         {
             grids[x + 3]->getEntity()->setRotation(vector3df(0.f, 180.f, 0.f));
             grids[x + 3]->getEntity()->setPosition(vector3df(
-                                                  -96.f + x * 96.f,
+                                                  -64 + x * 64/*-96.f + x * 96.f*/,
                                                   -2.f,
-                                                  -80.f + 96.f));
+                                                  -64 * 0.87/*-80.f + 96.f*/));
         }
         else
         {
             grids[x + 3]->getEntity()->setPosition(vector3df(
-                                                  -96.f + x * 96.f,
+                                                  -64 + x * 64 /*-96.f + x * 96.f*/,
                                                   -2.f,
-                                                  -80.f));
+                                                  -64 * 0.87/*-80.f*/));
         }
     }
-
-    grids[0]->getEntity()->setPosition(vector3df(0,-9,0));
 
     btClock clock;
 
