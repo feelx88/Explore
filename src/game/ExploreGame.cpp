@@ -236,24 +236,64 @@ public:
             int limit = (maxTris - (2 * x)) / 2;
             for(int y = 0; y <= limit; ++y)
             {
-                v.push_back(new Voxel(index++, depth + (float)dist(rand), vector3df(),
+                int r1 = dist(rand);
+                Voxel *v1 = new Voxel(index++, depth + (float)r1, vector3df(),
                                       (vector3df(y + left,0,x * 0.87) + offset) * triSize,
                                       (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
                                       (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
-                                      2 - dist(rand), Voxel::EVT_GROUND, true));
+                                      r1 == 0 ? 2 : 1 + dist(rand), Voxel::EVT_GROUND, true);
+                v.push_back(v1);
+
                 if(y < limit)
                 {
-                    v.push_back(new Voxel(index++, depth + (float)dist(rand), vector3df(),
+                    int r2 = dist(rand);
+                    Voxel *v2 = new Voxel(index++, depth + (float)r2, vector3df(),
                                           (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
                                           (vector3df(y + left + 1.5,0,x * 0.87 + 0.87) + offset) * triSize,
                                           (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
-                                          2 - dist(rand), Voxel::EVT_GROUND, false));
+                                          r2 == 0 ? 2 : 1 + dist(rand), Voxel::EVT_GROUND, false);
+                    v.push_back(v2);
                 }
             }
             left += 0.5;
         }
 
+        index = 0;
+
+        for(int x = 0; x < subdivPow; ++x)
+        {
+            int limit = (maxTris - (2 * x));
+            for(int y = 0; y < limit; ++y)
+            {
+                Voxel *curVoxel = v.at(index);
+
+                if(y > 0)
+                {
+                    curVoxel->neighbours[Voxel::EN_LEFT] = v.at(index - 1);
+                }
+                if(y < limit - 1)
+                {
+                    curVoxel->neighbours[Voxel::EN_RIGHT] = v.at(index + 1);
+                }
+                if(curVoxel->triangleUp)
+                {
+                    if(x > 0)
+                    {
+                        curVoxel->neighbours[Voxel::EN_TOP] = v.at(index - (maxTris - (2 * (x - 1))));
+                    }
+                }
+                else
+                {
+                    curVoxel->neighbours[Voxel::EN_TOP] = v.at(index + (maxTris - (2 * (x + 1))));
+                }
+
+                ++index;
+            }
+        }
+
         mMeshBuffer = new SMeshBuffer();
+        SMeshBuffer *buffer2 = new SMeshBuffer();
+        int bufferIndex = 0;
         int counter = 0;
 
         //setV();
@@ -284,8 +324,6 @@ public:
                     int lh = x->neighbours[Voxel::EN_LEFT]->height - x->height;
                     if(lh == 0)
                     {
-                        //v1.Pos.Y = -1;
-                        //v3.Pos.Y = -1;
                         v2.Pos.Y = -1;
                     }
                 }
@@ -295,8 +333,6 @@ public:
                     int rh = x->neighbours[Voxel::EN_RIGHT]->height - x->height;
                     if(rh == 0)
                     {
-                        //v2.Pos.Y = -1;
-                        //v3.Pos.Y = -1;
                         v1.Pos.Y = -1;
                     }
                 }
@@ -306,10 +342,143 @@ public:
                     int th = x->neighbours[Voxel::EN_TOP]->height - x->height;
                     if(th == 0)
                     {
-                        //v1.Pos.Y = -1;
-                        //v2.Pos.Y = -1;
                         v3.Pos.Y = -1;
                     }
+                }
+
+                int sum = v1.Pos.Y + v2.Pos.Y + v3.Pos.Y;
+                if(sum == -3)
+                {
+                    v1.Pos.Y = -0.5f;
+                    v2.Pos.Y = -0.5f;
+                    v3.Pos.Y = -0.5f;
+                }
+                else if(sum == -2)
+                {
+                    if(v1.Pos.Y == 0)
+                    {
+                        S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
+                        vv1.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv1.TCoords = vector2df(0.f, 0.f);
+                        vv1.Color = SColor(255, 255, 255, 255);
+
+                        vv2.Pos = x->vertices[1] + vector3df(0,1,0);
+                        vv2.TCoords = vector2df(0.f, 0.f);
+                        vv2.Color = SColor(255, 255, 255, 255);
+
+                        vv3.Pos = x->vertices[1];
+                        vv3.TCoords = vector2df(0.f, 0.f);
+                        vv3.Color = SColor(255, 255, 255, 255);
+
+                        vv4.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv4.TCoords = vector2df(0.f, 0.f);
+                        vv4.Color = SColor(255, 255, 255, 255);
+
+                        vv5.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv5.TCoords = vector2df(0.f, 0.f);
+                        vv5.Color = SColor(255, 255, 255, 255);
+
+                        vv6.Pos = x->vertices[2];
+                        vv6.TCoords = vector2df(0.f, 0.f);
+                        vv6.Color = SColor(255, 255, 255, 255);
+
+                        buffer2->Vertices.push_back(vv1);
+                        buffer2->Vertices.push_back(vv2);
+                        buffer2->Vertices.push_back(vv3);
+                        buffer2->Vertices.push_back(vv4);
+                        buffer2->Vertices.push_back(vv5);
+                        buffer2->Vertices.push_back(vv6);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                    }
+                    else if(v2.Pos.Y == 0)
+                    {
+                        S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
+                        vv1.Pos = x->vertices[1] + vector3df(0,1,0);
+                        vv1.TCoords = vector2df(0.f, 0.f);
+                        vv1.Color = SColor(255, 255, 255, 255);
+
+                        vv2.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv2.TCoords = vector2df(0.f, 0.f);
+                        vv2.Color = SColor(255, 255, 255, 255);
+
+                        vv3.Pos = x->vertices[0];
+                        vv3.TCoords = vector2df(0.f, 0.f);
+                        vv3.Color = SColor(255, 255, 255, 255);
+
+                        vv4.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv4.TCoords = vector2df(0.f, 0.f);
+                        vv4.Color = SColor(255, 255, 255, 255);
+
+                        vv5.Pos = x->vertices[1] + vector3df(0,1,0);
+                        vv5.TCoords = vector2df(0.f, 0.f);
+                        vv5.Color = SColor(255, 255, 255, 255);
+
+                        vv6.Pos = x->vertices[2];
+                        vv6.TCoords = vector2df(0.f, 0.f);
+                        vv6.Color = SColor(255, 255, 255, 255);
+
+                        buffer2->Vertices.push_back(vv1);
+                        buffer2->Vertices.push_back(vv2);
+                        buffer2->Vertices.push_back(vv3);
+                        buffer2->Vertices.push_back(vv4);
+                        buffer2->Vertices.push_back(vv5);
+                        buffer2->Vertices.push_back(vv6);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                    }
+                    else if(v3.Pos.Y == 0)
+                    {
+                        S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
+                        vv1.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv1.TCoords = vector2df(0.f, 0.f);
+                        vv1.Color = SColor(255, 255, 255, 255);
+
+                        vv2.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv2.TCoords = vector2df(0.f, 0.f);
+                        vv2.Color = SColor(255, 255, 255, 255);
+
+                        vv3.Pos = x->vertices[0];
+                        vv3.TCoords = vector2df(0.f, 0.f);
+                        vv3.Color = SColor(255, 255, 255, 255);
+
+                        vv4.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv4.TCoords = vector2df(0.f, 0.f);
+                        vv4.Color = SColor(255, 255, 255, 255);
+
+                        vv5.Pos = x->vertices[1] + vector3df(0,1,0);
+                        vv5.TCoords = vector2df(0.f, 0.f);
+                        vv5.Color = SColor(255, 255, 255, 255);
+
+                        vv6.Pos = x->vertices[1];
+                        vv6.TCoords = vector2df(0.f, 0.f);
+                        vv6.Color = SColor(255, 255, 255, 255);
+
+                        buffer2->Vertices.push_back(vv1);
+                        buffer2->Vertices.push_back(vv2);
+                        buffer2->Vertices.push_back(vv3);
+                        buffer2->Vertices.push_back(vv4);
+                        buffer2->Vertices.push_back(vv5);
+                        buffer2->Vertices.push_back(vv6);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                    }
+                }
+                else if(sum == -1)
+                {
+
                 }
             }//else wenn voll => wand
             else
@@ -319,7 +488,43 @@ public:
                     int lh = x->neighbours[Voxel::EN_LEFT]->height - x->height;
                     if(lh > 0)
                     {
-                        //wand
+                        S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
+                        vv1.Pos = x->vertices[2];
+                        vv1.TCoords = vector2df(0.f, 0.f);
+                        vv1.Color = SColor(255, 255, 255, 255);
+
+                        vv2.Pos = x->vertices[0];
+                        vv2.TCoords = vector2df(0.f, 0.f);
+                        vv2.Color = SColor(255, 255, 255, 255);
+
+                        vv3.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv3.TCoords = vector2df(0.f, 0.f);
+                        vv3.Color = SColor(255, 255, 255, 255);
+
+                        vv4.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv4.TCoords = vector2df(0.f, 0.f);
+                        vv4.Color = SColor(255, 255, 255, 255);
+
+                        vv5.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv5.TCoords = vector2df(0.f, 0.f);
+                        vv5.Color = SColor(255, 255, 255, 255);
+
+                        vv6.Pos = x->vertices[2];
+                        vv6.TCoords = vector2df(0.f, 0.f);
+                        vv6.Color = SColor(255, 255, 255, 255);
+
+                        buffer2->Vertices.push_back(vv1);
+                        buffer2->Vertices.push_back(vv2);
+                        buffer2->Vertices.push_back(vv3);
+                        buffer2->Vertices.push_back(vv4);
+                        buffer2->Vertices.push_back(vv5);
+                        buffer2->Vertices.push_back(vv6);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
                     }
                 }
 
@@ -328,7 +533,43 @@ public:
                     int rh = x->neighbours[Voxel::EN_RIGHT]->height - x->height;
                     if(rh > 0)
                     {
-                        //wand
+                        S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
+                        vv1.Pos = x->vertices[1];
+                        vv1.TCoords = vector2df(0.f, 0.f);
+                        vv1.Color = SColor(255, 255, 255, 255);
+
+                        vv2.Pos = x->vertices[2];
+                        vv2.TCoords = vector2df(0.f, 0.f);
+                        vv2.Color = SColor(255, 255, 255, 255);
+
+                        vv3.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv3.TCoords = vector2df(0.f, 0.f);
+                        vv3.Color = SColor(255, 255, 255, 255);
+
+                        vv4.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv4.TCoords = vector2df(0.f, 0.f);
+                        vv4.Color = SColor(255, 255, 255, 255);
+
+                        vv5.Pos = x->vertices[1] + vector3df(0,1,0);
+                        vv5.TCoords = vector2df(0.f, 0.f);
+                        vv5.Color = SColor(255, 255, 255, 255);
+
+                        vv6.Pos = x->vertices[1];
+                        vv6.TCoords = vector2df(0.f, 0.f);
+                        vv6.Color = SColor(255, 255, 255, 255);
+
+                        buffer2->Vertices.push_back(vv1);
+                        buffer2->Vertices.push_back(vv2);
+                        buffer2->Vertices.push_back(vv3);
+                        buffer2->Vertices.push_back(vv4);
+                        buffer2->Vertices.push_back(vv5);
+                        buffer2->Vertices.push_back(vv6);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
                     }
                 }
 
@@ -337,7 +578,43 @@ public:
                     int th = x->neighbours[Voxel::EN_TOP]->height - x->height;
                     if(th > 0)
                     {
-                        //wand
+                        S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
+                        vv1.Pos = x->vertices[0];
+                        vv1.TCoords = vector2df(0.f, 0.f);
+                        vv1.Color = SColor(255, 255, 255, 255);
+
+                        vv2.Pos = x->vertices[1];
+                        vv2.TCoords = vector2df(0.f, 0.f);
+                        vv2.Color = SColor(255, 255, 255, 255);
+
+                        vv3.Pos = x->vertices[1] + vector3df(0,1,0);
+                        vv3.TCoords = vector2df(0.f, 0.f);
+                        vv3.Color = SColor(255, 255, 255, 255);
+
+                        vv4.Pos = x->vertices[1] + vector3df(0,1,0);
+                        vv4.TCoords = vector2df(0.f, 0.f);
+                        vv4.Color = SColor(255, 255, 255, 255);
+
+                        vv5.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv5.TCoords = vector2df(0.f, 0.f);
+                        vv5.Color = SColor(255, 255, 255, 255);
+
+                        vv6.Pos = x->vertices[0];
+                        vv6.TCoords = vector2df(0.f, 0.f);
+                        vv6.Color = SColor(255, 255, 255, 255);
+
+                        buffer2->Vertices.push_back(vv1);
+                        buffer2->Vertices.push_back(vv2);
+                        buffer2->Vertices.push_back(vv3);
+                        buffer2->Vertices.push_back(vv4);
+                        buffer2->Vertices.push_back(vv5);
+                        buffer2->Vertices.push_back(vv6);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
+                        buffer2->Indices.push_back(bufferIndex++);
                     }
                 }
             }
@@ -406,9 +683,11 @@ public:
         }*/
 
         mMeshBuffer->recalculateBoundingBox();
+        buffer2->recalculateBoundingBox();
 
         mMesh = new SMesh();
         mMesh->addMeshBuffer(mMeshBuffer);
+        mMesh->addMeshBuffer(buffer2);
         mMesh->setDirty();
         mMesh->recalculateBoundingBox();
 
