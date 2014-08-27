@@ -28,6 +28,7 @@
 #include <engine/BulletSceneNodeAnimator.h>
 #include <engine/Entity.h>
 #include <engine/EntityContainer.h>
+#include <engine/VoxelTerrain/VoxelSector.h>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/random.hpp>
 #include <ItemFactory.h>
@@ -86,50 +87,7 @@ E_GAME_STATE ExploreGame::run()
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
-    std::vector<boost::shared_ptr<VoxelGrid> > grids;
-    grids.resize(6);
-
-    for( int x = 0; x < 3; ++x)
-    {
-        grids[x].reset(new VoxelGrid(mExplore, 128.f, 7, 0));
-
-        if(x % 2 != 0)
-        {
-            grids[x]->getEntity()->setRotation(vector3df(0.f, 180.f, 0.f));
-            grids[x]->getEntity()->setPosition(vector3df(
-                                                  -64 + x * 64/*-96.f + x * 96.f*/,
-                                                  -2.f,
-                                                  64 * 0.87/*80.f + 96.f*/));
-        }
-        else
-        {
-            grids[x]->getEntity()->setPosition(vector3df(
-                                                  -64+ x * 64/*-96.f + x * 96.f*/,
-                                                  -2.f,
-                                                  64 * 0.87/*80.f*/));
-        }
-    }
-
-    for( int x = 0; x < 3; ++x)
-    {
-        grids[x + 3].reset(new VoxelGrid(mExplore, 128.f, 7, 0));
-
-        if(x % 2 == 0)
-        {
-            grids[x + 3]->getEntity()->setRotation(vector3df(0.f, 180.f, 0.f));
-            grids[x + 3]->getEntity()->setPosition(vector3df(
-                                                  -64 + x * 64/*-96.f + x * 96.f*/,
-                                                  -2.f,
-                                                  -64 * 0.87/*-80.f + 96.f*/));
-        }
-        else
-        {
-            grids[x + 3]->getEntity()->setPosition(vector3df(
-                                                  -64 + x * 64 /*-96.f + x * 96.f*/,
-                                                  -2.f,
-                                                  -64 * 0.87/*-80.f*/));
-        }
-    }
+    VoxelSector sector(mExplore);
 
     btClock clock;
 

@@ -1,8 +1,9 @@
 #ifndef VOXEL_H
 #define VOXEL_H
 
-#include "../EngineTypedefs.h"
-#include "game/Explore.h"
+#include <EngineTypedefs.h>
+#include <engine/EntityTools.h>
+#include <game/Explore.h>
 
 struct Voxel
 {

@@ -1,4 +1,5 @@
 #include "VoxelTerrain/VoxelGrid.h"
+#include <boost/random.hpp>
 
 using namespace irr;
 using namespace core;

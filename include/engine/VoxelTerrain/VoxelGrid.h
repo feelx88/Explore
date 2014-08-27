@@ -20,8 +20,8 @@ private:
     ExplorePtr mExplore;
     std::vector<boost::shared_ptr<Voxel>> mVoxels;
     irr::scene::ISceneNode *mSceneNode;
-    irr::video::SMesh *mMesh;
-    irr::video::SMeshBuffer *mMeshBuffer;
+    irr::scene::SMesh *mMesh;
+    irr::scene::SMeshBuffer *mMeshBuffer;
     EntityPtr mEntity;
 };
 
