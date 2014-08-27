@@ -98,116 +98,12 @@ struct Voxel
     bool triangleUp;
 };
 
-std::vector<Voxel*> v = {
-    new Voxel( 0, 10, vector3df(), vector3df(0,0,0),vector3df(1,0,0),vector3df(0.5,0,1), 2, Voxel::EVT_GROUND, true),
-    new Voxel( 1, 10, vector3df(), vector3df(0.5,0,1),vector3df(1.5,0,1),vector3df(1,0,0), 2, Voxel::EVT_GROUND, false),
-    new Voxel( 2, 10, vector3df(), vector3df(1,0,0),vector3df(2,0,0),vector3df(1.5,0,1), 2, Voxel::EVT_GROUND, true),
-    new Voxel( 3, 10, vector3df(), vector3df(1.5,0,1),vector3df(2.5,0,1),vector3df(2,0,0), 2, Voxel::EVT_GROUND, false),
-    new Voxel( 4, 10, vector3df(), vector3df(2,0,0),vector3df(3,0,0),vector3df(2.5,0,1), 2, Voxel::EVT_GROUND, true),
-    new Voxel( 5, 10, vector3df(), vector3df(2.5,0,1),vector3df(3.5,0,1),vector3df(3,0,0), 2, Voxel::EVT_GROUND, false),
-    new Voxel( 6, 10, vector3df(), vector3df(3,0,0),vector3df(4,0,0),vector3df(3.5,0,1), 2, Voxel::EVT_GROUND, true),
-
-    new Voxel( 7, 11, vector3df(), vector3df(0.5,0,1),vector3df(1.5,0,1),vector3df(1,0,2), 1, Voxel::EVT_GROUND, true),
-    new Voxel( 8, 11, vector3df(), vector3df(1,0,2),vector3df(2,0,2),vector3df(1.5,0,1), 2, Voxel::EVT_GROUND, false),
-    new Voxel( 9, 11, vector3df(), vector3df(1.5,0,1),vector3df(2.5,0,1),vector3df(2,0,2), 1, Voxel::EVT_GROUND, true),
-    new Voxel(10, 10, vector3df(), vector3df(2,0,2),vector3df(3,0,2),vector3df(2.5,0,1), 2, Voxel::EVT_GROUND, false),
-    new Voxel(11, 10, vector3df(), vector3df(2.5,0,1),vector3df(3.5,0,1),vector3df(3,0,2), 2, Voxel::EVT_GROUND, true),
-
-    new Voxel(12, 11, vector3df(), vector3df(1,0,2),vector3df(2,0,2),vector3df(1.5,0,3), 1, Voxel::EVT_GROUND, true),
-    new Voxel(13, 11, vector3df(), vector3df(1.5,0,3),vector3df(2.5,0,3),vector3df(2,0,2), 2, Voxel::EVT_GROUND, false),
-    new Voxel(14, 10, vector3df(), vector3df(2,0,2),vector3df(3,0,2),vector3df(2.5,0,3), 2, Voxel::EVT_GROUND, true),
-
-    new Voxel(15, 10, vector3df(), vector3df(1.5,0,3),vector3df(2.5,0,3),vector3df(2,0,4), 2, Voxel::EVT_GROUND, true)
-};
-
-void setV()
-{
-    //no
-    v.at(0)->neighbours[Voxel::EN_RIGHT] = v.at(1);
-    //no
-
-    v.at(1)->neighbours[Voxel::EN_LEFT] = v.at(0);
-    v.at(1)->neighbours[Voxel::EN_RIGHT] = v.at(2);
-    v.at(1)->neighbours[Voxel::EN_TOP] = v.at(7);
-
-    v.at(2)->neighbours[Voxel::EN_LEFT] = v.at(1);
-    v.at(2)->neighbours[Voxel::EN_RIGHT] = v.at(3);
-    //no
-
-    v.at(3)->neighbours[Voxel::EN_LEFT] = v.at(2);
-    v.at(3)->neighbours[Voxel::EN_RIGHT] = v.at(4);
-    v.at(3)->neighbours[Voxel::EN_TOP] = v.at(9);
-
-    v.at(4)->neighbours[Voxel::EN_LEFT] = v.at(3);
-    v.at(4)->neighbours[Voxel::EN_RIGHT] = v.at(5);
-    //no
-
-    v.at(5)->neighbours[Voxel::EN_LEFT] = v.at(4);
-    v.at(5)->neighbours[Voxel::EN_RIGHT] = v.at(6);
-    v.at(5)->neighbours[Voxel::EN_TOP] = v.at(11);
-
-    v.at(6)->neighbours[Voxel::EN_LEFT] = v.at(5);
-    //no
-    //no
-
-    //no
-    v.at(7)->neighbours[Voxel::EN_RIGHT] = v.at(8);
-    v.at(7)->neighbours[Voxel::EN_TOP] = v.at(1);
-
-    v.at(8)->neighbours[Voxel::EN_LEFT] = v.at(7);
-    v.at(8)->neighbours[Voxel::EN_RIGHT] = v.at(9);
-    v.at(8)->neighbours[Voxel::EN_TOP] = v.at(12);
-
-    v.at(9)->neighbours[Voxel::EN_LEFT] = v.at(8);
-    v.at(9)->neighbours[Voxel::EN_RIGHT] = v.at(10);
-    v.at(9)->neighbours[Voxel::EN_TOP] = v.at(3);
-
-    v.at(10)->neighbours[Voxel::EN_LEFT] = v.at(9);
-    v.at(10)->neighbours[Voxel::EN_RIGHT] = v.at(11);
-    v.at(10)->neighbours[Voxel::EN_TOP] = v.at(14);
-
-    v.at(11)->neighbours[Voxel::EN_LEFT] = v.at(10);
-    //no
-    v.at(11)->neighbours[Voxel::EN_TOP] = v.at(5);
-
-    //no
-    v.at(12)->neighbours[Voxel::EN_RIGHT] = v.at(13);
-    v.at(12)->neighbours[Voxel::EN_TOP] = v.at(8);
-
-    v.at(13)->neighbours[Voxel::EN_LEFT] = v.at(12);
-    v.at(13)->neighbours[Voxel::EN_RIGHT] = v.at(14);
-    v.at(13)->neighbours[Voxel::EN_TOP] = v.at(15);
-
-    v.at(14)->neighbours[Voxel::EN_LEFT] = v.at(13);
-    //no
-    v.at(14)->neighbours[Voxel::EN_TOP] = v.at(10);
-
-    //no
-    //no
-    v.at(15)->neighbours[Voxel::EN_TOP] = v.at(13);
-}
-
-
 class VoxelGrid
 {
 public:
     VoxelGrid(ExplorePtr explore, float length, int subdiv, int depth)
         : mExplore(explore)
     {
-        int numVoxel = pow(2.f, 2 * subdiv);
-        /*mVoxels = new int*[numVoxel];
-        for(int i = 0; i < depth; ++i)
-        {
-            mVoxels[i] = new int[depth];
-            for(int j = 0; j < numVoxel; ++j)
-            {
-                mVoxels[i][j] = 10;
-            }
-        }*/
-
-        mVoxels = new Voxel*[1];
-        mVoxels[0] = new Voxel[numVoxel];
-
         IrrlichtDevicePtr device = explore->getIrrlichtDevice();
         ISceneManagerPtr mgr = device->getSceneManager();
         BulletWorldPtr world = explore->getBulletWorld();
@@ -226,8 +122,6 @@ public:
 
         float left = 0;
 
-        v.clear();
-
         boost::random::mt19937 rand;
         boost::random::uniform_int_distribution<> dist(0, 1);
 
@@ -237,22 +131,22 @@ public:
             for(int y = 0; y <= limit; ++y)
             {
                 int r1 = dist(rand);
-                Voxel *v1 = new Voxel(index++, depth + (float)r1, vector3df(),
+                boost::shared_ptr<Voxel> v1(new Voxel(index++, depth + (float)r1, vector3df(),
                                       (vector3df(y + left,0,x * 0.87) + offset) * triSize,
                                       (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
                                       (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
-                                      r1 == 0 ? 2 : 1 + dist(rand), Voxel::EVT_GROUND, true);
-                v.push_back(v1);
+                                      0 == 0 ? 2 : 1 + dist(rand), Voxel::EVT_GROUND, true));
+                mVoxels.push_back(v1);
 
                 if(y < limit)
                 {
                     int r2 = dist(rand);
-                    Voxel *v2 = new Voxel(index++, depth + (float)r2, vector3df(),
+                    boost::shared_ptr<Voxel> v2(new Voxel(index++, depth + (float)r2, vector3df(),
                                           (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
                                           (vector3df(y + left + 1.5,0,x * 0.87 + 0.87) + offset) * triSize,
                                           (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
-                                          r2 == 0 ? 2 : 1 + dist(rand), Voxel::EVT_GROUND, false);
-                    v.push_back(v2);
+                                          0 == 0 ? 2 : 1 + dist(rand), Voxel::EVT_GROUND, false));
+                    mVoxels.push_back(v2);
                 }
             }
             left += 0.5;
@@ -265,26 +159,26 @@ public:
             int limit = (maxTris - (2 * x));
             for(int y = 0; y < limit; ++y)
             {
-                Voxel *curVoxel = v.at(index);
+                boost::shared_ptr<Voxel> curVoxel = mVoxels.at(index);
 
                 if(y > 0)
                 {
-                    curVoxel->neighbours[Voxel::EN_LEFT] = v.at(index - 1);
+                    curVoxel->neighbours[Voxel::EN_LEFT] = mVoxels.at(index - 1).get();
                 }
                 if(y < limit - 1)
                 {
-                    curVoxel->neighbours[Voxel::EN_RIGHT] = v.at(index + 1);
+                    curVoxel->neighbours[Voxel::EN_RIGHT] = mVoxels.at(index + 1).get();
                 }
                 if(curVoxel->triangleUp)
                 {
                     if(x > 0)
                     {
-                        curVoxel->neighbours[Voxel::EN_TOP] = v.at(index - (maxTris - (2 * (x - 1))));
+                        curVoxel->neighbours[Voxel::EN_TOP] = mVoxels.at(index - (maxTris - (2 * (x - 1)))).get();
                     }
                 }
                 else
                 {
-                    curVoxel->neighbours[Voxel::EN_TOP] = v.at(index + (maxTris - (2 * (x + 1))));
+                    curVoxel->neighbours[Voxel::EN_TOP] = mVoxels.at(index + (maxTris - (2 * (x + 1)))).get();
                 }
 
                 ++index;
@@ -292,13 +186,16 @@ public:
         }
 
         mMeshBuffer = new SMeshBuffer();
-        SMeshBuffer *buffer2 = new SMeshBuffer();
+
+        SMeshBuffer *bufferLeft = new SMeshBuffer();
+        SMeshBuffer *bufferRight = new SMeshBuffer();
+        SMeshBuffer *bufferTop = new SMeshBuffer();
         int bufferIndex = 0;
-        int counter = 0;
+        int bufferIndexLeft = 0;
+        int bufferIndexRight = 0;
+        int bufferIndexTop = 0;
 
-        //setV();
-
-        for(auto x : v)
+        for(auto x : mVoxels)
         {
             vector3df height(0, x->height, 0);
 
@@ -382,18 +279,18 @@ public:
                         vv6.TCoords = vector2df(0.f, 0.f);
                         vv6.Color = SColor(255, 255, 255, 255);
 
-                        buffer2->Vertices.push_back(vv1);
-                        buffer2->Vertices.push_back(vv2);
-                        buffer2->Vertices.push_back(vv3);
-                        buffer2->Vertices.push_back(vv4);
-                        buffer2->Vertices.push_back(vv5);
-                        buffer2->Vertices.push_back(vv6);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
+                        bufferTop->Vertices.push_back(vv1);
+                        bufferTop->Vertices.push_back(vv2);
+                        bufferTop->Vertices.push_back(vv3);
+                        bufferLeft->Vertices.push_back(vv4);
+                        bufferLeft->Vertices.push_back(vv5);
+                        bufferLeft->Vertices.push_back(vv6);
+                        bufferTop->Indices.push_back(bufferIndexTop++);
+                        bufferTop->Indices.push_back(bufferIndexTop++);
+                        bufferTop->Indices.push_back(bufferIndexTop++);
+                        bufferLeft->Indices.push_back(bufferIndexLeft++);
+                        bufferLeft->Indices.push_back(bufferIndexLeft++);
+                        bufferLeft->Indices.push_back(bufferIndexLeft++);
                     }
                     else if(v2.Pos.Y == 0)
                     {
@@ -422,18 +319,18 @@ public:
                         vv6.TCoords = vector2df(0.f, 0.f);
                         vv6.Color = SColor(255, 255, 255, 255);
 
-                        buffer2->Vertices.push_back(vv1);
-                        buffer2->Vertices.push_back(vv2);
-                        buffer2->Vertices.push_back(vv3);
-                        buffer2->Vertices.push_back(vv4);
-                        buffer2->Vertices.push_back(vv5);
-                        buffer2->Vertices.push_back(vv6);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
+                        bufferTop->Vertices.push_back(vv1);
+                        bufferTop->Vertices.push_back(vv2);
+                        bufferTop->Vertices.push_back(vv3);
+                        bufferRight->Vertices.push_back(vv4);
+                        bufferRight->Vertices.push_back(vv5);
+                        bufferRight->Vertices.push_back(vv6);
+                        bufferTop->Indices.push_back(bufferIndexTop++);
+                        bufferTop->Indices.push_back(bufferIndexTop++);
+                        bufferTop->Indices.push_back(bufferIndexTop++);
+                        bufferRight->Indices.push_back(bufferIndexRight++);
+                        bufferRight->Indices.push_back(bufferIndexRight++);
+                        bufferRight->Indices.push_back(bufferIndexRight++);
                     }
                     else if(v3.Pos.Y == 0)
                     {
@@ -462,18 +359,18 @@ public:
                         vv6.TCoords = vector2df(0.f, 0.f);
                         vv6.Color = SColor(255, 255, 255, 255);
 
-                        buffer2->Vertices.push_back(vv1);
-                        buffer2->Vertices.push_back(vv2);
-                        buffer2->Vertices.push_back(vv3);
-                        buffer2->Vertices.push_back(vv4);
-                        buffer2->Vertices.push_back(vv5);
-                        buffer2->Vertices.push_back(vv6);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
+                        bufferLeft->Vertices.push_back(vv1);
+                        bufferLeft->Vertices.push_back(vv2);
+                        bufferLeft->Vertices.push_back(vv3);
+                        bufferRight->Vertices.push_back(vv4);
+                        bufferRight->Vertices.push_back(vv5);
+                        bufferRight->Vertices.push_back(vv6);
+                        bufferLeft->Indices.push_back(bufferIndexLeft++);
+                        bufferLeft->Indices.push_back(bufferIndexLeft++);
+                        bufferLeft->Indices.push_back(bufferIndexLeft++);
+                        bufferRight->Indices.push_back(bufferIndexRight++);
+                        bufferRight->Indices.push_back(bufferIndexRight++);
+                        bufferRight->Indices.push_back(bufferIndexRight++);
                     }
                 }
                 else if(sum == -1)
@@ -486,52 +383,70 @@ public:
                 if(x->neighbours[Voxel::EN_LEFT])
                 {
                     int lh = x->neighbours[Voxel::EN_LEFT]->height - x->height;
-                    if(lh > 0)
+                    if(lh < 0)
                     {
                         S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
-                        vv1.Pos = x->vertices[2];
+                        vv1.Pos = x->vertices[0];
                         vv1.TCoords = vector2df(0.f, 0.f);
                         vv1.Color = SColor(255, 255, 255, 255);
 
-                        vv2.Pos = x->vertices[0];
+                        vv2.Pos = x->vertices[2];
                         vv2.TCoords = vector2df(0.f, 0.f);
                         vv2.Color = SColor(255, 255, 255, 255);
 
-                        vv3.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv3.Pos = x->vertices[2] + vector3df(0,1,0);
                         vv3.TCoords = vector2df(0.f, 0.f);
                         vv3.Color = SColor(255, 255, 255, 255);
 
-                        vv4.Pos = x->vertices[0] + vector3df(0,1,0);
+                        vv4.Pos = x->vertices[2] + vector3df(0,1,0);
                         vv4.TCoords = vector2df(0.f, 0.f);
                         vv4.Color = SColor(255, 255, 255, 255);
 
-                        vv5.Pos = x->vertices[2] + vector3df(0,1,0);
+                        vv5.Pos = x->vertices[0] + vector3df(0,1,0);
                         vv5.TCoords = vector2df(0.f, 0.f);
                         vv5.Color = SColor(255, 255, 255, 255);
 
-                        vv6.Pos = x->vertices[2];
+                        vv6.Pos = x->vertices[0];
                         vv6.TCoords = vector2df(0.f, 0.f);
                         vv6.Color = SColor(255, 255, 255, 255);
 
-                        buffer2->Vertices.push_back(vv1);
-                        buffer2->Vertices.push_back(vv2);
-                        buffer2->Vertices.push_back(vv3);
-                        buffer2->Vertices.push_back(vv4);
-                        buffer2->Vertices.push_back(vv5);
-                        buffer2->Vertices.push_back(vv6);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
+                        if(x->triangleUp)
+                        {
+                            bufferLeft->Vertices.push_back(vv2);
+                            bufferLeft->Vertices.push_back(vv1);
+                            bufferLeft->Vertices.push_back(vv3);
+                            bufferLeft->Vertices.push_back(vv5);
+                            bufferLeft->Vertices.push_back(vv4);
+                            bufferLeft->Vertices.push_back(vv6);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                        }
+                        else
+                        {
+                            bufferLeft->Vertices.push_back(vv1);
+                            bufferLeft->Vertices.push_back(vv2);
+                            bufferLeft->Vertices.push_back(vv3);
+                            bufferLeft->Vertices.push_back(vv4);
+                            bufferLeft->Vertices.push_back(vv5);
+                            bufferLeft->Vertices.push_back(vv6);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                            bufferLeft->Indices.push_back(bufferIndexLeft++);
+                        }
                     }
                 }
 
                 if(x->neighbours[Voxel::EN_RIGHT])
                 {
                     int rh = x->neighbours[Voxel::EN_RIGHT]->height - x->height;
-                    if(rh > 0)
+                    if(rh < 0)
                     {
                         S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
                         vv1.Pos = x->vertices[1];
@@ -558,25 +473,43 @@ public:
                         vv6.TCoords = vector2df(0.f, 0.f);
                         vv6.Color = SColor(255, 255, 255, 255);
 
-                        buffer2->Vertices.push_back(vv1);
-                        buffer2->Vertices.push_back(vv2);
-                        buffer2->Vertices.push_back(vv3);
-                        buffer2->Vertices.push_back(vv4);
-                        buffer2->Vertices.push_back(vv5);
-                        buffer2->Vertices.push_back(vv6);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
+                        if(x->triangleUp)
+                        {
+                            bufferRight->Vertices.push_back(vv2);
+                            bufferRight->Vertices.push_back(vv1);
+                            bufferRight->Vertices.push_back(vv3);
+                            bufferRight->Vertices.push_back(vv5);
+                            bufferRight->Vertices.push_back(vv4);
+                            bufferRight->Vertices.push_back(vv6);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                        }
+                        else
+                        {
+                            bufferRight->Vertices.push_back(vv1);
+                            bufferRight->Vertices.push_back(vv2);
+                            bufferRight->Vertices.push_back(vv3);
+                            bufferRight->Vertices.push_back(vv4);
+                            bufferRight->Vertices.push_back(vv5);
+                            bufferRight->Vertices.push_back(vv6);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                            bufferRight->Indices.push_back(bufferIndexRight++);
+                        }
                     }
                 }
 
                 if(x->neighbours[Voxel::EN_TOP])
                 {
                     int th = x->neighbours[Voxel::EN_TOP]->height - x->height;
-                    if(th > 0)
+                    if(th < 0)
                     {
                         S3DVertex vv1, vv2, vv3, vv4, vv5, vv6;
                         vv1.Pos = x->vertices[0];
@@ -603,18 +536,36 @@ public:
                         vv6.TCoords = vector2df(0.f, 0.f);
                         vv6.Color = SColor(255, 255, 255, 255);
 
-                        buffer2->Vertices.push_back(vv1);
-                        buffer2->Vertices.push_back(vv2);
-                        buffer2->Vertices.push_back(vv3);
-                        buffer2->Vertices.push_back(vv4);
-                        buffer2->Vertices.push_back(vv5);
-                        buffer2->Vertices.push_back(vv6);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
-                        buffer2->Indices.push_back(bufferIndex++);
+                        if(x->triangleUp)
+                        {
+                            bufferTop->Vertices.push_back(vv2);
+                            bufferTop->Vertices.push_back(vv1);
+                            bufferTop->Vertices.push_back(vv3);
+                            bufferTop->Vertices.push_back(vv5);
+                            bufferTop->Vertices.push_back(vv4);
+                            bufferTop->Vertices.push_back(vv6);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                        }
+                        else
+                        {
+                            bufferTop->Vertices.push_back(vv1);
+                            bufferTop->Vertices.push_back(vv2);
+                            bufferTop->Vertices.push_back(vv3);
+                            bufferTop->Vertices.push_back(vv4);
+                            bufferTop->Vertices.push_back(vv5);
+                            bufferTop->Vertices.push_back(vv6);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                            bufferTop->Indices.push_back(bufferIndexTop++);
+                        }
                     }
                 }
             }
@@ -636,58 +587,21 @@ public:
                 mMeshBuffer->Vertices.push_back(v3);
             }
 
-            mMeshBuffer->Indices.push_back(counter++);
-            mMeshBuffer->Indices.push_back(counter++);
-            mMeshBuffer->Indices.push_back(counter++);
+            mMeshBuffer->Indices.push_back(bufferIndex++);
+            mMeshBuffer->Indices.push_back(bufferIndex++);
+            mMeshBuffer->Indices.push_back(bufferIndex++);
         }
-
-        /*std::vector<vector3df> verts;
-        std::vector<int> indices;
-
-        calculateSubdividedTriangles(
-                    triangle3df(a, b, c), subdiv, verts, indices);
-
-        boost::random::mt19937 rand;
-        boost::random::uniform_int_distribution<> dist(0, 1);
-
-        for(unsigned int x = 0; x < verts.size(); x += 3)
-        {
-            S3DVertex v1, v2, v3;
-            v1.Pos = verts.at(x) + vector3df(0.f, (float)dist(rand), 0.f);
-            v1.TCoords = vector2df(0.f, 0.f);
-            v1.Color = SColor(255, 255, 255, 255);
-
-            v2.Pos = verts.at(x + 1) + vector3df(0.f, (float)dist(rand), 0.f);
-            v2.TCoords = vector2df(1.f, 0.f);
-            v2.Color = SColor(255, 255, 255, 255);
-
-            v3.Pos = verts.at(x + 2) + vector3df(0.f, (float)dist(rand), 0.f);
-            v3.TCoords = vector2df(0.5f, 1.f);
-            v3.Color = SColor(255, 255, 255, 255);
-
-            vector3df normal = (v1.Pos - v3.Pos).crossProduct((v1.Pos - v2.Pos));
-            normal.normalize();
-
-            v1.Normal = normal;
-            v2.Normal = normal;
-            v3.Normal = normal;
-
-            mMeshBuffer->Vertices.push_back(v1);
-            mMeshBuffer->Vertices.push_back(v2);
-            mMeshBuffer->Vertices.push_back(v3);
-        }
-
-        for(unsigned int x = 0; x < indices.size(); ++x)
-        {
-            mMeshBuffer->Indices.push_back(indices.at(x));
-        }*/
 
         mMeshBuffer->recalculateBoundingBox();
-        buffer2->recalculateBoundingBox();
+        bufferLeft->recalculateBoundingBox();
+        bufferRight->recalculateBoundingBox();
+        bufferTop->recalculateBoundingBox();
 
         mMesh = new SMesh();
         mMesh->addMeshBuffer(mMeshBuffer);
-        mMesh->addMeshBuffer(buffer2);
+        mMesh->addMeshBuffer(bufferLeft);
+        mMesh->addMeshBuffer(bufferRight);
+        mMesh->addMeshBuffer(bufferTop);
         mMesh->setDirty();
         mMesh->recalculateBoundingBox();
 
@@ -703,67 +617,7 @@ public:
 
     ~VoxelGrid()
     {
-        //delete[] mVoxels;
     }
-
-    /*void calculateSubdividedTriangles(
-            triangle3df tri,
-            int subdivisions,
-            std::vector<vector3df> &vertexList,
-            std::vector<int> &indexList)
-    {
-        if(subdivisions == 0)
-        {
-            vertexList.push_back(tri.pointA);
-            vertexList.push_back(tri.pointC);
-            vertexList.push_back(tri.pointB);
-        }
-
-        int maxVerts = (int)pow(2.f, subdivisions) + 1;
-        float maxSizeX = (tri.pointB - tri.pointC).getLength();
-        float maxSizeY = (tri.pointA - (tri.pointB - tri.pointC) / 2.f ).getLength();
-
-        vector3df startPoint = tri.pointC;
-
-        float divX = maxSizeX / (float)(maxVerts - 1);
-        float divY = maxSizeY / (float)(maxVerts - 1);
-
-        int vertCount = (maxVerts * maxVerts + maxVerts) / 2; //gauss
-        int num = 0;
-
-        for(int x = maxVerts; x > 0; --x)
-        {
-            for(int y = 0; y < x; ++y)
-            {
-                vertexList.push_back(vector3df(
-                                         startPoint.X + (float)y * divX,
-                                         0.f,
-                                         startPoint.Z));
-
-                if(y < x - 1)
-                {
-                    mVoxels[0][num].fillLevel = 1;
-                    mVoxels[0][num].position = vector3df;
-                    mVoxels[0][num].triangleUp = y % 2 == 0;
-                    mVoxels[0][num].type = Voxel::EVT_GROUND;
-
-                    indexList.push_back(num + 1);
-                    indexList.push_back(num);
-                    indexList.push_back(num + x);
-                    if(num - x > 0)
-                    {
-                        indexList.push_back(num);
-                        indexList.push_back(num + 1);
-                        indexList.push_back(num - x);
-                    }
-                }
-                num++;
-            }
-
-            startPoint.X += divX / 2.f;
-            startPoint.Z += divY;
-        }
-    }*/
 
     EntityPtr getEntity()
     {
@@ -772,7 +626,7 @@ public:
 
 private:
     ExplorePtr mExplore;
-    Voxel **mVoxels;
+    std::vector<boost::shared_ptr<Voxel>> mVoxels;
     ISceneNode *mSceneNode;
     SMesh *mMesh;
     SMeshBuffer *mMeshBuffer;
