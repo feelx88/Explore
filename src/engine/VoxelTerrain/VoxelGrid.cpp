@@ -9,16 +9,26 @@ using namespace scene;
 VoxelGrid::VoxelGrid(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld,
                      float length, int subdiv, int depth)
     : mDevice(device),
-      mBulletWorld(bulletWorld)
+      mBulletWorld(bulletWorld),
+      mSubdivisions(subdiv),
+      mDepth(depth),
+      mLength(length)
 {
-    ISceneManagerPtr sceneMgr = mDevice->getSceneManager();
-    IVideoDriverPtr driver = mDevice->getVideoDriver();
+    generateVoxels();
+    generateMesh();
+}
 
-    int subdivPow = std::pow(2.f, subdiv);
+VoxelGrid::~VoxelGrid()
+{
+}
+
+void VoxelGrid::generateVoxels()
+{
+    int subdivPow = std::pow(2.f, mSubdivisions);
     int maxTris = 2 * subdivPow - 1;
-    float triSize = length / subdivPow;
+    float triSize = mLength / subdivPow;
 
-    vector3df offset(-length / 2.f, 0, -length / 2.f * 0.87f);
+    vector3df offset(-mLength / 2.f, 0, -mLength / 2.f * 0.87f);
 
     int index = 0;
 
@@ -33,7 +43,7 @@ VoxelGrid::VoxelGrid(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld,
         for(int y = 0; y <= limit; ++y)
         {
             int r1 = dist(rand);
-            boost::shared_ptr<Voxel> v1(new Voxel(index++, depth + (float)r1, vector3df(),
+            boost::shared_ptr<Voxel> v1(new Voxel(index++, mDepth + (float)r1, vector3df(),
                                                   (vector3df(y + left,0,x * 0.87) + offset) * triSize,
                                                   (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
                                                   (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
@@ -43,7 +53,7 @@ VoxelGrid::VoxelGrid(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld,
             if(y < limit)
             {
                 int r2 = dist(rand);
-                boost::shared_ptr<Voxel> v2(new Voxel(index++, depth + (float)r2, vector3df(),
+                boost::shared_ptr<Voxel> v2(new Voxel(index++, mDepth + (float)r2, vector3df(),
                                                       (vector3df(y + left + 0.5,0,x * 0.87 + 0.87) + offset) * triSize,
                                                       (vector3df(y + left + 1.5,0,x * 0.87 + 0.87) + offset) * triSize,
                                                       (vector3df(y + left + 1,0,x * 0.87) + offset) * triSize,
@@ -86,6 +96,12 @@ VoxelGrid::VoxelGrid(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld,
             ++index;
         }
     }
+}
+
+void VoxelGrid::generateMesh()
+{
+    ISceneManagerPtr sceneMgr = mDevice->getSceneManager();
+    IVideoDriverPtr driver = mDevice->getVideoDriver();
 
     mMeshBuffer = new SMeshBuffer();
 
@@ -515,8 +531,4 @@ VoxelGrid::VoxelGrid(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld,
     props->put<float>("Entity.Body.Mass", 0.f);
 
     mEntity.reset(new Entity(mDevice, mBulletWorld, props, "data", mSceneNode));
-}
-
-VoxelGrid::~VoxelGrid()
-{
 }

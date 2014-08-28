@@ -18,8 +18,13 @@ public:
     }
 
 private:
+    void generateVoxels();
+    void generateMesh();
+
     IrrlichtDevicePtr mDevice;
     BulletWorldPtr mBulletWorld;
+    int mSubdivisions, mDepth;
+    float mLength;
     std::vector<boost::shared_ptr<Voxel>> mVoxels;
     irr::scene::ISceneNode *mSceneNode;
     irr::scene::SMesh *mMesh;
