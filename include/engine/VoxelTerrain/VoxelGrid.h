@@ -7,7 +7,8 @@
 class VoxelGrid
 {
 public:
-    VoxelGrid(ExplorePtr explore, float length, int subdiv, int depth);
+    VoxelGrid(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld,
+              float length, int subdiv, int depth);
 
     ~VoxelGrid();
 
@@ -17,7 +18,8 @@ public:
     }
 
 private:
-    ExplorePtr mExplore;
+    IrrlichtDevicePtr mDevice;
+    BulletWorldPtr mBulletWorld;
     std::vector<boost::shared_ptr<Voxel>> mVoxels;
     irr::scene::ISceneNode *mSceneNode;
     irr::scene::SMesh *mMesh;

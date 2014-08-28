@@ -6,16 +6,13 @@ using namespace core;
 using namespace video;
 using namespace scene;
 
-VoxelGrid::VoxelGrid(ExplorePtr explore, float length, int subdiv, int depth)
-    : mExplore(explore)
+VoxelGrid::VoxelGrid(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld,
+                     float length, int subdiv, int depth)
+    : mDevice(device),
+      mBulletWorld(bulletWorld)
 {
-    IrrlichtDevicePtr device = explore->getIrrlichtDevice();
-    ISceneManagerPtr mgr = device->getSceneManager();
-    BulletWorldPtr world = explore->getBulletWorld();
-
-    vector3df a(0.f, 0.f, length);
-    vector3df b(0.75f * length, 0.f, -0.25f * length);
-    vector3df c(-0.75f * length, 0.f, -0.25f * length);
+    ISceneManagerPtr sceneMgr = mDevice->getSceneManager();
+    IVideoDriverPtr driver = mDevice->getVideoDriver();
 
     int subdivPow = std::pow(2.f, subdiv);
     int maxTris = 2 * subdivPow - 1;
@@ -510,14 +507,14 @@ VoxelGrid::VoxelGrid(ExplorePtr explore, float length, int subdiv, int depth)
     mMesh->setDirty();
     mMesh->recalculateBoundingBox();
 
-    mSceneNode = mgr->addMeshSceneNode(mMesh, 0, -1, vector3df(0, 0, 0));
-    mSceneNode->setMaterialTexture(0, mExplore->getIrrlichtDevice()->getVideoDriver()->getTexture("data/Textures/terrain_test.png"));
+    mSceneNode = sceneMgr->addMeshSceneNode(mMesh, 0, -1, vector3df(0, 0, 0));
+    mSceneNode->setMaterialTexture(0, driver->getTexture("data/Textures/terrain_test.png"));
 
     PropTreePtr props(new PropTree());
     props->put<std::string>("Entity.Body.Shape.<xmlattr>.Type", "Mesh");
     props->put<float>("Entity.Body.Mass", 0.f);
 
-    mEntity.reset(new Entity(device, world, props, "data", mSceneNode));
+    mEntity.reset(new Entity(mDevice, mBulletWorld, props, "data", mSceneNode));
 }
 
 VoxelGrid::~VoxelGrid()

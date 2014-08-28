@@ -24,14 +24,15 @@ using namespace core;
 using namespace video;
 using namespace scene;
 
-VoxelSector::VoxelSector(ExplorePtr explore)
-    : mExplore(explore)
+VoxelSector::VoxelSector(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld)
+    : mDevice(device),
+      mBulletWorld(bulletWorld)
 {
     mGrids.resize(6);
 
     for( int x = 0; x < 3; ++x)
     {
-        mGrids[x].reset(new VoxelGrid(mExplore, 128.f, 7, 0));
+        mGrids[x].reset(new VoxelGrid(mDevice, mBulletWorld, 128.f, 7, 0));
 
         if(x % 2 != 0)
         {
@@ -52,7 +53,7 @@ VoxelSector::VoxelSector(ExplorePtr explore)
 
     for( int x = 0; x < 3; ++x)
     {
-        mGrids[x + 3].reset(new VoxelGrid(mExplore, 128.f, 7, 0));
+        mGrids[x + 3].reset(new VoxelGrid(mDevice, mBulletWorld, 128.f, 7, 0));
 
         if(x % 2 == 0)
         {

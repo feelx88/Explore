@@ -87,7 +87,7 @@ E_GAME_STATE ExploreGame::run()
 
     mBulletWorld->setGravity( btVector3( 0.f, -10.f, 0.f ) );
 
-    VoxelSector sector(mExplore);
+    VoxelSector sector(mDevice, mBulletWorld);
 
     btClock clock;
 

@@ -27,11 +27,12 @@
 class VoxelSector
 {
 public:
-    VoxelSector(ExplorePtr explore);
+    VoxelSector(IrrlichtDevicePtr device, BulletWorldPtr bulletWorld);
 
 private:
     std::vector<boost::shared_ptr<VoxelGrid> > mGrids;
-    ExplorePtr mExplore;
+    IrrlichtDevicePtr mDevice;
+    BulletWorldPtr mBulletWorld;
 };
 
 #endif // VOXELSECTOR_H
